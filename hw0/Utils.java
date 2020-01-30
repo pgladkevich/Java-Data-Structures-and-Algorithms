@@ -2,20 +2,21 @@
 *  @author Pavel Gladkevich
 */
 
-private class Utils {
+public class Utils {
 
-	public static int Max (int [] a) {
-		len_a = a.length ()
+	public static int max (int[] a) {
+		int len_a = a.length;
 		if (len_a > 0) {
+			int greatest = 0;
 			if (len_a % 2 == 0) {
 				int index = 0;
-				greatest = 0
 				while (index < len_a) {
 					if (a[index] >= greatest) {
 						greatest = a[index];
 					}
 					index += 1;
 				}
+				return greatest;
 			}
 			else {
 				for (int index = 0; index < len_a; index +=1) {
@@ -23,20 +24,18 @@ private class Utils {
 						greatest = a[index];
 					}
 				}
+				// System.out.println("Hello");
 				return greatest;
-
 			}
-		};
-		else{
-			return NullPointerException;
 		}
+		return 0;
 	}
 
 	public static boolean threeSum (int [] a) {
-
+		return false;
 	}
 
 	public static boolean threeSumDistinct (int [] a) {
-
+		return false;
 	}
 }

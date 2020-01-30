@@ -9,7 +9,7 @@ public class Utils {
 	 * @param a
 	 * @return greatest integer
 	 */
-	public static int max (int[] a) {
+	public static int max (int [] a) {
 		int len_a = a.length;
 		if (len_a > 0) {
 			int greatest = 0;
@@ -43,28 +43,37 @@ public class Utils {
 	 */
 	public static boolean threeSum (int [] a) {
 
-		public static boolean checkForI
-
 		int len_a = a.length;
 
 		for (int i = 0; i < len_a; i+=1) {
 			if (a[i] == 0) {
 				return true;
 			}
-			else if (a[i] == ) {
-
+			else if (a[i] % 2 == 0) {
+				if (inverseInList(a[i], a)) {
+					return true;
+				}
 			}
-			else if () {
-
+			else if (true) {
+				return true;
 			}
 			else {
 				return false;
 			}
 		}
-		//return false;
 	}
 
 	public static boolean threeSumDistinct (int [] a) {
+		return false;
+	}
+
+	public static boolean inverseInList (int x, int[] a){
+		int look_for = -1 * (x/2);
+		for (int i=0; i < a.length; i+=1){
+			if (a[i] == look_for){
+				return true;
+			}
+		}
 		return false;
 	}
 }

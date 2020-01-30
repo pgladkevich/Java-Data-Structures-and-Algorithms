@@ -46,29 +46,46 @@ public class Utils {
 		int len_a = a.length;
 
 		for (int i = 0; i < len_a; i+=1) {
+			/* Return true if 0 is in the array because 0+0+0 = 0 */
 			if (a[i] == 0) {
 				return true;
 			}
+			/* Return true if for x=a[i] there exists y =a[j]= -1(a[i])/2 since x+2y=0 */
 			else if (a[i] % 2 == 0) {
-				if (inverseInList(a[i], a)) {
+				if (halfInverse(a[i], a)) {
 					return true;
 				}
 			}
-			else if (true) {
+			/* Return true if a[i] = a[j]+a[k] */
+			else if (sumInverse(a[i], a)) {
 				return true;
 			}
-			else {
-				return false;
-			}
 		}
+		/* All solutions considered so must be false otherwise */
+		return false;
 	}
 
 	public static boolean threeSumDistinct (int [] a) {
 		return false;
 	}
 
-	public static boolean inverseInList (int x, int[] a){
-		int look_for = -1 * (x/2);
+	private static boolean halfInverse (int x, int [] a){
+		int y = -1 * (x/2);
+		return inList(y, a);
+	}
+
+	private static boolean sumInverse (int x, int [] a) {
+		int first_two;
+		for (int i=0; i < a.length; i+=1){
+			first_two = x + a[i];
+			if (inList(-first_two, a)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static boolean inList (int look_for, int [] a){
 		for (int i=0; i < a.length; i+=1){
 			if (a[i] == look_for){
 				return true;

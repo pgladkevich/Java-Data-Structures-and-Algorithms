@@ -34,7 +34,12 @@ public class Tester {
     public void threeSumTest() {
         // Change call to threeSum to make this call yours.
         assertTrue(Utils.threeSum(new int[] { -6, 3, 10, 200 }));
-        // REPLACE THIS WITH MORE TESTS.
+        assertFalse(Utils.threeSum(new int[]{-6, 2, 5}));
+        assertTrue(Utils.threeSum(new int[]{-6, 3, 10, 200}));
+        assertTrue(Utils.threeSum(new int[]{8, 2, -1, 15}));
+        assertTrue(Utils.threeSum(new int[]{8, 2, -1, -1, 15}));
+        assertTrue(Utils.threeSum(new int[]{5, 1, 0, 3, 6}));
+
     }
 
     @Test

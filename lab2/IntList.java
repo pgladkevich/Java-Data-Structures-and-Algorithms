@@ -64,7 +64,12 @@ public class IntList {
         // Creates a sample IntList.
         IntList L1 = list(1, 2, 3, 4, 5);
 
-        //TODO:  Print out L1 using IntelliJ's 'sout' command.
+        System.out.println(L1);
+        int sumL1 = sum(L1);
+        System.out.println(sumL1);
+
+        IntList origL = IntList.list(1, 2, 3);
+        squareListRecursive(origL);
     }
 
     /** DO NOT MODIFY ANYTHING BELOW THIS LINE! In fact, I wouldn't even
@@ -115,7 +120,7 @@ public class IntList {
         int sum = 0;
         IntList p = L;
         while (p != null) {
-            sum = p.head;
+            sum += p.head;
             p = p.tail;
         }
         return sum;

@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 /** Class that contains methods that act on integer arrays
 *  @author Pavel Gladkevich
 */
@@ -29,14 +31,13 @@ public class Utils {
 						greatest = a[index];
 					}
 				}
-				// System.out.println("Hello");
 				return greatest;
 			}
 		}
 		return 0;
 	}
 
-	/** Class that determines three integers (not neccesarily distinct) in a[] whose sum is zero.
+	/** Class that determines three integers (not necessarily distinct) in a[] whose sum is zero.
 	 *
 	 * @param a
 	 * @return boolean
@@ -65,27 +66,65 @@ public class Utils {
 		return false;
 	}
 
+	/** Class that determines three distinct integers in a[] whose sum is zero.
+	 *
+	 * @param a
+	 * @return boolean
+	 */
 	public static boolean threeSumDistinct (int [] a) {
+		int [] first_removed;
+		int [] second_removed;
+		/* Create first loop to select the first element */
+		for (int i=0; i < a.length; i+=1){
+			int total = a[i];
+			first_removed = removeElement(i, a);
+			/* Create the second loop to select the second element */
+			for (int j=0; j < first_removed.length; j+=1){
+				total += first_removed[j];
+				second_removed = removeElement(j, first_removed);
+				/* After adding the first two elements check for inverse */
+				if (inArray(-total, second_removed)){
+					return true;
+				}
+				total -= first_removed[j];
+			}
+		}
 		return false;
 	}
 
+	/* Helper class to find the negative of half of an int */
 	private static boolean halfInverse (int x, int [] a){
 		int y = -1 * (x/2);
-		return inList(y, a);
+		return inArray(y, a);
 	}
 
+	/* Helper class to return another array with an element removed */
+	private static int[] removeElement (int position, int [] a) {
+		int [] one_removed = new int[a.length - 1];
+		for (int i=0, k=0; i < a.length; i += 1){
+			if (i == position){
+				continue;
+			}
+			one_removed[k] = a[i];
+			k += 1;
+		}
+		return one_removed;
+	}
+
+	/* Helper class to find the negative of two ints in a list */
 	private static boolean sumInverse (int x, int [] a) {
 		int first_two;
 		for (int i=0; i < a.length; i+=1){
 			first_two = x + a[i];
-			if (inList(-first_two, a)) {
+			if (inArray(-first_two, a)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	private static boolean inList (int look_for, int [] a){
+	/* Helper class to find an int in a list */
+	private static boolean inArray (int look_for, int [] a){
 		for (int i=0; i < a.length; i+=1){
 			if (a[i] == look_for){
 				return true;

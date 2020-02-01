@@ -117,10 +117,32 @@ public class ModelTests {
         checkArrows(tr(ARROWS1), model);
     }
 
-    @Test public void copyTest() {
+    @Test
+    public void copyTest() {
         Model model1 = new Model(tr(SOLN1));
         Model model2 = new Model(model1);
         checkNumbers(tr(BOARD1), model2, asList(1, 16));
+        for (int x = 0; x < model1.width(); x += 1) {
+            for (int y = 0; y < model1.height(); y += 1) {
+                Sq sq1 = model1.get(x, y);
+                Sq sq2 = model2.get(x, y);
+                assertFalse("Sq should not be the same instance", sq1 == sq2);
+                assertTrue("Sq should be equivalent objects", sq1.equals(sq2));
+            }
+        }
+
+        HashMap<Sq, Sq> model1Sqs = new HashMap<Sq, Sq>();
+        HashSet<Sq> model2Sqs = new HashSet<Sq>();
+        for (Sq sq : model1) {
+            model1Sqs.put(sq, sq);
+        }
+        for (Sq sq : model2) {
+            assertFalse("Sq should not be the same instance",
+                    sq == model1Sqs.get(sq));
+            model2Sqs.add(sq);
+        }
+        assertSetEquals("Model iterators should have equivalent Sqs",
+                model1Sqs.keySet(), model2Sqs);
     }
 
     @Test

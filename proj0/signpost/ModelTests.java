@@ -3,6 +3,7 @@ package signpost;
 import static java.util.Arrays.asList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.HashMap;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -11,6 +12,7 @@ import static signpost.Place.pl;
 import signpost.Model.Sq;
 import static signpost.Utils.msg;
 import static signpost.Utils.tr;
+import static signpost.Utils.assertSetEquals;
 
 /** Tests of the Model class.
  *  @author P. N. Hilfinger

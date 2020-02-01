@@ -1,12 +1,13 @@
 /** Collection of compound-interest and related financial
  *  computations.
- *  @author
+ *  @author P. N. Hilfinger, Zoe Plaxco
  */
 public class CompoundInterest {
     /** Current year. */
     static final int THIS_YEAR = 2020;
+
     /** Return the number of years between TARGETYEAR and THIS_YEAR,
-     *  e.g. if THIS_YEAR is 2020 and TARGETYEAR is 2020, the result
+     *  e.g. if THIS_YEAR is 2020 and TARGETYEAR is 2021, the result
      *  should be 1. Throughout the assignment it is OK to assume that
      *  TARGETYEAR is >= THIS_YEAR. */
     static int numYears(int targetYear) {
@@ -18,8 +19,8 @@ public class CompoundInterest {
      *  asset in the year given by TARGETYEAR.
      *
      *  RATE is given as a percentage return. For example, if
-     *  PRESENTVALUE is 10, the rate is 12, and the TARGETYEAR is 2021,
-     *  then the futureValue will be 10*1.12 = 12.544. */
+     *  PRESENTVALUE is 10, the rate is 12, and the TARGETYEAR is 2022,
+     *  then the futureValue will be 10*1.12*1.12 = 12.544. */
     static double futureValue(double presentValue, double rate,
                               int targetYear) {
         return 0;
@@ -31,9 +32,9 @@ public class CompoundInterest {
      *  compounds annually at a constant rate of INFLATIONRATE.
      *
      *  For example, suppose PRESENTVALUE is 10, RATE is 12,
-     *  TARGETYEAR is 2021, and INFLATIONRATE is 3.
+     *  TARGETYEAR is 2022, and INFLATIONRATE is 3.
      *  In this case, the nominal value is 12.544. If we convert this into
-     *  2020 dollars, we get 12.544 * 0.97 * 0.97 * 0.97 = 11.44857 dollars. */
+     *  2020 dollars, we get 12.544 * 0.97 * 0.97 = 11.8026496 dollars. */
     static double futureValueReal(double presentValue, double rate,
                                   int targetYear, double inflationRate) {
         return 0;
@@ -43,9 +44,9 @@ public class CompoundInterest {
      *  TARGETYEAR, with growth compounded annually at RATE. This method
      *  returns the total value of your savings in TARGETYEAR.
      *
-     *  For example, if PERYEAR is 5000, TARGETYEAR is 2021, and RATE is 10,
-     *  then the result will be 5000*1.1 + 5000*1.1 + 5000 =
-     *  16000. */
+     *  For example, if PERYEAR is 5000, TARGETYEAR is 2022, and RATE is 10,
+     *  then the result will be 5000*1.1*1.1 + 5000*1.1 + 5000 =
+     *  16550. */
     static double totalSavings(double perYear, int targetYear, double rate) {
         return 0;
     }
@@ -56,7 +57,6 @@ public class CompoundInterest {
     static double totalSavingsReal(double perYear, int targetYear, double rate,
                                double inflationRate) {
         return 0;
-
     }
 
     /** Prints out the future inflation-adjusted value of a dollar in
@@ -87,6 +87,7 @@ public class CompoundInterest {
 
         double nominalSavings = 0; // replace 0 with your code
         double realSavings = 0;    // replace 0 with your code
+
         // Do not change anything in this method below this line
 
         String savingsSummary =

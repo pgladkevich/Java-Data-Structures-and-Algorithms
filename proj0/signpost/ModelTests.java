@@ -226,20 +226,18 @@ public class ModelTests {
         checkSquare(s6, s6, null, s1, 1, 0);
     }
 
-        /* We disregard the solution board passed into Model and instead
-           instantiate our own squares. This bypasses the dependency
-           on a working Model constructor.  The squares are placed on
-           a 3x3 board shown below, where each tuple represents
-           (square, direction).
+    /* We disregard the solution board passed into Model and instead
+       instantiate our own squares. This bypasses the dependency
+       on a working Model constructor. The squares are placed on
+       a 3x3 board shown below, where each tuple represents
+       (square, direction).
 
-              (s3, E ) (s4, N ) (s9, N )
-              (s2, N ) (      ) (s8, N )
-              (s1, N ) (s6, E ) (s7, N )
+          (s3, E ) (s4, N ) (s9, N )
+          (s2, N ) (      ) (s8, N )
+          (s1, N ) (s6, E ) (s7, N )
 
-           This test requires that you pass sqConnectTest.
-         */
-
-
+       This test requires that you pass sqConnectTest.
+     */
 
     @Test
     public void sqDisconnectTest() {

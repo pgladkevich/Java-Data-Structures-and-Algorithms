@@ -242,14 +242,14 @@ public class ModelTests {
     @Test
     public void sqDisconnectTest() {
         Model model = new Model(tr(SOLN1));
-        Sq s1 = model.new Sq(0, 0, 1, true, 8, -1);
+        Sq s1 = model.new Sq(0, 0, 1, true, 8, 0);
         Sq s2 = model.new Sq(0, 1, 0, false, 8, -1);
         Sq s3 = model.new Sq(0, 2, 0, false, 2, -1);
         Sq s4 = model.new Sq(1, 2, 0, false, 8, -1);
         Sq s6 = model.new Sq(1, 0, 0, false, 2, -1);
         Sq s7 = model.new Sq(2, 0, 0, false, 8, -1);
         Sq s8 = model.new Sq(2, 1, 0, false, 8, -1);
-        Sq s9 = model.new Sq(2, 2, 9, true, 8, -1);
+        Sq s9 = model.new Sq(2, 2, 9, true, 8, 0);
 
         assertTrue("These squares should be connectable.", s1.connect(s2));
         assertTrue("These squares should be connectable.", s2.connect(s3));

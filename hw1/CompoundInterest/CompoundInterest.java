@@ -55,7 +55,7 @@ public class CompoundInterest {
      *  current year dollars, assuming a uniform inflation rate of
      *  INFLATIONRATE. */
     static double totalSavingsReal(double perYear, int targetYear, double rate,
-                               double inflationRate) {
+                                   double inflationRate) {
         return 0;
     }
 
@@ -70,11 +70,11 @@ public class CompoundInterest {
 
         // Do not change anything in this method below this line
         String dollarSummary =
-            String.format("Assuming a %.2f%% rate of return,"
-                          + " a dollar saved today would be worth"
-                          + " %.2f dollars in the year %d, or %.2f dollars"
-                          + " adjusted for inflation.", returnRate,
-                          nominalDollarValue, targetYear, realDollarValue);
+                String.format("Assuming a %.2f%% rate of return,"
+                                + " a dollar saved today would be worth"
+                                + " %.2f dollars in the year %d, or %.2f dollars"
+                                + " adjusted for inflation.", returnRate,
+                        nominalDollarValue, targetYear, realDollarValue);
 
         System.out.println(dollarSummary);
     }
@@ -91,12 +91,12 @@ public class CompoundInterest {
         // Do not change anything in this method below this line
 
         String savingsSummary =
-            String.format("Assuming a %.2f%% rate of return,"
-                          + " in the year %d, after saving %.2f"
-                          + " dollars per year, you'll have %.2f dollars or"
-                          + " %.2f dollars adjusted for inflation.",
-                          returnRate, targetYear, perYear,
-                          nominalSavings, realSavings);
+                String.format("Assuming a %.2f%% rate of return,"
+                                + " in the year %d, after saving %.2f"
+                                + " dollars per year, you'll have %.2f dollars or"
+                                + " %.2f dollars adjusted for inflation.",
+                        returnRate, targetYear, perYear,
+                        nominalSavings, realSavings);
 
         System.out.println(savingsSummary);
     }
@@ -111,8 +111,8 @@ public class CompoundInterest {
      *  PER_YEAR is how much money you will save per year until targetYear */
 
     static final double RETURN_RATE = 10,
-        INFLATION_RATE = 3,
-        PER_YEAR = 10000;
+            INFLATION_RATE = 3,
+            PER_YEAR = 10000;
 
     /** Print out future values for given parameters. */
     public static void main(String[] ignored) {

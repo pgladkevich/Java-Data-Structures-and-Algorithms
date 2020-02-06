@@ -1,3 +1,5 @@
+import java.awt.dnd.DnDConstants;
+
 /**
  * Scheme-like pairs that can be used to form a list of integers.
  *
@@ -62,7 +64,31 @@ public class IntDList {
      * @return The integer value at index i
      */
     public int get(int i) {
-        // FIXME: Implement this method and return correct value
+        if (i == 0) {
+            return _front._val;
+        }
+        else if (i > 0) {
+            DNode curr = _front;
+            int j =0;
+            while (j < i) {
+                curr = curr._next;
+                j +=1;
+                if (j == i) {
+                    return curr._val;
+                }
+            }
+        }
+        else {
+            DNode curr = _back;
+            int j=0;
+            while (j > i) {
+                curr = curr._prev;
+                j-=1;
+                if (j==i) {
+                    return curr._val;
+                }
+            }
+        }
         return 0;
     }
 
@@ -77,7 +103,12 @@ public class IntDList {
      * @param d value to be inserted in the back
      */
     public void insertBack(int d) {
-        // FIXME: Implement this method
+        if (_front == null) {
+            DNode  = new IntDList(d);
+        }
+        else {
+
+        }
     }
 
     /**

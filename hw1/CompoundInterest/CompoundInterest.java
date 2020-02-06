@@ -66,7 +66,7 @@ public class CompoundInterest {
      *  INFLATIONRATE. */
     static double totalSavingsReal(double perYear, int targetYear, double rate,
                                    double inflationRate) {
-        return 0;
+        return totalSavings(perYear, targetYear, rate) * java.lang.Math.pow(1-(inflationRate*.01), targetYear-THIS_YEAR);
     }
 
     /** Prints out the future inflation-adjusted value of a dollar in
@@ -75,10 +75,9 @@ public class CompoundInterest {
      *  INFLATIONRATE. */
     static void printDollarFV(int targetYear, double returnRate,
                               double inflationRate) {
-        double nominalDollarValue = 0; // replace 0 with your code
-        double realDollarValue = 0;    // replace 0 with your code
+        double nominalDollarValue = futureValue(1.0, returnRate, targetYear);
+        double realDollarValue = futureValueReal(1.0, returnRate, targetYear, inflationRate);
 
-        // Do not change anything in this method below this line
         String dollarSummary =
                 String.format("Assuming a %.2f%% rate of return,"
                                 + " a dollar saved today would be worth"
@@ -95,10 +94,8 @@ public class CompoundInterest {
     static void printSavingsFV(int targetYear, double returnRate,
                                double inflationRate, double perYear) {
 
-        double nominalSavings = 0; // replace 0 with your code
-        double realSavings = 0;    // replace 0 with your code
-
-        // Do not change anything in this method below this line
+        double nominalSavings = totalSavings(perYear,targetYear, returnRate);
+        double realSavings = totalSavingsReal(perYear, targetYear, returnRate, inflationRate);
 
         String savingsSummary =
                 String.format("Assuming a %.2f%% rate of return,"

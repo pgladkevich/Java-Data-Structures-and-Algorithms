@@ -104,7 +104,7 @@ public class IntDList {
      */
     public void insertBack(int d) {
         if (_front == null) {
-            DNode  = new IntDList(d);
+            DNode DL = new ;
         }
         else {
 

@@ -26,7 +26,7 @@ public class CompoundInterest {
         if (rate > 0) {
             return presentValue * java.lang.Math.pow((1+(.01 * rate)), targetYear - THIS_YEAR);
         }
-        return 0.0;
+        return 1.0;
     }
 
     /** Returns returns the value, in THIS_YEAR dollars, of an asset
@@ -40,6 +40,9 @@ public class CompoundInterest {
      *  2020 dollars, we get 12.544 * 0.97 * 0.97 = 11.8026496 dollars. */
     static double futureValueReal(double presentValue, double rate,
                                   int targetYear, double inflationRate) {
+        if (rate < 0) {
+            return 1.0;
+        }
         return futureValue(presentValue, rate, targetYear) * java.lang.Math.pow(1-(.01*inflationRate),targetYear-THIS_YEAR);
     }
 
@@ -55,7 +58,7 @@ public class CompoundInterest {
         int currentYear = THIS_YEAR;
 
         while (currentYear < (targetYear+1)) {
-            total += futureValue(5000, rate, targetYear-currentYear+2020);
+            total += futureValue(perYear, rate, targetYear-currentYear+2020);
             currentYear +=1;
         }
         return total;

@@ -192,8 +192,16 @@ public class IntDList {
      * @return the item that was deleted
      */
     public int deleteFront() {
-        // FIXME: Implement this method and return correct value
-        return 0;
+        int result = getFront();
+        if (size() == 1) {
+            _front = _back = null;
+            return result;
+        }
+        else {
+            _front._next._prev = null;
+            _front = _front._next;
+        }
+        return result;
     }
 
     /**
@@ -202,8 +210,16 @@ public class IntDList {
      * @return the item that was deleted
      */
     public int deleteBack() {
-        // FIXME: Implement this method and return correct value
-        return 0;
+        int result = getBack();
+        if (size() == 1) {
+            _front = _back = null;
+            return result;
+        }
+        else {
+            _back._prev._next = null;
+            _back = _back._prev;
+        }
+        return result;
     }
 
     /**

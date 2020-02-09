@@ -78,10 +78,10 @@ public class IntDList {
      */
     public int get(int i) {
         if (i == 0) {
-            return this.getFront();
+            return getFront();
         }
         else if (i == -1) {
-            return this.getBack();
+            return getBack();
         }
         else if (i > 0) {
             DNode curr = _front;
@@ -113,7 +113,7 @@ public class IntDList {
      */
     public void insertFront(int d) {
         DNode d_n = new DNode(null, d, null);
-        if (this.size() == 0) {
+        if (size() == 0) {
             _front = d_n;
             _back = d_n;
         }
@@ -129,7 +129,7 @@ public class IntDList {
      */
     public void insertBack(int d) {
         DNode d_n = new DNode(null, d, null);
-        if (this.size() == 0) {
+        if (size() == 0) {
             _front = d_n;
             _back = d_n;
         }
@@ -152,7 +152,38 @@ public class IntDList {
      *              and -(size+1) <= index <= -1 for negative indices (including insertions at front and back).
      */
     public void insertAtIndex(int d, int index) {
-        // FIXME: Implement this method
+        if (index == 0 || index == -(size()+1)) {
+            insertFront(d);
+        }
+        else if (index == -1 || size() < 2 || index == size()) {
+            insertBack(d);
+        }
+        else if (index > 0) {
+            DNode d_n = new DNode(null, d, null);
+            DNode curr = _front;
+            int j = 1;
+            while (j < index) {
+                curr = curr._next;
+                j += 1;
+            }
+            d_n._prev = curr;
+            d_n._next = curr._next;
+            curr._next._prev = d_n;
+            curr._next = d_n;
+        }
+        else {
+            DNode d_n = new DNode(null, d,null);
+            DNode curr = _back;
+            int j=-1;
+            while (j > index) {
+                j-=1;
+                curr = curr._prev;
+            }
+            d_n._prev = curr;
+            d_n._next = curr._next;
+            curr._next._prev = d_n;
+            curr._next = d_n;
+        }
     }
 
     /**

@@ -247,8 +247,16 @@ public class IntDList {
      * System.out.println(a); //prints ab
      */
     public String toString() {
-        // FIXME: Implement this method to return correct value
-        return null;
+        if (size() == 0) {
+            return "[]";
+        }
+        String str = "[";
+        DNode curr = _front;
+        for (; curr._next != null; curr = curr._next) {
+            str += curr._val + ", ";
+        }
+        str += curr._val +"]";
+        return str;
     }
 
     /**

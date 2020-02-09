@@ -55,7 +55,15 @@ public class IntDList {
         else if ((_front._prev == null) && (_front._next == null)){
             return 1;
         }
-        return -1;
+        else {
+            int count = 1;
+            DNode curr = _front;
+            while (curr._next != null) {
+                curr = curr._next;
+                count += 1;
+            }
+            return count;
+        }
     }
 
     /**
@@ -70,10 +78,10 @@ public class IntDList {
      */
     public int get(int i) {
         if (i == 0) {
-            return _front._val;
+            return this.getFront();
         }
-        else if (this.size() == 1 && (i == -1)) {
-            return _front._val;
+        else if (i == -1) {
+            return this.getBack();
         }
         else if (i > 0) {
             DNode curr = _front;
@@ -90,11 +98,11 @@ public class IntDList {
             DNode curr = _back;
             int j=0;
             while (j > i) {
-                curr = curr._prev;
                 j-=1;
                 if (j==i) {
                     return curr._val;
                 }
+                curr = curr._prev;
             }
         }
         return 0;

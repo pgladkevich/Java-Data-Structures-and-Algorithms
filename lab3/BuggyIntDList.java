@@ -33,18 +33,42 @@ public class BuggyIntDList extends IntDList {
     private DNode sortedMerge(DNode d1, DNode d2) {
 
         // FIXME: Below code has multiple problems. Debug the code to implement correct functionality.
+        if (d1 == null) {
+            _front = _back = d2;
+            return d2;
+        }
 
-        // ------ WRITE ADDITIONAL CODE HERE AND ONLY HERE (IF NEEDED) ------
+        if (d2 == null) {
+            _front = _back = d1;
+            return d1;
+        }
+
+        if (d1._next == null && d2._next == null) {
+            if (d1._val <= d2._val) {
+                _back = d2;
+                d2._prev = d1;
+                d1._next = d2;
+                d1._prev = null;
+                return d1;
+            }
+            else {
+                _back = d1;
+                d1._prev = d2;
+                d2._next = d1;
+                d2._prev = null;
+                return d2;
+            }
+        }
 
         // ------------------------------------------------------------------
 
         if (d1._val <= d2._val) {
-            d1._next = sortedMerge(d1, d2._next);   // FIXME: Replace this line (if needed). HINT: Step Into(F7) using debugger and try to figure out what it does.
+            d1._next = sortedMerge(d1._next, d2);   //  d1, d2._next FIXME: Replace this line (if needed). HINT: Step Into(F7) using debugger and try to figure out what it does.
             d1._next._prev = d1;
             d1._prev = null;
             return d1;
-        } else {
-            d2._next = sortedMerge(d1._next, d2);   // FIXME: Replace this line (if needed). HINT: Step Into(F7) using debugger and try to figure out what it does.
+        } else { // d1 > d2
+            d2._next = sortedMerge(d1, d2._next);   // d1._next, d2 FIXME: Replace this line (if needed). HINT: Step Into(F7) using debugger and try to figure out what it does.
             d2._next._prev = d2;
             d2._prev = null;
             return d2;

@@ -49,8 +49,13 @@ public class IntDList {
      * @return The number of elements in this list.
      */
     public int size() {
-        // FIXME: Implement this method and return correct value
-        return 0;
+        if (_front == null && _back == null) {
+            return 0;
+        }
+        else if ((_front._prev == null) && (_front._next == null)){
+            return 1;
+        }
+        return -1;
     }
 
     /**
@@ -65,6 +70,9 @@ public class IntDList {
      */
     public int get(int i) {
         if (i == 0) {
+            return _front._val;
+        }
+        else if (this.size() == 1 && (i == -1)) {
             return _front._val;
         }
         else if (i > 0) {
@@ -103,11 +111,15 @@ public class IntDList {
      * @param d value to be inserted in the back
      */
     public void insertBack(int d) {
-        if (_front == null) {
-            DNode DL = new ;
+        DNode d_n = new DNode(null, d, null);
+        if (this.size() == 0) {
+            _front = d_n;
+            _back = d_n;
         }
         else {
-
+            d_n._prev = _back;
+            _back._next = d_n;
+            _back = d_n;
         }
     }
 

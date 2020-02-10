@@ -520,15 +520,33 @@ class Model implements Iterable<Model.Sq> {
          *    they are not part of the same connected sequence.
          */
         boolean connectable(Sq s1) {
-            // Is s1 in the correct direction
-            // Arrow is accessible via _dir for s0
-            // pl is the place instance variable of s0
-
-            // Place.dirOf(x0, y0, x1,y1) will return 0 if not a queen move apart
-            // Have to make sure that the direction is not unset, so it can't be zero
-            if (_dir == 0 || _dir != pl.dirOf(x,y,s1.x,s1.y)) {
+             /* Have to make sure that s1 is not the same square as s0 */
+            if (x == s1.x && y == s1.y) {
                 return false;
             }
+            /* Is s1 in the correct direction.
+             Place.dirOf(x0, y0, x1,y1) will return 0 if not a queen move apart.
+             Arrow is accessible via _dir for s0.
+             pl is the place instance variable of s0.
+             Have to make sure that the direction is not unset, so it can't be zero. */
+            else if (_dir == 0 || _dir != pl.dirOf(x,y,s1.x,s1.y)) {
+                return false;
+            }
+            /* Check for predecessor of s1, and s0 successor both of which should be null */
+            else if (s1._predecessor != null || _successor != null) {
+                return false;
+            }
+            /* Check that s1 is not the first number in sequence and that s0 is not the last */
+            else if (s1._sequenceNum == 1 || _sequenceNum == _width*_height) {
+                return false;
+            }
+            /* If both s0 and s1 have sequence numbers then s0's must be one less than s1's */
+            else if ((_sequenceNum != 0 && s1._sequenceNum != 0) && (_sequenceNum != (s1._sequenceNum - 1))) {
+                return false;
+            }
+            else if ()
+
+            /* */
             return true;
         }
 

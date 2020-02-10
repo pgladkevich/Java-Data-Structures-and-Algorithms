@@ -520,7 +520,15 @@ class Model implements Iterable<Model.Sq> {
          *    they are not part of the same connected sequence.
          */
         boolean connectable(Sq s1) {
-            // FIXME
+            // Is s1 in the correct direction
+            // Arrow is accessible via _dir for s0
+            // pl is the place instance variable of s0
+
+            // Place.dirOf(x0, y0, x1,y1) will return 0 if not a queen move apart
+            // Have to make sure that the direction is not unset, so it can't be zero
+            if (_dir == 0 || _dir != pl.dirOf(x,y,s1.x,s1.y)) {
+                return false;
+            }
             return true;
         }
 

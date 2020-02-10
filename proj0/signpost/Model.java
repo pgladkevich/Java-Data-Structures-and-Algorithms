@@ -525,28 +525,31 @@ class Model implements Iterable<Model.Sq> {
                 return false;
             }
             /* Is s1 in the correct direction.
-             Place.dirOf(x0, y0, x1,y1) will return 0 if not a queen move apart.
-             Arrow is accessible via _dir for s0.
-             pl is the place instance variable of s0.
-             Have to make sure that the direction is not unset, so it can't be zero. */
+            * Place.dirOf(x0, y0, x1,y1) will return 0 if not a queen move apart.
+            * Arrow is accessible via _dir for s0.
+            * pl is the place instance variable of s0.
+            * Have to make sure that the direction is not unset, so it can't be zero. */
             else if (_dir == 0 || _dir != pl.dirOf(x,y,s1.x,s1.y)) {
                 return false;
             }
             /* Check for predecessor of s1, and s0 successor both of which should be null */
-            else if (s1._predecessor != null || _successor != null) {
+            else if (s1.predecessor() != null || this.successor() != null) {
                 return false;
             }
             /* Check that s1 is not the first number in sequence and that s0 is not the last */
-            else if (s1._sequenceNum == 1 || _sequenceNum == _width*_height) {
+            else if (s1.sequenceNum() == 1 || this.sequenceNum() == size()) {
                 return false;
             }
             /* If both s0 and s1 have sequence numbers then s0's must be one less than s1's */
-            else if ((_sequenceNum != 0 && s1._sequenceNum != 0) && (_sequenceNum != (s1._sequenceNum - 1))) {
+            else if ((sequenceNum() != 0 && s1.sequenceNum() != 0) && (this.sequenceNum() != (s1.sequenceNum() - 1))) {
                 return false;
             }
-            else if ()
-
-            /* */
+            /* If neither of them have sequence numbers then their _sequenceNum == 0 and _head must not be the same
+            * or they would be a part of the same connectable group  */
+            else if ((this.sequenceNum() == 0 && s1.sequenceNum() == 0) && (this.head() == s1.head())){
+                return false;
+            }
+            /* Exhausted the possible errors so return true */
             return true;
         }
 

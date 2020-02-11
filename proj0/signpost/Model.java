@@ -573,26 +573,30 @@ class Model implements Iterable<Model.Sq> {
             /* If this square has a number, number all its successors accordingly (if needed). */
             if (this.hasFixedNum() && !(s1.hasFixedNum())) {
                 int index = this.sequenceNum() +1;
+                s1.setFixedNum(index);
+                s1._hasFixedNum = true;
                 Sq curr = s1;
-                s1._sequenceNum = index;
 
                 while (curr.successor() != null && (index < (size()-1))) {
-                    curr._successor._sequenceNum = index;
-                    curr = curr.successor();
                     index +=1;
+                    curr._successor.setFixedNum(index);
+                    curr._successor._hasFixedNum = true;
+                    curr = curr.successor();
                 }
             }
 
              /* If S1 is numbered, number this square and its predecessors accordingly (if needed). */
             if (s1.hasFixedNum() && !(this.hasFixedNum())) {
-                Sq curr = this;
                 int index = s1.sequenceNum()-1;
-                this._sequenceNum = index;
+                this.setFixedNum(index);
+                this._hasFixedNum = true;
+                Sq curr = this;
 
                 while (curr.predecessor() != null && (index > 1)) {
-                    curr = curr.predecessor();
                     index -=1;
-                    curr._sequenceNum = index;
+                    curr._predecessor.setFixedNum(index);
+                    curr._predecessor._hasFixedNum = true;
+                    curr = curr.predecessor();
                 }
             }
 
@@ -628,14 +632,15 @@ class Model implements Iterable<Model.Sq> {
             _unconnected += 1;
             next._predecessor = _successor = null;
             if (_sequenceNum == 0) {
-                // FIXME: If both this and next are now one-element groups,
-                //        release their former group and set both group
-                //        numbers to -1.
-                //        Otherwise, if either is now a one-element group, set
-                //        its group number to -1 without releasing the group
-                //        number.
-                //        Otherwise, the group has been split into two multi-
-                //        element groups.  Create a new group for next.
+                /* If both this and next are now one-element groups, release their former group
+                * and set both group numbers to -1. */
+
+
+                /* Otherwise, if either is now a one-element group, set its group number
+                * to -1 without releasing the group number. */
+
+                /*  Otherwise, the group has been split into two multi- element groups.
+                * Create a new group for next. */
             } else {
                 // FIXME: If neither this nor any square in its group that
                 //        precedes it has a fixed sequence number, set all

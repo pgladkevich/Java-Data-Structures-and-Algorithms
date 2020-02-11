@@ -560,15 +560,26 @@ class Model implements Iterable<Model.Sq> {
             if (!connectable(s1)) {
                 return false;
             }
+            int s0group = this.group();
             int sgroup = s1.group();
 
             _unconnected -= 1;
 
-            // FIXME: Connect this square to its successor:
-            //        + Set this square's _successor field and S1's
-            //          _predecessor field.
-            //        + If this square has a number, number all its successors
-            //          accordingly (if needed).
+            /* Set this square's _successor field and S1's  _predecessor field. */
+            this._successor = s1;
+            s1._predecessor = this;
+
+            /* If this square has a number, number all its successors accordingly (if needed). */
+            if (this.hasFixedNum() && !(s1.hasFixedNum())) {
+                Sq curr = this;
+                int index = this.sequenceNum();
+
+                while (curr.successor() != null && (index < (size()-1))) {
+                    curr.successor()._sequenceNum = index;
+                    index +=1;
+                }
+            }
+
             //        + If S1 is numbered, number this square and its
             //          predecessors accordingly (if needed).
             //        + Set the _head fields of this square's successors this

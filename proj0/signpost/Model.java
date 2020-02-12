@@ -637,12 +637,12 @@ class Model implements Iterable<Model.Sq> {
             }
             _unconnected += 1;
             next._predecessor = this._successor = null;
-            /* Because _sequenceNum == 0 that means none of the elements have fixed numbers, and their
+            /* Because _sequenceNum == 0 that means none of the elements have defined sequence numbers, and their
             * group number is 0 or above since they have to be connected for us to disconnect them. */
             if (_sequenceNum == 0) {
                 /* If both this and next are now one-element groups, release their former group
                 * and set both group numbers to -1.
-                * We know that successor of s0 is null since we'er disconnecting, so only check its
+                * We know that successor of s0 is null since we're disconnecting, so only check its
                 * predecessor. We know that predecessor of s1 is null so only check its successor. */
                 if ((this.predecessor() == null) && (next.successor() == null)) {
                     releaseGroup(this.group());
@@ -665,7 +665,7 @@ class Model implements Iterable<Model.Sq> {
                     Sq curr = next;
                     while (next.successor() != null) {
                         curr = next.successor();
-                        curr._group = new_group;
+                        curr._head = next;
                     }
                 }
             } else {
@@ -677,17 +677,54 @@ class Model implements Iterable<Model.Sq> {
                 if (prev_curr.hasFixedNum() == true) {
                     any_previous = true;
                 }
-
-                while (prev_curr.predecessor() != null) {
-                    if (prev_curr.hasFixedNum() == true) {
-                        any_previous = true;
+                if (prev_curr.predecessor() != null) {
+                    while (prev_curr.predecessor() != null) {
+                        if (prev_curr.predecessor().hasFixedNum() == true) {
+                            any_previous = true;
+                        }
+                        prev_curr = prev_curr._predecessor;
+                    }
+                    if (!any_previous) {
+                        prev_curr = this;
+                        this._head._group = newGroup();
+                        while (prev_curr != null) {
+                            prev_curr._sequenceNum = 0;
+                            prev_curr = prev_curr._predecessor;
+                        }
                     }
                 }
-
+                else if (!any_previous){
+                    this._sequenceNum = 0;
+                    this._group = -1;
+                }
                 /* If neither next nor any square in its group that follows it has a fixed
                 * sequence number, set all their sequence numbers to 0 and create a new
                 * group for them if next has a current successor (otherwise set next's group to -1.) */
-
+                boolean any_next = false;
+                Sq next_curr = next;
+                if (next_curr.hasFixedNum() == true) {
+                    any_next = true;
+                }
+                if (next_curr.successor() != null) {
+                    while (next_curr.successor() != null) {
+                        if (next_curr.successor().hasFixedNum() == true) {
+                            any_next = true;
+                        }
+                        next_curr = next_curr._successor;
+                    }
+                    if (!any_next) {
+                        next_curr = next;
+                        next._group = newGroup();
+                        while (next_curr != null) {
+                            next_curr._sequenceNum = 0;
+                            next_curr = next_curr._successor;
+                        }
+                    }
+                }
+                else if (!any_next) {
+                    next._sequenceNum = 0;
+                    next._group = -1;
+                }
             }
             /* Set the _head of next and all squares in its group to next. */
             Sq next_curr = next;

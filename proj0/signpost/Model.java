@@ -262,8 +262,38 @@ class Model implements Iterable<Model.Sq> {
      *  successor, or 0 if it has none. */
     private int arrowDirection(int x, int y) {
         int seq0 = _solution[x][y];
-        // FIXME
-        return 0;
+        if (seq0 == this.size()) {
+            return 0;
+        }
+        int seq1 = seq0+1;
+        /* Iterate through and find x1,y1 of seq1, the next in the sequence after seq0 */
+        int[] coords = findCoords(seq1, _solution);
+//        /* Now create a Place list the size of _solution that we will place two places in,
+//        * the seq0 x and y coordinates and the seq1 x and y coordinates */
+//        Place[][] checkArrow = new Place[_solution.length][_solution[0].length];
+//        checkArrow[0] = Place pl (x,y);
+//        final Place PL = Place.pl(1, 1);
+//        checkArrow [0][0] = PL;
+        return signpost.Place.dirOf(x,y,coords[0],coords[1]);
+    }
+    /* Just here so for testing arrowDirection */
+    public static void main (String[] args) {
+        Model model = new Model(tr(SOLN1));
+        System.out.println(model.arrowDirection(3,0));
+    }
+
+    /** Iterate through a 2d int[][] array and return the coordinates of the matching element */
+    public int [] findCoords(int seq1, int [][] solution) {
+        int[] result = new int[2];
+        for (int i = 0; i < _solution.length; i +=1) {
+            for (int j =0; j < _solution[0].length; j+=1) {
+                if (_solution[i][j] == seq1) {
+                    result [0] = i;
+                    result [1] = j;
+                }
+            }
+        }
+        return result;
     }
 
     /** Return a new, currently unused group number > 0.  Selects the
@@ -819,5 +849,19 @@ class Model implements Iterable<Model.Sq> {
     private Place[] _solnNumToPlace;
     /** The set of positive group numbers currently in use. */
     private HashSet<Integer> _usedGroups = new HashSet<>();
+
+    private static final int[][] SOLN1 = {
+            { 1, 13, 3, 2 },
+            { 12, 4, 8, 15 },
+            { 5, 9, 7, 14 },
+            { 11, 6, 10, 16 }
+    };
+
+    private static final int[][] SOLN2 = {
+            { 1, 2, 17, 16, 3 },
+            { 9, 7, 15, 6, 8 },
+            { 12, 11, 18, 5, 4 },
+            { 10, 13, 14, 19, 20 }
+    };
 
 }

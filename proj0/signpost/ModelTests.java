@@ -330,6 +330,13 @@ public class ModelTests {
         { 10, 13, 14, 19, 20 }
     };
 
+    private static final int[][] ARROWS2 = {
+            { 2, 2, 4, 6, 4 },
+            { 4, 2, 1, 6, 6 },
+            { 3, 6, 3, 8, 6 },
+            { 1, 2, 8, 2, 0 }
+    };
+
     private static final int[][] BOARD2 = {
         { 1, 0, 0, 0, 0 },
         { 0, 0, 0, 0, 0 },

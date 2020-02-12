@@ -570,33 +570,39 @@ class Model implements Iterable<Model.Sq> {
             this._successor = s1;
             s1._predecessor = this;
 
-            /* If this square has a number, number all its successors accordingly (if needed). */
-            if (this.hasFixedNum() && !(s1.hasFixedNum())) {
+            /* If this square has a number, number all its successors accordingly (if needed).
+            * previously I had this: this.hasFixedNum() && !(s1.hasFixedNum())*/
+            if (s0group == 0  && sgroup != 0) {
                 int index = this.sequenceNum() +1;
-                s1.setFixedNum(index);
-                s1._hasFixedNum = true;
+                Sq s0_head = this._head;
+                s1._sequenceNum = index;
                 Sq curr = s1;
 
                 while (curr.successor() != null && (index < (size()-1))) {
                     index +=1;
-                    curr._successor.setFixedNum(index);
-                    curr._successor._hasFixedNum = true;
+                    curr._successor._sequenceNum = index;
+                    curr._successor._head = s0_head;
                     curr = curr.successor();
                 }
             }
 
-             /* If S1 is numbered, number this square and its predecessors accordingly (if needed). */
-            if (s1.hasFixedNum() && !(this.hasFixedNum())) {
+             /* If S1 is numbered, number this square and its predecessors accordingly (if needed).
+             s1.hasFixedNum() && !(this.hasFixedNum() */
+            if (s0group != 0  && sgroup == 0) {
                 int index = s1.sequenceNum()-1;
-                this.setFixedNum(index);
-                this._hasFixedNum = true;
+                Sq s0_head = this._head;
+                this._sequenceNum = index;
                 Sq curr = this;
 
                 while (curr.predecessor() != null && (index > 1)) {
                     index -=1;
-                    curr._predecessor.setFixedNum(index);
-                    curr._predecessor._hasFixedNum = true;
+                    curr._predecessor._sequenceNum = index;
                     curr = curr.predecessor();
+                }
+                curr = this;
+                while (curr.successor() != null) {
+                    curr._successor._head = s0_head;
+                    curr = curr.successor();
                 }
             }
 
@@ -618,7 +624,7 @@ class Model implements Iterable<Model.Sq> {
             /* If both this square and S1 are unnumbered, set the group of this square's
             * head to the result of joining the two groups. */
             if (this.sequenceNum() == 0 && s1.sequenceNum() == 0) {
-                this.head()._group = joinGroups(s0group, sgroup);
+                this._head._group = joinGroups(s0group, sgroup);
             }
             return true;
         }
@@ -630,31 +636,66 @@ class Model implements Iterable<Model.Sq> {
                 return;
             }
             _unconnected += 1;
-            next._predecessor = _successor = null;
+            next._predecessor = this._successor = null;
+            /* Because _sequenceNum == 0 that means none of the elements have fixed numbers, and their
+            * group number is 0 or above since they have to be connected for us to disconnect them. */
             if (_sequenceNum == 0) {
                 /* If both this and next are now one-element groups, release their former group
-                * and set both group numbers to -1. */
-
-
+                * and set both group numbers to -1.
+                * We know that successor of s0 is null since we'er disconnecting, so only check its
+                * predecessor. We know that predecessor of s1 is null so only check its successor. */
+                if ((this.predecessor() == null) && (next.successor() == null)) {
+                    releaseGroup(this.group());
+                    this._group = -1;
+                    next._group = -1;
+                }
                 /* Otherwise, if either is now a one-element group, set its group number
                 * to -1 without releasing the group number. */
-
+                else if (this.predecessor() == null) {
+                    this._group = -1;
+                }
+                else if (next.successor() == null) {
+                    next._group = -1;
+                }
                 /*  Otherwise, the group has been split into two multi- element groups.
                 * Create a new group for next. */
+                else {
+                    int new_group = newGroup();
+                    next._group = new_group;
+                    Sq curr = next;
+                    while (next.successor() != null) {
+                        curr = next.successor();
+                        curr._group = new_group;
+                    }
+                }
             } else {
-                // FIXME: If neither this nor any square in its group that
-                //        precedes it has a fixed sequence number, set all
-                //        their sequence numbers to 0 and create a new group
-                //        for them if this has a current predecessor (other
-                //        set group to -1).
-                // FIXME: If neither next nor any square in its group that
-                //        follows it has a fixed sequence number, set all
-                //        their sequence numbers to 0 and create a new
-                //        group for them if next has a current successor
-                //        (otherwise set next's group to -1.)
+                /* If neither this nor any square in its group that precedes it has a fixed
+                * sequence number, set all their sequence numbers to 0 and create a new group
+                * for them if this has a current predecessor (otherwise set group to -1). */
+                boolean any_previous = false;
+                Sq prev_curr = this;
+                if (prev_curr.hasFixedNum() == true) {
+                    any_previous = true;
+                }
+
+                while (prev_curr.predecessor() != null) {
+                    if (prev_curr.hasFixedNum() == true) {
+                        any_previous = true;
+                    }
+                }
+
+                /* If neither next nor any square in its group that follows it has a fixed
+                * sequence number, set all their sequence numbers to 0 and create a new
+                * group for them if next has a current successor (otherwise set next's group to -1.) */
+
             }
-            // FIXME: Set the _head of next and all squares in its group to
-            //        next.
+            /* Set the _head of next and all squares in its group to next. */
+            Sq next_curr = next;
+            next._head = next;
+            while (next_curr.successor() != null) {
+                next_curr._successor._head = next;
+                next_curr = next_curr._successor;
+            }
         }
 
         @Override

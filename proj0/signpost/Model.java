@@ -95,21 +95,21 @@ class Model implements Iterable<Model.Sq> {
         // puzzle-generation software is complete.
         // FIXME: Remove everything down to and including
         // "// END DUMMY SETUP".
-        _board = new Sq[][] {
-            { new Sq(0, 0, 0, false, 2, -1), new Sq(0, 1, 0, false, 2, -1),
-              new Sq(0, 2, 0, false, 4, -1), new Sq(0, 3, 1, true, 2, 0) },
-            { new Sq(1, 0, 0, false, 2, -1), new Sq(1, 1, 0, false, 2, -1),
-              new Sq(1, 2, 0, false, 6, -1), new Sq(1, 3, 0, false, 2, -1) },
-            { new Sq(2, 0, 0, false, 6, -1), new Sq(2, 1, 0, false, 2, -1),
-              new Sq(2, 2, 0, false, 6, -1), new Sq(2, 3, 0, false, 2, -1) },
-            { new Sq(3, 0, 16, true, 0, 0), new Sq(3, 1, 0, false, 5, -1),
-              new Sq(3, 2, 0, false, 6, -1), new Sq(3, 3, 0, false, 4, -1) }
-        };
-        for (Sq[] col: _board) {
-            for (Sq sq : col) {
-                _allSquares.add(sq);
-            }
-        }
+//        _board = new Sq[][] {
+//            { new Sq(0, 0, 0, false, 2, -1), new Sq(0, 1, 0, false, 2, -1),
+//              new Sq(0, 2, 0, false, 4, -1), new Sq(0, 3, 1, true, 2, 0) },
+//            { new Sq(1, 0, 0, false, 2, -1), new Sq(1, 1, 0, false, 2, -1),
+//              new Sq(1, 2, 0, false, 6, -1), new Sq(1, 3, 0, false, 2, -1) },
+//            { new Sq(2, 0, 0, false, 6, -1), new Sq(2, 1, 0, false, 2, -1),
+//              new Sq(2, 2, 0, false, 6, -1), new Sq(2, 3, 0, false, 2, -1) },
+//            { new Sq(3, 0, 16, true, 0, 0), new Sq(3, 1, 0, false, 5, -1),
+//              new Sq(3, 2, 0, false, 6, -1), new Sq(3, 3, 0, false, 4, -1) }
+//        };
+//        for (Sq[] col: _board) {
+//            for (Sq sq : col) {
+//                _allSquares.add(sq);
+//            }
+//        }
         // END DUMMY SETUP
 
         // FIXME: Initialize _board so that _board[x][y] contains the Sq object
@@ -119,13 +119,59 @@ class Model implements Iterable<Model.Sq> {
         //        contains sequence number k.  Check that all numbers from
         //        1 - last appear; else throw IllegalArgumentException (see
         //        badArgs utility).
+        _board = new Sq [_width][_height];
+        int x0,y0, sequenceNum, dir, group;
+        boolean fixed = false;
 
+        for (int col  = 0, index = 0; col < _solution.length; col += 1) {
+            for (int row = 0; row < _solution[col].length; row += 1) {
+                x0 = col;
+                y0 = row;
+                sequenceNum = _solution[x0][y0];
+                dir = arrowDirection(x0,y0);
+                if (sequenceNum == 1 || sequenceNum == last){
+                    fixed = true;
+                    group = 0;
+                    _board[col][row] = new Sq (x0,y0,sequenceNum,fixed,dir,group);
+                    _allSquares.add(_board[col][row]);
+                    fixed = false;
+                }
+                else {
+                    group = -1;
+                    _board[col][row] = new Sq (x0,y0,0,fixed,dir,group);
+                    _allSquares.add(_board[col][row]);
+                }
+            }
+        }
+        _solnNumToPlace = new Place[last+1];
+        for (int index = 0;index < last+1; index +=1) {
+            if (index ==0) {
+                _solnNumToPlace[index] = null;
+            }
+            else {
+                int[] coords = findCoords(index, _solution);
+                _solnNumToPlace[index] = pl(coords[0], coords[1]);
+            }
+        }
+
+        for (Place current : _solnNumToPlace) {
+            if (current == null) {
+                continue;
+            }
+            else if (_solution[current.x][current.y] < 1 || _solution[current.x][current.y] > last) {
+                    throw badArgs("IllegalArgumentException");
+            }
+        }
         // FIXME: For each Sq object on the board, set its _successors list
         //        to the list of locations of all cells that it might
         //        connect to (i.e., all cells that are a queen move away
         //        in the direction of its arrow).
         //        Likewise, set its _predecessors list to the list of
         //        all cells that might connect to it.
+        for (Sq current : _allSquares) {
+            PlaceList[][][] M = Place.successorCells(_width, _height);
+            current._successors = M[current.x][current.y][0];
+        }
 
         _unconnected = last - 1;
     }
@@ -145,26 +191,26 @@ class Model implements Iterable<Model.Sq> {
         //        set until all the Sq objects are first created.)
         // It looks like I need to create Sq[][] _board based off of the _solution variable
         /* Sq(int x0, int y0, int sequenceNum, boolean fixed, int dir, int group) */
-        _board = new Sq [_solution.length][_solution[0].length];
-        int x0,y0, sequenceNum, dir, group;
-        boolean fixed = false;
-
-        for (int col = 0; col < _solution.length; col += 1) {
-            for (int row = 0; row < _solution[col].length; row += 1) {
-                x0 = col;
-                y0 = row;
-                sequenceNum = _solution[x0][y0];
-                dir = arrowDirection(x0,y0);
-                if (sequenceNum == 1 || sequenceNum == model.size()){
-                    fixed = true;
-                    group = 0;
-                }
-                else {
-                    group = -1;
-                }
-                _board[col][row] = new Sq (x0,y0,sequenceNum,fixed,dir,group);
-            }
-        }
+//        _board = new Sq [_solution.length][_solution[0].length];
+//        int x0,y0, sequenceNum, dir, group;
+//        boolean fixed = false;
+//
+//        for (int col = 0; col < _solution.length; col += 1) {
+//            for (int row = 0; row < _solution[col].length; row += 1) {
+//                x0 = col;
+//                y0 = row;
+//                sequenceNum = _solution[x0][y0];
+//                dir = arrowDirection(x0,y0);
+//                if (sequenceNum == 1 || sequenceNum == model.size()){
+//                    fixed = true;
+//                    group = 0;
+//                }
+//                else {
+//                    group = -1;
+//                }
+//                _board[col][row] = new Sq (x0,y0,sequenceNum,fixed,dir,group);
+//            }
+//        }
 
         // FIXME: Once all the new Sq objects are in place, fill in their
         //        _successor, _predecessor, and _head fields.  For example,

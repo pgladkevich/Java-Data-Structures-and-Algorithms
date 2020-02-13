@@ -143,6 +143,28 @@ class Model implements Iterable<Model.Sq> {
         //        the Sq objects in MODEL other than their _successor,
         //        _predecessor, and _head fields (which can't necessarily be
         //        set until all the Sq objects are first created.)
+        // It looks like I need to create Sq[][] _board based off of the _solution variable
+        /* Sq(int x0, int y0, int sequenceNum, boolean fixed, int dir, int group) */
+        _board = new Sq [_solution.length][_solution[0].length];
+        int x0,y0, sequenceNum, dir, group;
+        boolean fixed = false;
+
+        for (int col = 0; col < _solution.length; col += 1) {
+            for (int row = 0; row < _solution[col].length; row += 1) {
+                x0 = col;
+                y0 = row;
+                sequenceNum = _solution[x0][y0];
+                dir = arrowDirection(x0,y0);
+                if (sequenceNum == 1 || sequenceNum == model.size()){
+                    fixed = true;
+                    group = 0;
+                }
+                else {
+                    group = -1;
+                }
+                _board[col][row] = new Sq (x0,y0,sequenceNum,fixed,dir,group);
+            }
+        }
 
         // FIXME: Once all the new Sq objects are in place, fill in their
         //        _successor, _predecessor, and _head fields.  For example,
@@ -153,6 +175,12 @@ class Model implements Iterable<Model.Sq> {
         //        position (4, 1) in this copy.  Be careful NOT to have
         //        any of these fields in the copy pointing at the old Sqs in
         //        MODEL.
+        /* So I need to use _successor = _board.solNumToSquare(_board[col][row].sequenceNum() +1)
+        * since it will return the square that is the next in sequence. I can't do this for the last value
+        * so cut the loop at size()-1 and then do it one last time for the last value
+        * Repeat this for the _head and _predecessor.*/
+
+        // Unsure if the above works or if I need to use solnNumToPlace()instead.
     }
 
     /** Returns the width (number of columns of cells) of the board. */

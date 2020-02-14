@@ -27,7 +27,8 @@ public class ListsTest {
         int[][] ending_L1_array = new int[][] {{1, 3, 7}, {5}, {4,6,9,10}, {10,11}};
         ending_L1 = ending_L1.list(ending_L1_array);
 
-
+        assert Utils.equals(null, lists.Lists.naturalRuns(null));
+        assert Utils.equals(ending_L1,lists.Lists.naturalRuns(starting_L1));
     }
 
     public static void main(String[] args) {

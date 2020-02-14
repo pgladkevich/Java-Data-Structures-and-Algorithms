@@ -19,7 +19,35 @@ class Lists {
      *  Destructive: creates no new IntList items, and may modify the
      *  original list pointed to by L. */
     static IntListList naturalRuns(IntList L) {
-        /* *Replace this body with the solution. */
-        return null;
+        if (L == null) {
+            return null;
+        }
+        else if (L.tail == null) {
+            IntListList result = new IntListList();
+            result.head = L;
+            result.tail = null;
+            return result;
+        }
+        else {
+            IntListList result = new IntListList();
+            IntList curr = L;
+            result.head = curr;
+            int val_to_beat = L.head;
+            result.tail = null;
+
+            while (L != null) {
+                if (val_to_beat >= L.tail.head) {
+                    if (result.tail == null) {
+                        result.tail = IntListList.list();
+                    }
+                }
+                else {
+                    continue;
+                }
+                val_to_beat = L.tail.head;
+                L = L.tail;
+            }
+            return result;
+        }
     }
 }

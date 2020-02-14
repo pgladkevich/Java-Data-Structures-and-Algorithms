@@ -22,16 +22,26 @@ public class ListsTest {
     // takes as input a 2D array.
     @Test
     public void naturalRunsTest() {
+        /* Some edge cases */
+        assert Utils.equals(null, lists.Lists.naturalRuns(null));
+
+        IntList edge_L1 =  IntList.list(1);
+        IntListList ending_edge_L1 = new IntListList();
+        int[][] ending_edge_L1_array = new int[][] {{1}};
+        ending_edge_L1 = ending_edge_L1.list(ending_edge_L1_array);
+        assert Utils.equals(ending_edge_L1, lists.Lists.naturalRuns(edge_L1));
+
         IntList starting_L1 =  IntList.list(1, 3, 7, 5, 4, 6, 9, 10, 10, 11);
         IntListList ending_L1 = new IntListList();
         int[][] ending_L1_array = new int[][] {{1, 3, 7}, {5}, {4,6,9,10}, {10,11}};
         ending_L1 = ending_L1.list(ending_L1_array);
 
-        assert Utils.equals(null, lists.Lists.naturalRuns(null));
         assert Utils.equals(ending_L1,lists.Lists.naturalRuns(starting_L1));
     }
 
     public static void main(String[] args) {
+//        IntListList ending_L1 = new IntListList();
+//        ending_L1.list([[IntList.list(1,3,7)],[IntList.list(5)],[IntList.list(4,6)]])
         System.exit(ucb.junit.textui.runClasses(ListsTest.class));
     }
 }

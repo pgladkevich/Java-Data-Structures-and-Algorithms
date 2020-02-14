@@ -34,18 +34,32 @@ class Lists {
             result.head = curr;
             int val_to_beat = L.head;
             result.tail = null;
+            IntListList ptr = new IntListList();
 
-            while (L != null) {
+            while (L.tail != null) {
                 if (val_to_beat >= L.tail.head) {
                     if (result.tail == null) {
-                        result.tail = IntListList.list();
+                        ptr = ptr.list(L.tail);
+                        result.tail = ptr;
                     }
+                    else {
+                        ptr.tail = ptr.list(L.tail);
+                        ptr = ptr.tail;
+                    }
+                    val_to_beat = L.tail.head;
+                    curr = L.tail;
+                    L.tail = null;
+                    L = curr;
                 }
                 else {
+                    if (L.tail == null) {
+                        L = L.tail;
+                        continue;
+                    }
+                    val_to_beat = L.tail.head;
+                    L = L.tail;
                     continue;
                 }
-                val_to_beat = L.tail.head;
-                L = L.tail;
             }
             return result;
         }

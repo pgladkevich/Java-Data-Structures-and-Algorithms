@@ -32,9 +32,8 @@ public class ListsTest {
         assert Utils.equals(ending_edge_L1, lists.Lists.naturalRuns(edge_L1));
 
         IntList starting_L1 =  IntList.list(1, 3, 7, 5, 4, 6, 9, 10, 10, 11);
-        IntListList ending_L1 = new IntListList();
         int[][] ending_L1_array = new int[][] {{1, 3, 7}, {5}, {4,6,9,10}, {10,11}};
-        ending_L1 = ending_L1.list(ending_L1_array);
+        IntListList ending_L1 = IntListList.list(ending_L1_array);
 
         assert Utils.equals(ending_L1,lists.Lists.naturalRuns(starting_L1));
     }

@@ -22,7 +22,12 @@ public class ListsTest {
     // takes as input a 2D array.
     @Test
     public void naturalRunsTest() {
-        Utils.readIntArray()
+        IntList starting_L1 =  IntList.list(1, 3, 7, 5, 4, 6, 9, 10, 10, 11);
+        IntListList ending_L1 = new IntListList();
+        int[][] ending_L1_array = new int[][] {{1, 3, 7}, {5}, {4,6,9,10}, {10,11}};
+        ending_L1 = ending_L1.list(ending_L1_array);
+
+
     }
 
     public static void main(String[] args) {

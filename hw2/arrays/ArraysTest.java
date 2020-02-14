@@ -35,9 +35,19 @@ public class ArraysTest {
         int[] A_one = new int[] {1};
         assert Utils.equals(A_null, arrays.Arrays.remove(A_one, start, len));
 
-        int[] A_remove_all = new int[] {1,2,3,5,13,56,7,9};
+        int[] A = new int[] {1,2,3,5,13,56,7,9};
         len = 8;
-        assert Utils.equals(A_null, arrays.Arrays.remove(A_remove_all, start, len));
+        assert Utils.equals(A_null, arrays.Arrays.remove(A, start, len));
+
+        start = 4;
+        len = 4;
+        int[] removed_a1 = Utils.subarray(A,0,4);
+        assert Utils.equals(removed_a1, arrays.Arrays.remove(A, start,len));
+
+        start =4;
+        len = 2;
+        int[] removed_a2 = arrays.Arrays.catenate(Utils.subarray(A,0,4),Utils.subarray(A,6,2));
+        assert Utils.equals(removed_a2, arrays.Arrays.remove(A,4,2));
     }
 
 

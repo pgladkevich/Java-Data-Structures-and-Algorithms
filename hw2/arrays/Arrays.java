@@ -45,7 +45,18 @@ class Arrays {
             int[] A_null = new int[] {};
             return A_null;
         }
-        return null;
+        else {
+            if (A.length - start == len) {
+                return Utils.subarray(A,0,start);
+            }
+            else {
+                int[] removed = arrays.Arrays.catenate(
+                        Utils.subarray(A,0,start),
+                        Utils.subarray(A,start+len,A.length - start - len)
+                );
+                return removed;
+            }
+        }
     }
 
     /* C3. */

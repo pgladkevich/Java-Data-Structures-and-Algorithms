@@ -170,7 +170,7 @@ class Model implements Iterable<Model.Sq> {
         //        all cells that might connect to it.
         for (Sq current : _allSquares) {
             PlaceList[][][] M = Place.successorCells(_width, _height);
-            current._successors = M[current.x][current.y][0];
+            current._successors = M[current.x][current.y][current._dir];
         }
 
         _unconnected = last - 1;

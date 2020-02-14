@@ -14,8 +14,24 @@ class Arrays {
     /** Returns a new array consisting of the elements of A followed by the
      *  the elements of B. */
     static int[] catenate(int[] A, int[] B) {
-        /* *Replace this body with the solution. */
-        return null;
+        int[] result = new int[A.length + B.length];
+        if (A.length == 0 ) {
+            return B;
+        }
+        else if (B.length == 0) {
+            return A;
+        }
+        else {
+            int last_A_index = 0;
+            for (int i = 0; i < A.length; i+=1) {
+                result[i] = A[i];
+                last_A_index += 1;
+            }
+            for (int j = 0; j < B.length; j+=1) {
+                result[last_A_index +j] = B[j];
+            }
+            return result;
+        }
     }
 
     /* C2. */

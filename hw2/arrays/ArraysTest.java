@@ -25,6 +25,20 @@ public class ArraysTest {
         assert Utils.equals(result, arrays.Arrays.catenate(A,B));
     }
 
+    @Test
+    public void remove() {
+        int[] A_null = new int[] {};
+        int start = 0;
+        int len = 1;
+        assert Utils.equals(A_null, arrays.Arrays.remove(A_null, start, len));
+
+        int[] A_one = new int[] {1};
+        assert Utils.equals(A_null, arrays.Arrays.remove(A_one, start, len));
+
+        int[] A_remove_all = new int[] {1,2,3,5,13,56,7,9};
+        len = 8;
+        assert Utils.equals(A_null, arrays.Arrays.remove(A_remove_all, start, len));
+    }
 
 
     public static void main(String[] args) {

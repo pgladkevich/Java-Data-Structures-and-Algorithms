@@ -38,7 +38,13 @@ class Arrays {
     /** Returns the array formed by removing LEN items from A,
      *  beginning with item #START. */
     static int[] remove(int[] A, int start, int len) {
-        /* *Replace this body with the solution. */
+        if (A.length == 0) {
+            return A;
+        }
+        if (len == A.length && start == 0) {
+            int[] A_null = new int[] {};
+            return A_null;
+        }
         return null;
     }
 

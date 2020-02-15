@@ -192,25 +192,14 @@ class Model implements Iterable<Model.Sq> {
         *
         * Create Sq[][] _board based off of the _solution variable
         * Sq(int x0, int y0, int sequenceNum, boolean fixed, int dir, int group) */
-        _board = new Sq [_solution.length][_solution[0].length];
-        int x0,y0, sequenceNum, dir, group;
-        boolean fixed = false;
+        _board = new Sq[_width][_height];
 
-        for (int col = 0; col < _solution.length; col += 1) {
-            for (int row = 0; row < _solution[col].length; row += 1) {
-                x0 = col;
-                y0 = row;
-                sequenceNum = _solution[x0][y0];
-                dir = arrowDirection(x0,y0);
-                if (sequenceNum == 1 || sequenceNum == model.size()){
-                    fixed = true;
-                    group = 0;
-                }
-                else {
-                    fixed = false;
-                    group = -1;
-                }
-                _board[col][row] = new Sq (x0,y0,sequenceNum,fixed,dir,group);
+        for (int i = 0; i < _width; i+=1) {
+            for (int j = 0; j < _height; j+=1) {
+                Sq s_og = model._board[i][j];
+                Sq s = new Sq(model._board[i][j]);
+                this._board[i][j] = s;
+                this._allSquares.add(s);
             }
         }
 
@@ -223,10 +212,42 @@ class Model implements Iterable<Model.Sq> {
         //        position (4, 1) in this copy.  Be careful NOT to have
         //        any of these fields in the copy pointing at the old Sqs in
         //        MODEL.
-        /* So I need to use _successor = _board.solNumToSquare(_board[col][row].sequenceNum() +1)
-        * since it will return the square that is the next in sequence. I can't do this for the last value
-        * so cut the loop at size()-1 and then do it one last time for the last value
-        * Repeat this for the _head and _predecessor. */
+
+        for (int i = 0; i < _width; i +=1) {
+            for (int j = 0; j < _height; j+=1) {
+                Sq s = this._board[i][j];
+                if (model.get(i,j)._successor == null ) {
+                    s._successor = null;
+                }
+                else {
+                    Place s_successor = model.get(i,j)._successor.pl;
+                    s._successor = this.get(s_successor);
+                }
+                if (model.get(i,j)._predecessor == null ) {
+                    s._predecessors = null;
+                }
+                else {
+                    Place s_predecessor = model.get(i,j)._predecessor.pl;
+                    s._predecessor = this.get(s_predecessor);
+                }
+                if (model.get(i,j)._predecessors == null) {
+                    s._predecessors = null;
+                }
+                else {
+                    PlaceList s_predecessors = model.get(i,j)._predecessors;
+                    s._predecessors = s_predecessors;
+                }
+                if (model.get(i,j)._successors == null) {
+                    s._successors = null;
+                }
+                else {
+                    PlaceList s_successors = model.get(i,j)._successors;
+                    s._successors = s_successors;
+                }
+                Place s_head = model.get(i,j)._head.pl;
+                s._head = this.get(s_head);
+            }
+        }
     }
 
     /** Returns the width (number of columns of cells) of the board. */

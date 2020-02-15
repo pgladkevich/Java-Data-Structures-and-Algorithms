@@ -186,14 +186,12 @@ class Model implements Iterable<Model.Sq> {
         _usedGroups.addAll(model._usedGroups);
         _allSuccessors = model._allSuccessors;
 
-        // FIXME: Initialize _board and _allSquares to contain copies of the
-        //        the Sq objects in MODEL other than their _successor,
-        //        _predecessor, and _head fields (which can't necessarily be
-        //        set until all the Sq objects are first created.)
-
-
-        /* Create Sq[][] _board based off of the _solution variable
-        Sq(int x0, int y0, int sequenceNum, boolean fixed, int dir, int group) */
+        /* Initialize _board and _allSquares to contain copies of the Sq objects in MODEL
+        * other than their _successor, _predecessor, and _head fields (which can't necessarily
+        * be set until all the Sq objects are first created.)
+        *
+        * Create Sq[][] _board based off of the _solution variable
+        * Sq(int x0, int y0, int sequenceNum, boolean fixed, int dir, int group) */
         _board = new Sq [_solution.length][_solution[0].length];
         int x0,y0, sequenceNum, dir, group;
         boolean fixed = false;

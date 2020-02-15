@@ -96,7 +96,7 @@ class Model implements Iterable<Model.Sq> {
         * sequence number k.  Check that all numbers from 1 - last appear; else throw
         *  IllegalArgumentException (see badArgs utility). */
 
-        /* Create Sq[][] _board based off of the _solution variable
+        /* Create Sq[][] _board based off of the int[][]solution
         * Sq(int x0, int y0, int sequenceNum, boolean fixed, int dir, int group) */
         _board = new Sq [_width][_height];
         int x0,y0, sequenceNum, dir, group;
@@ -191,6 +191,30 @@ class Model implements Iterable<Model.Sq> {
         //        _predecessor, and _head fields (which can't necessarily be
         //        set until all the Sq objects are first created.)
 
+
+        /* Create Sq[][] _board based off of the _solution variable
+        Sq(int x0, int y0, int sequenceNum, boolean fixed, int dir, int group) */
+        _board = new Sq [_solution.length][_solution[0].length];
+        int x0,y0, sequenceNum, dir, group;
+        boolean fixed = false;
+
+        for (int col = 0; col < _solution.length; col += 1) {
+            for (int row = 0; row < _solution[col].length; row += 1) {
+                x0 = col;
+                y0 = row;
+                sequenceNum = _solution[x0][y0];
+                dir = arrowDirection(x0,y0);
+                if (sequenceNum == 1 || sequenceNum == model.size()){
+                    fixed = true;
+                    group = 0;
+                }
+                else {
+                    fixed = false;
+                    group = -1;
+                }
+                _board[col][row] = new Sq (x0,y0,sequenceNum,fixed,dir,group);
+            }
+        }
 
         // FIXME: Once all the new Sq objects are in place, fill in their
         //        _successor, _predecessor, and _head fields.  For example,
@@ -323,7 +347,7 @@ class Model implements Iterable<Model.Sq> {
 
         return signpost.Place.dirOf(x,y,coords[0],coords[1]);
     }
-    /* Just here so for testing arrowDirection */
+    /* Just here for testing arrowDirection */
     public static void main (String[] args) {
         Model model = new Model(tr(SOLN1));
         System.out.println(model.arrowDirection(3,0));

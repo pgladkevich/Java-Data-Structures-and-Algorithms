@@ -343,7 +343,16 @@ class Model implements Iterable<Model.Sq> {
      *  unconnected and are separated by a queen move.  Returns true iff
      *  any changes were made. */
     boolean autoconnect() {
-        return false; // FIXME
+        boolean changes = false;
+        for (Sq curr : _allSquares) {
+            for (Sq curr2 : _allSquares) {
+                if (curr.connectable(curr2)){
+                    curr.connect(curr2);
+                    changes = true;
+                }
+            }
+        }
+        return changes;
     }
 
     /** Sets the numbers in this board's squares to the solution from which

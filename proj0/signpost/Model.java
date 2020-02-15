@@ -90,35 +90,14 @@ class Model implements Iterable<Model.Sq> {
         _solution = new int[_width][_height];
         deepCopy(solution, _solution);
 
-        // DUMMY SETUP
-        // This is a particular puzzle provided as a filler until the
-        // puzzle-generation software is complete.
-        // FIXME: Remove everything down to and including
-        // "// END DUMMY SETUP".
-//        _board = new Sq[][] {
-//            { new Sq(0, 0, 0, false, 2, -1), new Sq(0, 1, 0, false, 2, -1),
-//              new Sq(0, 2, 0, false, 4, -1), new Sq(0, 3, 1, true, 2, 0) },
-//            { new Sq(1, 0, 0, false, 2, -1), new Sq(1, 1, 0, false, 2, -1),
-//              new Sq(1, 2, 0, false, 6, -1), new Sq(1, 3, 0, false, 2, -1) },
-//            { new Sq(2, 0, 0, false, 6, -1), new Sq(2, 1, 0, false, 2, -1),
-//              new Sq(2, 2, 0, false, 6, -1), new Sq(2, 3, 0, false, 2, -1) },
-//            { new Sq(3, 0, 16, true, 0, 0), new Sq(3, 1, 0, false, 5, -1),
-//              new Sq(3, 2, 0, false, 6, -1), new Sq(3, 3, 0, false, 4, -1) }
-//        };
-//        for (Sq[] col: _board) {
-//            for (Sq sq : col) {
-//                _allSquares.add(sq);
-//            }
-//        }
-        // END DUMMY SETUP
+        /* Initialize _board so that _board[x][y] contains the Sq object representing the
+        * contents at cell (x, y), _allSquares contains the list of all Sq objects on the
+        * board, and _solnNumToPlace[k] contains the Place in _solution that contains
+        * sequence number k.  Check that all numbers from 1 - last appear; else throw
+        *  IllegalArgumentException (see badArgs utility). */
 
-        // FIXME: Initialize _board so that _board[x][y] contains the Sq object
-        //        representing the contents at cell (x, y), _allSquares
-        //        contains the list of all Sq objects on the board, and
-        //        _solnNumToPlace[k] contains the Place in _solution that
-        //        contains sequence number k.  Check that all numbers from
-        //        1 - last appear; else throw IllegalArgumentException (see
-        //        badArgs utility).
+        /* Create Sq[][] _board based off of the _solution variable
+        * Sq(int x0, int y0, int sequenceNum, boolean fixed, int dir, int group) */
         _board = new Sq [_width][_height];
         int x0,y0, sequenceNum, dir, group;
         boolean fixed = false;
@@ -162,12 +141,11 @@ class Model implements Iterable<Model.Sq> {
                     throw badArgs("IllegalArgumentException");
             }
         }
-        // FIXME: For each Sq object on the board, set its _successors list
-        //        to the list of locations of all cells that it might
-        //        connect to (i.e., all cells that are a queen move away
-        //        in the direction of its arrow).
-        //        Likewise, set its _predecessors list to the list of
-        //        all cells that might connect to it.
+
+        /* For each Sq object on the board, set its _successors list to the list of locations of
+        * all cells that it might connect to (i.e., all cells that are a queen move away in the
+        * direction of its arrow). Likewise, set its _predecessors list to the list of all cells
+        *  that might connect to it. */
         for (Sq current : _allSquares) {
             if (current.sequenceNum() == last) {
                 current._successors = null;
@@ -196,8 +174,6 @@ class Model implements Iterable<Model.Sq> {
                   current._predecessors = P_further_reduced;
             }
         }
-
-
         _unconnected = last - 1;
     }
 
@@ -214,28 +190,7 @@ class Model implements Iterable<Model.Sq> {
         //        the Sq objects in MODEL other than their _successor,
         //        _predecessor, and _head fields (which can't necessarily be
         //        set until all the Sq objects are first created.)
-        // It looks like I need to create Sq[][] _board based off of the _solution variable
-        /* Sq(int x0, int y0, int sequenceNum, boolean fixed, int dir, int group) */
-//        _board = new Sq [_solution.length][_solution[0].length];
-//        int x0,y0, sequenceNum, dir, group;
-//        boolean fixed = false;
-//
-//        for (int col = 0; col < _solution.length; col += 1) {
-//            for (int row = 0; row < _solution[col].length; row += 1) {
-//                x0 = col;
-//                y0 = row;
-//                sequenceNum = _solution[x0][y0];
-//                dir = arrowDirection(x0,y0);
-//                if (sequenceNum == 1 || sequenceNum == model.size()){
-//                    fixed = true;
-//                    group = 0;
-//                }
-//                else {
-//                    group = -1;
-//                }
-//                _board[col][row] = new Sq (x0,y0,sequenceNum,fixed,dir,group);
-//            }
-//        }
+
 
         // FIXME: Once all the new Sq objects are in place, fill in their
         //        _successor, _predecessor, and _head fields.  For example,
@@ -249,9 +204,7 @@ class Model implements Iterable<Model.Sq> {
         /* So I need to use _successor = _board.solNumToSquare(_board[col][row].sequenceNum() +1)
         * since it will return the square that is the next in sequence. I can't do this for the last value
         * so cut the loop at size()-1 and then do it one last time for the last value
-        * Repeat this for the _head and _predecessor.*/
-
-        // Unsure if the above works or if I need to use solnNumToPlace()instead.
+        * Repeat this for the _head and _predecessor. */
     }
 
     /** Returns the width (number of columns of cells) of the board. */

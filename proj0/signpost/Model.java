@@ -169,9 +169,34 @@ class Model implements Iterable<Model.Sq> {
         //        Likewise, set its _predecessors list to the list of
         //        all cells that might connect to it.
         for (Sq current : _allSquares) {
-            PlaceList[][][] M = Place.successorCells(_width, _height);
-            current._successors = M[current.x][current.y][current._dir];
+            if (current.sequenceNum() == last) {
+                current._successors = null;
+            }
+            else {
+                PlaceList[][][] N = Place.successorCells(_width, _height);
+                current._successors = N[current.x][current.y][current._dir];
+            }
         }
+
+        for (Sq current : _allSquares) {
+            if (current.sequenceNum() == 1) {
+                current._predecessors = null;
+            }
+            else {
+                  PlaceList[][][] P = Place.successorCells(_width, _height);
+                  PlaceList P_reduced = P[current.x][current.y][0];
+                  PlaceList P_further_reduced = new PlaceList();
+                  for (Place curr_P : P_reduced) {
+                      Sq check =_board[curr_P.x][curr_P.y];
+                      int dir_to = signpost.Place.dirOf(check.x,check.y,current.x,current.y);
+                      if (dir_to == check._dir) {
+                          P_further_reduced.add(curr_P);
+                      }
+                  }
+                  current._predecessors = P_further_reduced;
+            }
+        }
+
 
         _unconnected = last - 1;
     }
@@ -342,12 +367,7 @@ class Model implements Iterable<Model.Sq> {
         int seq1 = seq0+1;
         /* Iterate through and find x1,y1 of seq1, the next in the sequence after seq0 */
         int[] coords = findCoords(seq1, _solution);
-//        /* Now create a Place list the size of _solution that we will place two places in,
-//        * the seq0 x and y coordinates and the seq1 x and y coordinates */
-//        Place[][] checkArrow = new Place[_solution.length][_solution[0].length];
-//        checkArrow[0] = Place pl (x,y);
-//        final Place PL = Place.pl(1, 1);
-//        checkArrow [0][0] = PL;
+
         return signpost.Place.dirOf(x,y,coords[0],coords[1]);
     }
     /* Just here so for testing arrowDirection */

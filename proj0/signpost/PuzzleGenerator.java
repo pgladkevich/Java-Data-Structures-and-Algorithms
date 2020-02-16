@@ -8,7 +8,7 @@ import static signpost.Place.PlaceList;
 import static signpost.Utils.*;
 
 /** A creator of random Signpost puzzles.
- *  @author
+ *  @author Pavel Gladkevich
  */
 class PuzzleGenerator implements PuzzleSource {
 
@@ -134,8 +134,46 @@ class PuzzleGenerator implements PuzzleSource {
      *  numbered square in the proper direction from START (with the next
      *  number in sequence). */
     static Sq findUniqueSuccessor(Model model, Sq start) {
-        // FIXME: Fill in to satisfy the comment.
-        return null;
+        if (start.successors() == null) {
+            return null;
+        }
+        else if (start.hasFixedNum() == false){
+            PlaceList start_successors = start.successors();
+            Sq potential_unique = null;
+            boolean there_is_one = false;
+            for (Place P : start_successors) {
+                Sq curr_s = model.get(P);
+                if (there_is_one == false && start.connectable(curr_s)){
+                    there_is_one = true;
+                    potential_unique = curr_s;
+                }
+                else if (there_is_one = true && start.connectable(curr_s)) {
+                    potential_unique = null;
+                    break;
+                }
+            }
+            return potential_unique;
+        }
+        else {
+            PlaceList start_successors = start.successors();
+            Sq potential_unique = null;
+            boolean there_is_one = false;
+            boolean there_is_two = false;
+            for (Place P : start_successors) {
+                Sq curr_s = model.get(P);
+                if (curr_s.hasFixedNum() == true && (curr_s.sequenceNum() == (start.sequenceNum()+1))) {
+                    return curr_s;
+                }
+                else if (there_is_one == false && start.connectable(curr_s)){
+                    there_is_one = true;
+                    potential_unique = curr_s;
+                }
+                else if (there_is_one = true && start.connectable(curr_s)) {
+                    potential_unique = null;
+                }
+            }
+            return potential_unique;
+        }
     }
 
     /** Make all unique backward connections in MODEL (those in which there is
@@ -163,8 +201,23 @@ class PuzzleGenerator implements PuzzleSource {
      *  the only unconnected predecessor.  This is because findUniqueSuccessor
      *  already finds the other cases of numbered, unconnected cells. */
     static Sq findUniquePredecessor(Model model, Sq end) {
-        // FIXME: Replace the following to satisfy the comment.
-        return null;
+        boolean there_is_one = false;
+        Sq potential_predecessor = null;
+        PlaceList end_predecessors = end.predecessors();
+        for (Place P : end_predecessors) {
+            Sq curr_square = model.get(P);
+            if (curr_square.connectable(end) == true && curr_square.hasFixedNum() == true && end.hasFixedNum() == true) {
+                return curr_square;
+            }
+            else if (there_is_one == false && curr_square.connectable(end)){
+                there_is_one = true;
+                potential_predecessor = curr_square;
+            }
+            else if (there_is_one == true && curr_square.connectable(end)) {
+                potential_predecessor = null;
+            }
+        }
+        return potential_predecessor;
     }
 
     /** Remove all links in MODEL and unfix numbers (other than the first and

@@ -153,8 +153,17 @@ class Model implements Iterable<Model.Sq> {
             else {
                 PlaceList[][][] N = Place.successorCells(_width, _height);
                 current._successors = N[current.x][current.y][current._dir];
+//                PlaceList valid_successors = new PlaceList();
+//                for (Place potential_s_place : current._successors) {
+//                    Sq potential_successor = this.get(potential_s_place);
+//                    if (current.connect(potential_successor)) {
+//                        valid_successors.add(potential_s_place);
+//                    }
+//                }
+//                current._successors = valid_successors;
             }
         }
+
 
         for (Sq current : _allSquares) {
             if (current.sequenceNum() == 1) {
@@ -358,7 +367,16 @@ class Model implements Iterable<Model.Sq> {
     /** Sets the numbers in this board's squares to the solution from which
      *  this board was last initialized by the constructor. */
     void solve() {
-        // FIXME
+        this.restart();
+        for (Place P : _solnNumToPlace) {
+            if (P == null) {
+                continue;
+            }
+            Sq curr_sq = this.get(P);
+            int[] next_coords = findCoords((curr_sq._sequenceNum + 1), _solution);
+            Sq next_seq = this.get(pl(next_coords[0],next_coords[1]));
+            curr_sq.connect(next_seq);
+        }
         _unconnected = 0;
     }
 

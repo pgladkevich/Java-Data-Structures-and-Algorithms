@@ -798,15 +798,26 @@ class Model implements Iterable<Model.Sq> {
                     next._group = -1;
                 }
                 /* Otherwise, if either is now a one-element group, set its group number
-                * to -1 without releasing the group number. */
+                * to -1 without releasing the group number.
+                */
                 else if (this.predecessor() == null) {
+                    next._head = next;
+                    /* Want to keep the original group of this and pass it on to next */
+                    if (next.successor() != null){
+                        next._group = this._group;
+                        Sq curr = next;
+                        while (curr.successor() != null) {
+                            curr._head = next;
+                            curr = curr.successor();
+                        }
+                    }
                     this._group = -1;
                 }
                 else if (next.successor() == null) {
                     next._group = -1;
                 }
                 /*  Otherwise, the group has been split into two multi- element groups.
-                * Create a new group for next. */
+                 * Create a new group for next. */
                 else {
                     int new_group = newGroup();
                     next._group = new_group;

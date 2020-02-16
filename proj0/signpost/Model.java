@@ -785,7 +785,7 @@ class Model implements Iterable<Model.Sq> {
             _unconnected += 1;
             next._predecessor = this._successor = null;
             /* Because _sequenceNum == 0 that means none of the elements have defined sequence numbers, and their
-            * group number is 0 or above since they have to be connected for us to disconnect them. */
+            * group number is above 0 since they have to be connected for us to disconnect them. */
             if (_sequenceNum == 0) {
                 /* If both this and next are now one-element groups, release their former group
                 * and set both group numbers to -1.
@@ -810,9 +810,9 @@ class Model implements Iterable<Model.Sq> {
                     int new_group = newGroup();
                     next._group = new_group;
                     Sq curr = next;
-                    while (next.successor() != null) {
-                        curr = next.successor();
+                    while (curr.successor() != null) {
                         curr._head = next;
+                        curr = curr.successor();
                     }
                 }
             } else {

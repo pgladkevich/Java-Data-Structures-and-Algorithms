@@ -663,7 +663,21 @@ class Model implements Iterable<Model.Sq> {
 
         /** Connect this square to S1, if both are connectable; otherwise do
          *  nothing. Returns true iff this square and S1 were connectable.
-         *  Assumes S1 is in the proper arrow direction from this square. */
+         *  Assumes S1 is in the proper arrow direction from this square.
+         *
+         *
+         *
+         *
+         *
+         * Set the _head fields of this square's successors to this._head
+         *
+         * If either of this square or S1 used to be unnumbered and is now
+         numbered, release its group of whichever was unnumbered, so that it
+         can be reused.
+         *
+         * If both this square and S1 are unnumbered, set the group of this
+         * square's head to the result of joining the two groups.
+         *  */
         boolean connect(Sq s1) {
             if (!connectable(s1)) {
                 return false;
@@ -698,7 +712,7 @@ class Model implements Iterable<Model.Sq> {
              s1.hasFixedNum() && !(this.hasFixedNum() */
             if (s0group != 0  && sgroup == 0) {
                 int index = s1.sequenceNum()-1;
-                Sq s0_head = this._head;
+                Sq s0Head = this._head;
                 this._sequenceNum = index;
                 Sq curr = this;
 
@@ -709,35 +723,57 @@ class Model implements Iterable<Model.Sq> {
                 }
                 curr = this;
                 while (curr.successor() != null) {
-                    curr._successor._head = s0_head;
+                    curr._successor._head = s0Head;
                     curr = curr.successor();
                 }
             }
-
-            /* Set the _head fields of this square's successors to this square's _head */
-            Sq next_pointer = this;
-            while (next_pointer.successor() != null) {
-                next_pointer.successor()._head = this.head();
-                next_pointer = next_pointer.successor();
+            Sq nextPointer = this;
+            while (nextPointer.successor() != null) {
+                nextPointer.successor()._head = this.head();
+                nextPointer = nextPointer.successor();
             }
-
-            /* If either of this square or S1 used to be unnumbered and is now numbered,
-            * release its group of whichever was unnumbered, so that it can be reused. */
             if (s0group > 0 && sgroup == 0) {
                 releaseGroup(s0group);
-            }
-            else if ( s0group == 0 && sgroup > 0) {
+            } else if ( s0group == 0 && sgroup > 0) {
                 releaseGroup(sgroup);
             }
-            /* If both this square and S1 are unnumbered, set the group of this square's
-            * head to the result of joining the two groups. */
             if (this.sequenceNum() == 0 && s1.sequenceNum() == 0) {
                 this._head._group = joinGroups(s0group, sgroup);
             }
             return true;
         }
 
-        /** Disconnect this square from its current successor, if any. */
+        /** Disconnect this square from its current successor, if any.
+         *
+         * Because _sequenceNum == 0 that means none of the elements have
+         * defined sequence numbers, and their group number is above 0 since
+         * they have to be connected for us to disconnect them.
+         *
+         * If both this and next are now one-element groups, release their
+         * former group and set both group numbers to -1. We know that successor
+         * of s0 is null since we're disconnecting, so only check its
+         * predecessor. We know that predecessor of s1 is null so only check
+         * its successor.
+         *
+         * Otherwise, if either is now a one-element group, set its group number
+         * to -1 without releasing the group number.
+         *
+         * Want to keep the original group of this and pass it on to next
+         *
+         * Otherwise, the group has been split into two multi- element groups.
+         * Create a new group for next.
+         *
+         * If neither this nor any square in its group that precedes it
+         * has a fixed sequence number, set all their sequence numbers to
+         * 0 and create a new group for them if this has a current
+         * predecessor (otherwise set group to -1).
+         *
+         * If neither next nor any square in its group that follows it
+         * has a fixed sequence number, set all their sequence numbers
+         * to 0 and create a new group for them if next has a current
+         * successor (otherwise set next's group to -1.)
+         *
+         * Set the _head of next and all squares in its group to next. */
         void disconnect() {
             Sq next = _successor;
             if (next == null) {
@@ -745,24 +781,13 @@ class Model implements Iterable<Model.Sq> {
             }
             _unconnected += 1;
             next._predecessor = this._successor = null;
-            /* Because _sequenceNum == 0 that means none of the elements have defined sequence numbers, and their
-            * group number is above 0 since they have to be connected for us to disconnect them. */
             if (_sequenceNum == 0) {
-                /* If both this and next are now one-element groups, release their former group
-                * and set both group numbers to -1.
-                * We know that successor of s0 is null since we're disconnecting, so only check its
-                * predecessor. We know that predecessor of s1 is null so only check its successor. */
-                if ((this.predecessor() == null) && (next.successor() == null)) {
+                if (this.predecessor() == null && (next.successor() == null)) {
                     releaseGroup(this.group());
                     this._group = -1;
                     next._group = -1;
-                }
-                /* Otherwise, if either is now a one-element group, set its group number
-                * to -1 without releasing the group number.
-                */
-                else if (this.predecessor() == null) {
+                } else if (this.predecessor() == null) {
                     next._head = next;
-                    /* Want to keep the original group of this and pass it on to next */
                     if (next.successor() != null){
                         next._group = this._group;
                         Sq curr = next;
@@ -772,13 +797,9 @@ class Model implements Iterable<Model.Sq> {
                         }
                     }
                     this._group = -1;
-                }
-                else if (next.successor() == null) {
+                } else if (next.successor() == null) {
                     next._group = -1;
-                }
-                /*  Otherwise, the group has been split into two multi- element groups.
-                 * Create a new group for next. */
-                else {
+                } else {
                     int newGroup = newGroup();
                     next._group = newGroup;
                     Sq curr = next;
@@ -788,10 +809,6 @@ class Model implements Iterable<Model.Sq> {
                     }
                 }
             } else {
-                /* If neither this nor any square in its group that precedes it
-                * has a fixed sequence number, set all their sequence numbers to
-                * 0 and create a new group for them if this has a current
-                * predecessor (otherwise set group to -1). */
                 boolean anyPrevious = false;
                 Sq prevCurr = this;
                 if (prevCurr.hasFixedNum()) {
@@ -812,42 +829,35 @@ class Model implements Iterable<Model.Sq> {
                             prevCurr = prevCurr._predecessor;
                         }
                     }
-                }
-                else if (!anyPrevious) {
+                } else if (!anyPrevious) {
                     this._sequenceNum = 0;
                     this._group = -1;
                 }
-                /* If neither next nor any square in its group that follows it
-                * has a fixed sequence number, set all their sequence numbers
-                * to 0 and create a new group for them if next has a current
-                * successor (otherwise set next's group to -1.) */
                 boolean anyNext = false;
-                Sq next_curr = next;
-                if (next_curr.hasFixedNum()) {
+                Sq nextCurr = next;
+                if (nextCurr.hasFixedNum()) {
                     anyNext = true;
                 }
-                if (next_curr.successor() != null) {
-                    while (next_curr.successor() != null) {
-                        if (next_curr.successor().hasFixedNum()) {
+                if (nextCurr.successor() != null) {
+                    while (nextCurr.successor() != null) {
+                        if (nextCurr.successor().hasFixedNum()) {
                             anyNext = true;
                         }
-                        next_curr = next_curr._successor;
+                        nextCurr = nextCurr._successor;
                     }
                     if (!anyNext) {
-                        next_curr = next;
+                        nextCurr = next;
                         next._group = newGroup();
-                        while (next_curr != null) {
-                            next_curr._sequenceNum = 0;
-                            next_curr = next_curr._successor;
+                        while (nextCurr != null) {
+                            nextCurr._sequenceNum = 0;
+                            nextCurr = nextCurr._successor;
                         }
                     }
-                }
-                else if (!anyNext) {
+                } else if (!anyNext) {
                     next._sequenceNum = 0;
                     next._group = -1;
                 }
             }
-            /* Set the _head of next and all squares in its group to next. */
             Sq nextCurr = next;
             next._head = next;
             while (nextCurr.successor() != null) {

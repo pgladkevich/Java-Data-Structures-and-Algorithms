@@ -355,7 +355,8 @@ class Model implements Iterable<Model.Sq> {
         boolean changes = false;
         for (Sq curr : _allSquares) {
             for (Sq curr2 : _allSquares) {
-                if (curr.hasFixedNum() == true && curr2.hasFixedNum() == true && curr.connectable(curr2)){
+                /* curr.hasFixedNum() == true && curr2.hasFixedNum() == true && curr.connectable(curr2 */
+                if (curr._sequenceNum > 0 && curr2._sequenceNum > 0 && curr.connectable(curr2)){
                     curr.connect(curr2);
                     changes = true;
                 }

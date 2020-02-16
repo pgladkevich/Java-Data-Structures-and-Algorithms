@@ -161,6 +161,10 @@ public class ModelTests {
         Model model = new Model(tr(new int[][] { { 1, 2 } }));
         model.autoconnect();
         assertTrue("Trivial puzzle should be solved at birth.", model.solved());
+
+        Model model2 = new Model(tr(SOLN1));
+        model2.autoconnect();
+        assertFalse("SOLN1 should be solved", model2.solved());
     }
 
     /* In sqConnectTest and sqDisconnectTest, we disregard the solution

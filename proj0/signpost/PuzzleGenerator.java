@@ -22,9 +22,8 @@ class PuzzleGenerator implements PuzzleSource {
     public Model getPuzzle(int width, int height, boolean allowFreeEnds) {
         Model model =
             new Model(makePuzzleSolution(width, height, allowFreeEnds));
-        // FIXME: Remove the "//" on the following two lines.
-        // makeSolutionUnique(model);
-        // model.autoconnect();
+        makeSolutionUnique(model);
+        model.autoconnect();
         return model;
     }
 
@@ -60,8 +59,8 @@ class PuzzleGenerator implements PuzzleSource {
 //            { 13, 11, 6, 3 },
 //            { 16, 12, 5, 4 }
 //        };
-//        boolean ok = findSolutionPathFrom(x0, y0);
-//        assert ok;
+        boolean ok = findSolutionPathFrom(x0, y0);
+        assert ok;
         return _vals;
     }
 
@@ -147,7 +146,7 @@ class PuzzleGenerator implements PuzzleSource {
                     there_is_one = true;
                     potential_unique = curr_s;
                 }
-                else if (there_is_one = true && start.connectable(curr_s)) {
+                else if (there_is_one == true && start.connectable(curr_s)) {
                     potential_unique = null;
                     break;
                 }
@@ -168,7 +167,7 @@ class PuzzleGenerator implements PuzzleSource {
                     there_is_one = true;
                     potential_unique = curr_s;
                 }
-                else if (there_is_one = true && start.connectable(curr_s)) {
+                else if (there_is_one == true && start.connectable(curr_s)) {
                     potential_unique = null;
                 }
             }

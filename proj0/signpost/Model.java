@@ -174,7 +174,7 @@ class Model implements Iterable<Model.Sq> {
                   PlaceList P_reduced = P[current.x][current.y][0];
                   PlaceList P_further_reduced = new PlaceList();
                   for (Place curr_P : P_reduced) {
-                      Sq check =_board[curr_P.x][curr_P.y];
+                      Sq check = _board[curr_P.x][curr_P.y];
                       int dir_to = signpost.Place.dirOf(check.x,check.y,current.x,current.y);
                       if (dir_to == check._dir) {
                           P_further_reduced.add(curr_P);

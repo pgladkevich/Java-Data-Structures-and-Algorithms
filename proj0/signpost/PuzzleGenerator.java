@@ -129,17 +129,17 @@ class PuzzleGenerator implements PuzzleSource {
         if (start.successors() == null) {
             return null;
         }
-        else if (start.hasFixedNum() == false){
+        else if (!start.hasFixedNum()){
             PlaceList start_successors = start.successors();
             Sq potential_unique = null;
             boolean there_is_one = false;
             for (Place P : start_successors) {
                 Sq curr_s = model.get(P);
-                if (there_is_one == false && start.connectable(curr_s)){
+                if (!there_is_one && start.connectable(curr_s)){
                     there_is_one = true;
                     potential_unique = curr_s;
                 }
-                else if (there_is_one == true && start.connectable(curr_s)) {
+                else if (there_is_one && start.connectable(curr_s)) {
                     potential_unique = null;
                     break;
                 }
@@ -153,14 +153,15 @@ class PuzzleGenerator implements PuzzleSource {
             boolean there_is_two = false;
             for (Place P : start_successors) {
                 Sq curr_s = model.get(P);
-                if (curr_s.hasFixedNum() == true && (curr_s.sequenceNum() == (start.sequenceNum()+1))) {
+                if (curr_s.hasFixedNum() &&
+                        (curr_s.sequenceNum() == (start.sequenceNum()+1))) {
                     return curr_s;
                 }
-                else if (there_is_one == false && start.connectable(curr_s)){
+                else if (!there_is_one && start.connectable(curr_s)){
                     there_is_one = true;
                     potential_unique = curr_s;
                 }
-                else if (there_is_one == true && start.connectable(curr_s)) {
+                else if (there_is_one && start.connectable(curr_s)) {
                     potential_unique = null;
                 }
             }
@@ -198,14 +199,14 @@ class PuzzleGenerator implements PuzzleSource {
         PlaceList end_predecessors = end.predecessors();
         for (Place P : end_predecessors) {
             Sq curr_square = model.get(P);
-            if (curr_square.connectable(end) == true && curr_square.hasFixedNum() == true && end.hasFixedNum() == true) {
+            if (curr_square.connectable(end) && curr_square.hasFixedNum() && end.hasFixedNum()) {
                 return curr_square;
             }
-            else if (there_is_one == false && curr_square.connectable(end)){
+            else if (!there_is_one && curr_square.connectable(end)){
                 there_is_one = true;
                 potential_predecessor = curr_square;
             }
-            else if (there_is_one == true && curr_square.connectable(end)) {
+            else if (there_is_one && curr_square.connectable(end)) {
                 potential_predecessor = null;
             }
         }

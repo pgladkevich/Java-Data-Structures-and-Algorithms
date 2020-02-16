@@ -131,41 +131,40 @@ class PuzzleGenerator implements PuzzleSource {
         }
         else if (!start.hasFixedNum()){
             PlaceList start_successors = start.successors();
-            Sq potential_unique = null;
-            boolean there_is_one = false;
+            Sq potentialUnique = null;
+            boolean thereIsOne = false;
             for (Place P : start_successors) {
                 Sq curr_s = model.get(P);
-                if (!there_is_one && start.connectable(curr_s)){
-                    there_is_one = true;
-                    potential_unique = curr_s;
+                if (!thereIsOne && start.connectable(curr_s)){
+                    thereIsOne = true;
+                    potentialUnique = curr_s;
                 }
-                else if (there_is_one && start.connectable(curr_s)) {
-                    potential_unique = null;
+                else if (thereIsOne && start.connectable(curr_s)) {
+                    potentialUnique = null;
                     break;
                 }
             }
-            return potential_unique;
+            return potentialUnique;
         }
         else {
             PlaceList start_successors = start.successors();
-            Sq potential_unique = null;
-            boolean there_is_one = false;
-            boolean there_is_two = false;
+            Sq potentialUnique = null;
+            boolean thereIsOne = false;
             for (Place P : start_successors) {
                 Sq curr_s = model.get(P);
                 if (curr_s.hasFixedNum() &&
                         (curr_s.sequenceNum() == (start.sequenceNum()+1))) {
                     return curr_s;
                 }
-                else if (!there_is_one && start.connectable(curr_s)){
-                    there_is_one = true;
-                    potential_unique = curr_s;
+                else if (!thereIsOne && start.connectable(curr_s)){
+                    thereIsOne = true;
+                    potentialUnique = curr_s;
                 }
-                else if (there_is_one && start.connectable(curr_s)) {
-                    potential_unique = null;
+                else if (thereIsOne && start.connectable(curr_s)) {
+                    potentialUnique = null;
                 }
             }
-            return potential_unique;
+            return potentialUnique;
         }
     }
 
@@ -194,23 +193,22 @@ class PuzzleGenerator implements PuzzleSource {
      *  the only unconnected predecessor.  This is because findUniqueSuccessor
      *  already finds the other cases of numbered, unconnected cells. */
     static Sq findUniquePredecessor(Model model, Sq end) {
-        boolean there_is_one = false;
-        Sq potential_predecessor = null;
+        boolean thereIsOne = false;
+        Sq potentialPredecessor = null;
         PlaceList end_predecessors = end.predecessors();
         for (Place P : end_predecessors) {
-            Sq curr_square = model.get(P);
-            if (curr_square.connectable(end) && curr_square.hasFixedNum() && end.hasFixedNum()) {
-                return curr_square;
-            }
-            else if (!there_is_one && curr_square.connectable(end)){
-                there_is_one = true;
-                potential_predecessor = curr_square;
-            }
-            else if (there_is_one && curr_square.connectable(end)) {
-                potential_predecessor = null;
+            Sq currSquare = model.get(P);
+            if (currSquare.connectable(end) && currSquare.hasFixedNum()
+                    && end.hasFixedNum()) {
+                return currSquare;
+            } else if (!thereIsOne && currSquare.connectable(end)) {
+                thereIsOne = true;
+                potentialPredecessor = currSquare;
+            } else if (thereIsOne && currSquare.connectable(end)) {
+                potentialPredecessor = null;
             }
         }
-        return potential_predecessor;
+        return potentialPredecessor;
     }
 
     /** Remove all links in MODEL and unfix numbers (other than the first and

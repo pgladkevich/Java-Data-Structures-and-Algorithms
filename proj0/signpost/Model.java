@@ -779,8 +779,8 @@ class Model implements Iterable<Model.Sq> {
                 /*  Otherwise, the group has been split into two multi- element groups.
                  * Create a new group for next. */
                 else {
-                    int new_group = newGroup();
-                    next._group = new_group;
+                    int newGroup = newGroup();
+                    next._group = newGroup;
                     Sq curr = next;
                     while (curr.successor() != null) {
                         curr._head = next;
@@ -792,28 +792,28 @@ class Model implements Iterable<Model.Sq> {
                 * has a fixed sequence number, set all their sequence numbers to
                 * 0 and create a new group for them if this has a current
                 * predecessor (otherwise set group to -1). */
-                boolean any_previous = false;
-                Sq prev_curr = this;
-                if (prev_curr.hasFixedNum()) {
-                    any_previous = true;
+                boolean anyPrevious = false;
+                Sq prevCurr = this;
+                if (prevCurr.hasFixedNum()) {
+                    anyPrevious = true;
                 }
-                if (prev_curr.predecessor() != null) {
-                    while (prev_curr.predecessor() != null) {
-                        if (prev_curr.predecessor().hasFixedNum()) {
-                            any_previous = true;
+                if (prevCurr.predecessor() != null) {
+                    while (prevCurr.predecessor() != null) {
+                        if (prevCurr.predecessor().hasFixedNum()) {
+                            anyPrevious = true;
                         }
-                        prev_curr = prev_curr._predecessor;
+                        prevCurr = prevCurr._predecessor;
                     }
-                    if (!any_previous) {
-                        prev_curr = this;
+                    if (!anyPrevious) {
+                        prevCurr = this;
                         this._head._group = newGroup();
-                        while (prev_curr != null) {
-                            prev_curr._sequenceNum = 0;
-                            prev_curr = prev_curr._predecessor;
+                        while (prevCurr != null) {
+                            prevCurr._sequenceNum = 0;
+                            prevCurr = prevCurr._predecessor;
                         }
                     }
                 }
-                else if (!any_previous) {
+                else if (!anyPrevious) {
                     this._sequenceNum = 0;
                     this._group = -1;
                 }
@@ -821,19 +821,19 @@ class Model implements Iterable<Model.Sq> {
                 * has a fixed sequence number, set all their sequence numbers
                 * to 0 and create a new group for them if next has a current
                 * successor (otherwise set next's group to -1.) */
-                boolean any_next = false;
+                boolean anyNext = false;
                 Sq next_curr = next;
                 if (next_curr.hasFixedNum()) {
-                    any_next = true;
+                    anyNext = true;
                 }
                 if (next_curr.successor() != null) {
                     while (next_curr.successor() != null) {
                         if (next_curr.successor().hasFixedNum()) {
-                            any_next = true;
+                            anyNext = true;
                         }
                         next_curr = next_curr._successor;
                     }
-                    if (!any_next) {
+                    if (!anyNext) {
                         next_curr = next;
                         next._group = newGroup();
                         while (next_curr != null) {
@@ -842,17 +842,17 @@ class Model implements Iterable<Model.Sq> {
                         }
                     }
                 }
-                else if (!any_next) {
+                else if (!anyNext) {
                     next._sequenceNum = 0;
                     next._group = -1;
                 }
             }
             /* Set the _head of next and all squares in its group to next. */
-            Sq next_curr = next;
+            Sq nextCurr = next;
             next._head = next;
-            while (next_curr.successor() != null) {
-                next_curr._successor._head = next;
-                next_curr = next_curr._successor;
+            while (nextCurr.successor() != null) {
+                nextCurr._successor._head = next;
+                nextCurr = nextCurr._successor;
             }
         }
 

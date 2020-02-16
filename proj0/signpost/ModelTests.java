@@ -164,7 +164,7 @@ public class ModelTests {
 
         Model model2 = new Model(tr(SOLN1));
         model2.autoconnect();
-        assertFalse("SOLN1 should be solved", model2.solved());
+        assertFalse("SOLN1 should not be solved", model2.solved());
     }
 
     /* In sqConnectTest and sqDisconnectTest, we disregard the solution

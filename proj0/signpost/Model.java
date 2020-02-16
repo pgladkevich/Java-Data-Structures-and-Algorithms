@@ -153,14 +153,14 @@ class Model implements Iterable<Model.Sq> {
             else {
                 PlaceList[][][] N = Place.successorCells(_width, _height);
                 current._successors = N[current.x][current.y][current._dir];
-//                PlaceList valid_successors = new PlaceList();
-//                for (Place potential_s_place : current._successors) {
-//                    Sq potential_successor = this.get(potential_s_place);
-//                    if (current.connect(potential_successor)) {
-//                        valid_successors.add(potential_s_place);
-//                    }
-//                }
-//                current._successors = valid_successors;
+                /* PlaceList valid_successors = new PlaceList();
+                * for (Place potential_s_place : current._successors) {
+                *    Sq potential_successor = this.get(potential_s_place);
+                *    if (current.connect(potential_successor)) {
+                *        valid_successors.add(potential_s_place);
+                * (    }
+                * }
+                * current._successors = valid_successors; */
             }
         }
 
@@ -212,15 +212,15 @@ class Model implements Iterable<Model.Sq> {
             }
         }
 
-        // FIXME: Once all the new Sq objects are in place, fill in their
-        //        _successor, _predecessor, and _head fields.  For example,
-        //        if in MODEL, the _successor field of the Sq at
-        //        position (2, 3) pointed to the Sq in MODEL at position
-        //        (4, 1), then the Sq at position (2, 3) in this copy
-        //        will have a _successor field pointing to the Sq at
-        //        position (4, 1) in this copy.  Be careful NOT to have
-        //        any of these fields in the copy pointing at the old Sqs in
-        //        MODEL.
+        /*       Once all the new Sq objects are in place, fill in their
+        *        successor, _predecessor, and _head fields.  For example,
+        *        if in MODEL, the _successor field of the Sq at
+        *        position (2, 3) pointed to the Sq in MODEL at position
+        *        (4, 1), then the Sq at position (2, 3) in this copy
+        *        will have a _successor field pointing to the Sq at
+        *        position (4, 1) in this copy.  Be careful NOT to have
+        *        any of these fields in the copy pointing at the old Sqs in
+        *        MODEL. */
 
         for (int i = 0; i < _width; i +=1) {
             for (int j = 0; j < _height; j+=1) {
@@ -355,7 +355,7 @@ class Model implements Iterable<Model.Sq> {
         boolean changes = false;
         for (Sq curr : _allSquares) {
             for (Sq curr2 : _allSquares) {
-                if (curr.connectable(curr2)){
+                if (curr.hasFixedNum() == true && curr2.hasFixedNum() == true && curr.connectable(curr2)){
                     curr.connect(curr2);
                     changes = true;
                 }

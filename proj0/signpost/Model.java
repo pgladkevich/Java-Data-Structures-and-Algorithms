@@ -102,20 +102,19 @@ class Model implements Iterable<Model.Sq> {
                     fixed = true;
                     group = 0;
                     _board[col][row] = new Sq (
-                            x0,y0,sequenceNum,fixed,dir,group);
+                            x0,y0,sequenceNum, fixed, dir, group);
                     _allSquares.add(_board[col][row]);
-                    fixed = false;
                 } else {
                     group = -1;
                     _board[col][row] = new Sq (
-                            x0,y0,0,fixed,dir,group);
+                            x0,y0,0, false, dir, group);
                     _allSquares.add(_board[col][row]);
                 }
             }
         }
         _solnNumToPlace = new Place[last+1];
-        for (int index = 0;index < last+1; index +=1) {
-            if (index ==0) {
+        for (int index = 0; index < (last + 1); index += 1) {
+            if (index == 0) {
                 _solnNumToPlace[index] = null;
             } else {
                 int[] coords = findCoords(index, _solution);
@@ -142,13 +141,14 @@ class Model implements Iterable<Model.Sq> {
                 current._predecessors = null;
             } else {
                   PlaceList[][][] P = Place.successorCells(_width, _height);
-                  PlaceList P_reduced = P[current.x][current.y][0];
+                  PlaceList pReduced = P[current.x][current.y][0];
                   PlaceList P_further_reduced = new PlaceList();
-                  for (Place curr_P : P_reduced) {
-                      Sq check = _board[curr_P.x][curr_P.y];
-                      int dir_to = signpost.Place.dirOf(check.x,check.y,current.x,current.y);
-                      if (dir_to == check._dir) {
-                          P_further_reduced.add(curr_P);
+                  for (Place currP : pReduced) {
+                      Sq check = _board[currP.x][currP.y];
+                      int dirTo = signpost.Place.dirOf(
+                              check.x, check.y, current.x, current.y);
+                      if (dirTo == check._dir) {
+                          P_further_reduced.add(currP);
                       }
                   }
                   current._predecessors = P_further_reduced;
@@ -182,44 +182,43 @@ class Model implements Iterable<Model.Sq> {
         _allSuccessors = model._allSuccessors;
         _board = new Sq[_width][_height];
 
-        for (int i = 0; i < _width; i+=1) {
-            for (int j = 0; j < _height; j+=1) {
-                Sq s_og = model._board[i][j];
+        for (int i = 0; i < _width; i += 1) {
+            for (int j = 0; j < _height; j += 1) {
                 Sq s = new Sq(model._board[i][j]);
                 this._board[i][j] = s;
                 this._allSquares.add(s);
             }
         }
 
-        for (int i = 0; i < _width; i +=1) {
-            for (int j = 0; j < _height; j+=1) {
+        for (int i = 0; i < _width; i += 1) {
+            for (int j = 0; j < _height; j += 1) {
                 Sq s = this._board[i][j];
-                if (model.get(i,j)._successor == null ) {
+                if (model.get(i, j)._successor == null ) {
                     s._successor = null;
                 } else {
-                    Place s_successor = model.get(i,j)._successor.pl;
-                    s._successor = this.get(s_successor);
+                    Place sSuccessor = model.get(i, j)._successor.pl;
+                    s._successor = this.get(sSuccessor);
                 }
-                if (model.get(i,j)._predecessor == null ) {
+                if (model.get(i, j)._predecessor == null) {
                     s._predecessors = null;
                 } else {
-                    Place s_predecessor = model.get(i,j)._predecessor.pl;
-                    s._predecessor = this.get(s_predecessor);
+                    Place sPredecessor = model.get(i, j)._predecessor.pl;
+                    s._predecessor = this.get(sPredecessor);
                 }
-                if (model.get(i,j)._predecessors == null) {
+                if (model.get(i, j)._predecessors == null) {
                     s._predecessors = null;
                 } else {
-                    PlaceList s_predecessors = model.get(i,j)._predecessors;
-                    s._predecessors = s_predecessors;
+                    PlaceList sPredecessors = model.get(i, j)._predecessors;
+                    s._predecessors = sPredecessors;
                 }
-                if (model.get(i,j)._successors == null) {
+                if (model.get(i, j)._successors == null) {
                     s._successors = null;
                 } else {
-                    PlaceList s_successors = model.get(i,j)._successors;
-                    s._successors = s_successors;
+                    PlaceList sSuccessors = model.get(i, j)._successors;
+                    s._successors = sSuccessors;
                 }
-                Place s_head = model.get(i,j)._head.pl;
-                s._head = this.get(s_head);
+                Place sHead = model.get(i, j)._head.pl;
+                s._head = this.get(sHead);
             }
         }
     }
@@ -320,8 +319,8 @@ class Model implements Iterable<Model.Sq> {
         boolean changes = false;
         for (Sq curr : _allSquares) {
             for (Sq curr2 : _allSquares) {
-                /* curr.hasFixedNum() == true && curr2.hasFixedNum() == true && curr.connectable(curr2 */
-                if (curr._sequenceNum > 0 && curr2._sequenceNum > 0 && curr.connectable(curr2)){
+                if (curr._sequenceNum > 0 && curr2._sequenceNum > 0
+                        && curr.connectable(curr2)) {
                     curr.connect(curr2);
                     changes = true;
                 }
@@ -338,33 +337,34 @@ class Model implements Iterable<Model.Sq> {
             if (P == null) {
                 continue;
             }
-            Sq curr_sq = this.get(P);
-            int[] next_coords = findCoords((curr_sq._sequenceNum + 1), _solution);
-            Sq next_seq = this.get(pl(next_coords[0],next_coords[1]));
-            curr_sq.connect(next_seq);
+            Sq currSq = this.get(P);
+            int[] nCoords = findCoords((currSq._sequenceNum + 1), _solution);
+            Sq nextSeq = this.get(pl(nCoords[0], nCoords[1]));
+            currSq.connect(nextSeq);
         }
         _unconnected = 0;
     }
 
     /** Return the direction from cell (X, Y) in the solution to its
-     *  successor, or 0 if it has none. */
+     *  successor, or 0 if it has none. Iterate through and find x1,y1 of seq1,
+     *  the next in the sequence after seq0 */
     private int arrowDirection(int x, int y) {
         int seq0 = _solution[x][y];
         if (seq0 == this.size()) {
             return 0;
         }
-        int seq1 = seq0+1;
-        /* Iterate through and find x1,y1 of seq1, the next in the sequence after seq0 */
+        int seq1 = seq0 + 1;
         int[] coords = findCoords(seq1, _solution);
 
-        return signpost.Place.dirOf(x,y,coords[0],coords[1]);
+        return signpost.Place.dirOf(x, y, coords[0], coords[1]);
     }
 
-    /** Iterate through a 2d int[][] array and return the coordinates of the matching element */
+    /** Iterate through a 2d int[][] array SOLUTION and return the coordinates
+     * of the matching element as an int[] SEQ1. */
     public int [] findCoords(int seq1, int [][] solution) {
         int[] result = new int[2];
-        for (int i = 0; i < _solution.length; i +=1) {
-            for (int j =0; j < _solution[0].length; j+=1) {
+        for (int i = 0; i < _solution.length; i += 1) {
+            for (int j = 0; j < _solution[0].length; j += 1) {
                 if (_solution[i][j] == seq1) {
                     result [0] = i;
                     result [1] = j;
@@ -626,38 +626,41 @@ class Model implements Iterable<Model.Sq> {
          *    this square's is sequenceNum() == S1.sequenceNum() - 1.
          *  + If neither S1 nor this square have sequence numbers, then
          *    they are not part of the same connected sequence.
-         */
+         *
+         * Have to make sure that s1 is not the same square as s0
+         *
+         * Is s1 in the correct direction.
+         * Place.dirOf(x0, y0, x1,y1) will return 0 if not a queen move apart.
+         * Arrow is accessible via _dir for s0.
+         * pl is the place instance variable of s0.
+         * Make sure that the direction is not unset, so it can't be zero.
+         * Check that s1._predecessor == s0._successor == null
+         *
+         * Check s1._sequenceNum !=1 and that s0._sequenceNum != last
+         *
+         * If both s0 and s1 have sequenceNum >0 then s1-1 == s0's sequenceNum
+         *
+         * If neither of them have sequence numbers then their _sequenceNum == 0
+         * and _head must not be the same
+         * or they would be a part of the same connectable group
+         *
+         * Exhausted the possible errors so return true */
         boolean connectable(Sq s1) {
-             /* Have to make sure that s1 is not the same square as s0 */
             if (x == s1.x && y == s1.y) {
                 return false;
-            }
-            /* Is s1 in the correct direction.
-            * Place.dirOf(x0, y0, x1,y1) will return 0 if not a queen move apart.
-            * Arrow is accessible via _dir for s0.
-            * pl is the place instance variable of s0.
-            * Have to make sure that the direction is not unset, so it can't be zero. */
-            else if (_dir == 0 || _dir != pl.dirOf(x,y,s1.x,s1.y)) {
+            } else if (_dir == 0 || _dir != pl.dirOf(x, y, s1.x, s1.y)) {
+                return false;
+            } else if (s1.predecessor() != null || this.successor() != null) {
+                return false;
+            } else if (s1.sequenceNum() == 1 || this.sequenceNum() == size()) {
+                return false;
+            } else if ((sequenceNum() != 0 && s1.sequenceNum() != 0)
+                    && (this.sequenceNum() != (s1.sequenceNum() - 1))) {
+                return false;
+            } else if ((this.sequenceNum() == 0 && s1.sequenceNum() == 0)
+                    && (this.head() == s1.head())) {
                 return false;
             }
-            /* Check for predecessor of s1, and s0 successor both of which should be null */
-            else if (s1.predecessor() != null || this.successor() != null) {
-                return false;
-            }
-            /* Check that s1 is not the first number in sequence and that s0 is not the last */
-            else if (s1.sequenceNum() == 1 || this.sequenceNum() == size()) {
-                return false;
-            }
-            /* If both s0 and s1 have sequence numbers then s0's must be one less than s1's */
-            else if ((sequenceNum() != 0 && s1.sequenceNum() != 0) && (this.sequenceNum() != (s1.sequenceNum() - 1))) {
-                return false;
-            }
-            /* If neither of them have sequence numbers then their _sequenceNum == 0 and _head must not be the same
-            * or they would be a part of the same connectable group  */
-            else if ((this.sequenceNum() == 0 && s1.sequenceNum() == 0) && (this.head() == s1.head())){
-                return false;
-            }
-            /* Exhausted the possible errors so return true */
             return true;
         }
 
@@ -665,9 +668,15 @@ class Model implements Iterable<Model.Sq> {
          *  nothing. Returns true iff this square and S1 were connectable.
          *  Assumes S1 is in the proper arrow direction from this square.
          *
+         * Create two ints to keep track of the square's starting groups
          *
+         * Set this square's _successor field and S1's  _predecessor field.
          *
+         * If this square has a number, number all its successors accordingly
+         * (if needed).
          *
+         * If S1 is numbered, number this square and its predecessors
+         * accordingly (if needed). s1.hasFixedNum() && !(this.hasFixedNum()
          *
          * Set the _head fields of this square's successors to this._head
          *
@@ -676,48 +685,38 @@ class Model implements Iterable<Model.Sq> {
          can be reused.
          *
          * If both this square and S1 are unnumbered, set the group of this
-         * square's head to the result of joining the two groups.
-         *  */
+         * square's head to the result of joining the two groups. */
         boolean connect(Sq s1) {
             if (!connectable(s1)) {
                 return false;
             }
-            /* Create two ints to keep track of the square's starting groups */
             int s0group = this.group();
             int sgroup = s1.group();
-
             _unconnected -= 1;
-
-            /* Set this square's _successor field and S1's  _predecessor field. */
             this._successor = s1;
             s1._predecessor = this;
 
-            /* If this square has a number, number all its successors accordingly (if needed).
-            * previously I had this: this.hasFixedNum() && !(s1.hasFixedNum())*/
             if (s0group == 0  && sgroup != 0) {
-                int index = this.sequenceNum() +1;
-                Sq s0_head = this._head;
+                int index = this.sequenceNum() + 1;
+                Sq s0Head = this._head;
                 s1._sequenceNum = index;
                 Sq curr = s1;
 
-                while (curr.successor() != null && (index < (size()-1))) {
-                    index +=1;
+                while (curr.successor() != null && (index < (size() - 1))) {
+                    index += 1;
                     curr._successor._sequenceNum = index;
-                    curr._successor._head = s0_head;
+                    curr._successor._head = s0Head;
                     curr = curr.successor();
                 }
             }
-
-             /* If S1 is numbered, number this square and its predecessors accordingly (if needed).
-             s1.hasFixedNum() && !(this.hasFixedNum() */
             if (s0group != 0  && sgroup == 0) {
-                int index = s1.sequenceNum()-1;
+                int index = s1.sequenceNum() - 1;
                 Sq s0Head = this._head;
                 this._sequenceNum = index;
                 Sq curr = this;
 
                 while (curr.predecessor() != null && (index > 1)) {
-                    index -=1;
+                    index -= 1;
                     curr._predecessor._sequenceNum = index;
                     curr = curr.predecessor();
                 }
@@ -734,7 +733,7 @@ class Model implements Iterable<Model.Sq> {
             }
             if (s0group > 0 && sgroup == 0) {
                 releaseGroup(s0group);
-            } else if ( s0group == 0 && sgroup > 0) {
+            } else if (s0group == 0 && sgroup > 0) {
                 releaseGroup(sgroup);
             }
             if (this.sequenceNum() == 0 && s1.sequenceNum() == 0) {
@@ -788,7 +787,7 @@ class Model implements Iterable<Model.Sq> {
                     next._group = -1;
                 } else if (this.predecessor() == null) {
                     next._head = next;
-                    if (next.successor() != null){
+                    if (next.successor() != null) {
                         next._group = this._group;
                         Sq curr = next;
                         while (curr.successor() != null) {

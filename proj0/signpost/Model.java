@@ -79,40 +79,27 @@ class Model implements Iterable<Model.Sq> {
      *       this Model, so that subsequent changes to SOLUTION have no
      *       effect on the Model.  */
     Model(int[][] solution) {
-        if (solution.length == 0 || solution.length * solution[0].length < 2) {
-            throw badArgs("must have at least 2 squares");
-        }
+        checkValidSolnArgs(solution);
         _width = solution.length; _height = solution[0].length;
-        int last = _width * _height;
-        BitSet allNums = new BitSet();
+        int last = _width * _height; BitSet allNums = new BitSet();
         _allSuccessors = Place.successorCells(_width, _height);
-        _solution = new int[_width][_height];
-        deepCopy(solution, _solution);
-        _board = new Sq [_width][_height];
-        int x0,y0, sequenceNum, dir, group;
-        boolean fixed = false;
-
+        _solution = new int[_width][_height]; deepCopy(solution, _solution);
+        _board = new Sq [_width][_height]; int x0, y0, sequenceNum, dir, group;
         for (int col  = 0, index = 0; col < _solution.length; col += 1) {
             for (int row = 0; row < _solution[col].length; row += 1) {
-                x0 = col;
-                y0 = row;
-                sequenceNum = _solution[x0][y0];
-                dir = arrowDirection(x0,y0);
-                if (sequenceNum == 1 || sequenceNum == last){
-                    fixed = true;
-                    group = 0;
-                    _board[col][row] = new Sq (
-                            x0,y0,sequenceNum, fixed, dir, group);
-                    _allSquares.add(_board[col][row]);
+                x0 = col; y0 = row; sequenceNum = _solution[x0][y0];
+                dir = arrowDirection(x0, y0);
+                if (sequenceNum == 1 || sequenceNum == last) {
+                    group = 0; _board[col][row] = new Sq(
+                            x0, y0, sequenceNum, true, dir, group);
                 } else {
-                    group = -1;
-                    _board[col][row] = new Sq (
-                            x0,y0,0, false, dir, group);
-                    _allSquares.add(_board[col][row]);
+                    group = -1; _board[col][row] = new Sq(
+                            x0, y0, 0, false, dir, group);
                 }
+                _allSquares.add(_board[col][row]);
             }
         }
-        _solnNumToPlace = new Place[last+1];
+        _solnNumToPlace = new Place[last + 1];
         for (int index = 0; index < (last + 1); index += 1) {
             if (index == 0) {
                 _solnNumToPlace[index] = null;
@@ -121,13 +108,7 @@ class Model implements Iterable<Model.Sq> {
                 _solnNumToPlace[index] = pl(coords[0], coords[1]);
             }
         }
-        for (Place current : _solnNumToPlace) {
-            if (current == null) {
-                continue;
-            } else if (_solution[current.x][current.y] < 1 || _solution[current.x][current.y] > last) {
-                    throw badArgs("IllegalArgumentException");
-            }
-        }
+        checkValidSoln(this);
         for (Sq current : _allSquares) {
             if (current.sequenceNum() == last) {
                 current._successors = null;
@@ -140,21 +121,38 @@ class Model implements Iterable<Model.Sq> {
             if (current.sequenceNum() == 1) {
                 current._predecessors = null;
             } else {
-                  PlaceList[][][] P = Place.successorCells(_width, _height);
-                  PlaceList pReduced = P[current.x][current.y][0];
-                  PlaceList P_further_reduced = new PlaceList();
-                  for (Place currP : pReduced) {
-                      Sq check = _board[currP.x][currP.y];
-                      int dirTo = signpost.Place.dirOf(
-                              check.x, check.y, current.x, current.y);
-                      if (dirTo == check._dir) {
-                          P_further_reduced.add(currP);
-                      }
-                  }
-                  current._predecessors = P_further_reduced;
+                PlaceList[][][] P = Place.successorCells(_width, _height);
+                PlaceList pReduced = P[current.x][current.y][0];
+                PlaceList pFurtherReduced = new PlaceList();
+                for (Place currP : pReduced) {
+                    Sq check = _board[currP.x][currP.y];
+                    int dirTo = signpost.Place.dirOf(
+                            check.x, check.y, current.x, current.y);
+                    if (dirTo == check._dir) {
+                        pFurtherReduced.add(currP);
+                    }
+                }
+                current._predecessors = pFurtherReduced;
             }
         }
         _unconnected = last - 1;
+    }
+    /** Checks if the input SOLUTION contains valid arguments. */
+    void checkValidSolnArgs(int[][] solution) {
+        if (solution.length == 0 || solution.length * solution[0].length < 2) {
+            throw badArgs("must have at least 2 squares");
+        }
+    }
+    /** Checks if the input MODEL contains valid arguments once initialized. */
+    void checkValidSoln(Model model) {
+        for (Place current : _solnNumToPlace) {
+            if (current == null) {
+                continue;
+            } else if (_solution[current.x][current.y] < 1
+                    || _solution[current.x][current.y] > model.size()) {
+                throw badArgs("IllegalArgumentException");
+            }
+        }
     }
 
     /** Initializes a copy of MODEL.
@@ -193,7 +191,7 @@ class Model implements Iterable<Model.Sq> {
         for (int i = 0; i < _width; i += 1) {
             for (int j = 0; j < _height; j += 1) {
                 Sq s = this._board[i][j];
-                if (model.get(i, j)._successor == null ) {
+                if (model.get(i, j)._successor == null) {
                     s._successor = null;
                 } else {
                     Place sSuccessor = model.get(i, j)._successor.pl;
@@ -742,7 +740,27 @@ class Model implements Iterable<Model.Sq> {
             return true;
         }
 
-        /** Disconnect this square from its current successor, if any.
+        /** Disconnect this square from its current successor, if any(Part 0).*/
+        void disconnect() {
+            Sq next = _successor;
+            if (next == null) {
+                return;
+            }
+            _unconnected += 1;
+            next._predecessor = this._successor = null;
+            if (_sequenceNum == 0) {
+                disconnectUnfixed(next);
+            } else {
+                disconnectFixed(next);
+            }
+            Sq nextCurr = next;
+            next._head = next;
+            while (nextCurr.successor() != null) {
+                nextCurr._successor._head = next;
+                nextCurr = nextCurr._successor;
+            }
+        }
+        /** Disconnect this square from its successor NEXT (Part 1).
          *
          * Because _sequenceNum == 0 that means none of the elements have
          * defined sequence numbers, and their group number is above 0 since
@@ -760,7 +778,36 @@ class Model implements Iterable<Model.Sq> {
          * Want to keep the original group of this and pass it on to next
          *
          * Otherwise, the group has been split into two multi- element groups.
-         * Create a new group for next.
+         * Create a new group for next. */
+        void disconnectUnfixed(Sq next) {
+            if (this.predecessor() == null && (next.successor() == null)) {
+                releaseGroup(this.group());
+                this._group = -1;
+                next._group = -1;
+            } else if (this.predecessor() == null) {
+                next._head = next;
+                if (next.successor() != null) {
+                    next._group = this._group;
+                    Sq curr = next;
+                    while (curr.successor() != null) {
+                        curr._head = next;
+                        curr = curr.successor();
+                    }
+                }
+                this._group = -1;
+            } else if (next.successor() == null) {
+                next._group = -1;
+            } else {
+                int newGroup = newGroup();
+                next._group = newGroup;
+                Sq curr = next;
+                while (curr.successor() != null) {
+                    curr._head = next;
+                    curr = curr.successor();
+                }
+            }
+        }
+        /** Disconnect this square from its successor NEXT (Part 2).
          *
          * If neither this nor any square in its group that precedes it
          * has a fixed sequence number, set all their sequence numbers to
@@ -772,96 +819,55 @@ class Model implements Iterable<Model.Sq> {
          * to 0 and create a new group for them if next has a current
          * successor (otherwise set next's group to -1.)
          *
-         * Set the _head of next and all squares in its group to next. */
-        void disconnect() {
-            Sq next = _successor;
-            if (next == null) {
-                return;
+         * Set the _head of next and all squares in its group to next */
+        void disconnectFixed(Sq next) {
+            boolean anyPrevious = false;
+            Sq prevCurr = this;
+            if (prevCurr.hasFixedNum()) {
+                anyPrevious = true;
             }
-            _unconnected += 1;
-            next._predecessor = this._successor = null;
-            if (_sequenceNum == 0) {
-                if (this.predecessor() == null && (next.successor() == null)) {
-                    releaseGroup(this.group());
-                    this._group = -1;
-                    next._group = -1;
-                } else if (this.predecessor() == null) {
-                    next._head = next;
-                    if (next.successor() != null) {
-                        next._group = this._group;
-                        Sq curr = next;
-                        while (curr.successor() != null) {
-                            curr._head = next;
-                            curr = curr.successor();
-                        }
+            if (prevCurr.predecessor() != null) {
+                while (prevCurr.predecessor() != null) {
+                    if (prevCurr.predecessor().hasFixedNum()) {
+                        anyPrevious = true;
                     }
-                    this._group = -1;
-                } else if (next.successor() == null) {
-                    next._group = -1;
-                } else {
-                    int newGroup = newGroup();
-                    next._group = newGroup;
-                    Sq curr = next;
-                    while (curr.successor() != null) {
-                        curr._head = next;
-                        curr = curr.successor();
-                    }
+                    prevCurr = prevCurr._predecessor;
                 }
-            } else {
-                boolean anyPrevious = false;
-                Sq prevCurr = this;
-                if (prevCurr.hasFixedNum()) {
-                    anyPrevious = true;
-                }
-                if (prevCurr.predecessor() != null) {
-                    while (prevCurr.predecessor() != null) {
-                        if (prevCurr.predecessor().hasFixedNum()) {
-                            anyPrevious = true;
-                        }
+                if (!anyPrevious) {
+                    prevCurr = this;
+                    this._head._group = newGroup();
+                    while (prevCurr != null) {
+                        prevCurr._sequenceNum = 0;
                         prevCurr = prevCurr._predecessor;
                     }
-                    if (!anyPrevious) {
-                        prevCurr = this;
-                        this._head._group = newGroup();
-                        while (prevCurr != null) {
-                            prevCurr._sequenceNum = 0;
-                            prevCurr = prevCurr._predecessor;
-                        }
+                }
+            } else if (!anyPrevious) {
+                this._sequenceNum = 0;
+                this._group = -1;
+            }
+            boolean anyNext = false;
+            Sq nextCurr = next;
+            if (nextCurr.hasFixedNum()) {
+                anyNext = true;
+            }
+            if (nextCurr.successor() != null) {
+                while (nextCurr.successor() != null) {
+                    if (nextCurr.successor().hasFixedNum()) {
+                        anyNext = true;
                     }
-                } else if (!anyPrevious) {
-                    this._sequenceNum = 0;
-                    this._group = -1;
+                    nextCurr = nextCurr._successor;
                 }
-                boolean anyNext = false;
-                Sq nextCurr = next;
-                if (nextCurr.hasFixedNum()) {
-                    anyNext = true;
-                }
-                if (nextCurr.successor() != null) {
-                    while (nextCurr.successor() != null) {
-                        if (nextCurr.successor().hasFixedNum()) {
-                            anyNext = true;
-                        }
+                if (!anyNext) {
+                    nextCurr = next;
+                    next._group = newGroup();
+                    while (nextCurr != null) {
+                        nextCurr._sequenceNum = 0;
                         nextCurr = nextCurr._successor;
                     }
-                    if (!anyNext) {
-                        nextCurr = next;
-                        next._group = newGroup();
-                        while (nextCurr != null) {
-                            nextCurr._sequenceNum = 0;
-                            nextCurr = nextCurr._successor;
-                        }
-                    }
-                } else if (!anyNext) {
-                    next._sequenceNum = 0;
-                    next._group = -1;
                 }
-            }
-            Sq nextCurr = next;
-            next._head = next;
-            while (nextCurr.successor() != null) {
-                nextCurr._successor._head = next;
-                nextCurr = nextCurr._successor;
+            } else if (!anyNext) {
+                next._sequenceNum = 0;
+                next._group = -1;
             }
         }
 

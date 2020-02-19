@@ -49,3 +49,4 @@ clean:
 	$(RM) bin/$(PACKAGE).jar
 	"$(MAKE)" -C $(PACKAGE) clean
 	"$(MAKE)" -C testing clean
+

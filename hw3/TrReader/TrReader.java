@@ -25,7 +25,10 @@ public class TrReader extends Reader {
         while (index < (len+off)) {
             int c = _str.read();
             if (c == -1) {
-                return -1;
+                if (index == off) {
+                    return -1;
+                }
+                return index-off;
             }
             if (_from.contains(Character.toString((char)c))) {
                 int i = _from.indexOf(c);

@@ -27,7 +27,7 @@ public class TrReaderTest {
      * */
     @Test
     public void testSource() throws IOException {
-        Reader r = makeStringReader(new FileReader("TrReaderTest.java"), 4096);
+        Reader r = makeStringReader(new FileReader("TrReader/TrReaderTest.java"), 4096);
 
         TrReader trR = new TrReader(r, "import jav.", "josh hug___");
         char[] cbuf = new char[250];
@@ -36,6 +36,10 @@ public class TrReaderTest {
         String result = new String(cbuf);
         assertEquals(TRANSLATION.substring(0, 250), result);
 
+        r = new TrReader(new StringReader("azbzczdz"), "edcab", "EDCAB");
+        char[] b = new char[] {'Z','Z','Z','Z','Z','Z','Z','Z'};
+        System.out.println(r.read(b,3,2));
+        System.out.println("Hi");
 //        TrReader trR2 = new TrReader(r, "cbF", "CRS");
 //        char[] cbuf2 = new char[] {'F', 'H', 'I', 'J', 'O'};
 //        String result2 = new String("FHCaO");

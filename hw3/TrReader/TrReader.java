@@ -19,10 +19,10 @@ public class TrReader extends Reader {
 
     public int read(char[] cbuf, int off, int len) throws IOException {
         int index = off;
-        if (len - off < 0) {
+        if (len == 0) {
             return 0;
         }
-        while (index < len) {
+        while (index < (len+off)) {
             int c = _str.read();
             if (c == -1) {
                 return -1;

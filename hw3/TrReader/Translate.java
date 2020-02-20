@@ -17,7 +17,7 @@ public class Translate {
             StringReader sr = new StringReader(S);
             TrReader tr = new TrReader(sr,from,to);
             tr.read(buffer, 0, S.length());
-            return Arrays.toString(buffer);
+            return new String(buffer);
         } catch (IOException e) {
             return null;
         }

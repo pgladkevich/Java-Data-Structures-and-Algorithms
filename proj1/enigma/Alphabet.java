@@ -22,7 +22,7 @@ class Alphabet {
         return 26; // FIXME
     }
 
-    /** Returns true if ch is in this alphabet. */
+    /** Returns true if CH is in this alphabet. */
     boolean contains(char ch) {
         return 'A' <= ch && ch <= 'Z'; // FIXME
     }
@@ -33,7 +33,7 @@ class Alphabet {
         return (char) ('A' + index); // FIXME
     }
 
-    /** Returns the index of character ch which must be in
+    /** Returns the index of character CH which must be in
      *  the alphabet. This is the inverse of toChar(). */
     int toInt(char ch) {
         return ch - 'A'; // FIXME

@@ -19,8 +19,14 @@ public class TrReader extends Reader {
 
     public int read(char[] cbuf, int off, int len) throws IOException {
         int index = off;
+        if (len - off < 0) {
+            return 0;
+        }
         while (index < len) {
             int c = _str.read();
+            if (c == -1) {
+                break;
+            }
             if (_from.contains(Character.toString((char)c))) {
                 int i = _from.indexOf(c);
                 cbuf[index] = _to.charAt(i);
@@ -30,13 +36,14 @@ public class TrReader extends Reader {
             }
             index +=1;
         }
-        return len - off;
+
+        return index - off;
     }
 
     public void close() {
         _str = null;
     }
-    
+
     private Reader _str;
     private String _from;
     private String _to;

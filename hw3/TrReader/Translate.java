@@ -1,7 +1,9 @@
 import java.io.IOException;
+import java.io.StringReader;
+import java.util.Arrays;
 
 /** String translation.
- *  @author your name here
+ *  @author Pavel Gladkevich
  */
 public class Translate {
     /** This method should return the String S, but with all characters that
@@ -12,7 +14,10 @@ public class Translate {
         /* NOTE: The try {...} catch is a technicality to keep Java happy. */
         char[] buffer = new char[S.length()];
         try {
-            throw new IOException(); //TODO: REPLACE THIS LINE WITH YOUR CODE.
+            StringReader sr = new StringReader(S);
+            TrReader tr = new TrReader(sr,from,to);
+            tr.read(buffer, 0, S.length());
+            return Arrays.toString(buffer);
         } catch (IOException e) {
             return null;
         }
@@ -25,4 +30,8 @@ public class Translate {
       c. Use only the library classes String, and any classes with names
          ending with "Reader" (see online java documentation).
     */
+    public static void main(String[] args) {
+        System.out.println(Translate.translate ("hello, I am the autograder", "hIthr", "HiTHR"));
+        System.out.println(Translate.translate("", "", ""));
+    }
 }

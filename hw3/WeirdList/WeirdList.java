@@ -1,5 +1,5 @@
 /** A WeirdList holds a sequence of integers.
- * @author your name here
+ * @author Pavel Gladkevich
  */
 public class WeirdList {
     /** The empty sequence of integers. */

@@ -10,6 +10,7 @@ import ucb.junit.textui;
 public class WeirdListTest {
     @Test
     public void testList() {
+        WeirdList e = new WeirdList(0, null);
         WeirdList wl1 = new WeirdList(5, WeirdList.EMPTY);
         WeirdList wl2 = new WeirdList(6, wl1);
         WeirdList wl3 = new WeirdList(10, wl2);

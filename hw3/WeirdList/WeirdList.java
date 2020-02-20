@@ -1,14 +1,19 @@
+import net.sf.saxon.style.XSLOutput;
+
 /** A WeirdList holds a sequence of integers.
  * @author Pavel Gladkevich
  */
 public class WeirdList {
+    private int _head;
+    private WeirdList _tail;
+
     /** The empty sequence of integers. */
-    public static final WeirdList EMPTY =
-        null;  // TODO: REPLACE THIS LINE
+    public static final WeirdList EMPTY = new WeirdList(0,null);
 
     /** A new WeirdList whose head is HEAD and tail is TAIL. */
-    public WeirdList(int head, WeirdList tail) { 
-        /* TODO: FILL IN */ 
+    public WeirdList(int head, WeirdList tail) {
+        this._head = head;
+        this._tail = tail;
     }
 
     /** Returns the number of elements in the sequence that
@@ -29,6 +34,9 @@ public class WeirdList {
      *  sequence, and return a WeirdList of the resulting values. */
     public WeirdList map(IntUnaryFunction func) {
         return null;  // TODO: REPLACE THIS LINE
+    }
+    public WeirdList BaseCase(){
+        return null;
     }
 
     /*
@@ -61,7 +69,6 @@ public class WeirdList {
      * }
      * You are NOT required to do this, just an extra thing you can
      * do if you want to avoid making a separate .java file. */
-
 }
 
 /*

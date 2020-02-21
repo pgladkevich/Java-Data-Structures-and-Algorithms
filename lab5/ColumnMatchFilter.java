@@ -1,3 +1,5 @@
+import com.sun.codemodel.internal.JType;
+
 /**
  * TableFilter to filter for entries whose two columns match.
  *
@@ -7,7 +9,9 @@ public class ColumnMatchFilter extends TableFilter {
 
     public ColumnMatchFilter(Table input, String colName1, String colName2) {
         super(input);
-        // FIXME: Add your code here.
+        System.out.println(this);
+
+
     }
 
     @Override
@@ -17,4 +21,5 @@ public class ColumnMatchFilter extends TableFilter {
     }
 
     // FIXME: Add instance variables?
+    private Table _inputTable;
 }

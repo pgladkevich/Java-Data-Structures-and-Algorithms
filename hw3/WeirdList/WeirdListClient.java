@@ -3,7 +3,10 @@ class WeirdListClient {
 
     /** Return the result of adding N to each element of L. */
     static WeirdList add(WeirdList L, int n) {
-        return null; // TODO: REPLACE THIS LINE
+        IntUnaryFunction.addFunc func = new IntUnaryFunction.addFunc();
+        IntUnaryFunction.setValFunc1  val = new IntUnaryFunction.setValFunc1();
+
+        return L.map(func);
     }
 
     /** Return the sum of all the elements in L. */

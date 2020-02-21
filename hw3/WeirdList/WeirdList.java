@@ -1,3 +1,4 @@
+import net.sf.saxon.functions.Empty;
 import net.sf.saxon.style.XSLOutput;
 
 /** A WeirdList holds a sequence of integers.
@@ -8,7 +9,7 @@ public class WeirdList {
     private WeirdList _tail;
 
     /** The empty sequence of integers. */
-    public static final WeirdList EMPTY = new BaseCase();// new WeirdList(0,null);
+    public static final WeirdList EMPTY = new BaseCase(0,null);
 
     /** A new WeirdList whose head is HEAD and tail is TAIL. */
     public WeirdList(int head, WeirdList tail) {
@@ -34,32 +35,26 @@ public class WeirdList {
         return  " " + this._head + next.toString();
     }
 
-    public static class BaseCase extends WeirdList {
-        public BaseCase() {
-            super(0, null);
-        }
-
-        @Override
-        public int length() {
-            return EMPTY._head;
-        }
-
-        @Override
-        public String toString() {
-            return "";
-        }
-    }
-
     /** Part 3b: Apply FUNC.apply to every element of THIS WeirdList in
      *  sequence, and return a WeirdList of the resulting values. */
     public WeirdList map(IntUnaryFunction func) {
-//        WeirdList result = this;
+        // return new WeirdList(func.apply(_head), _tail.map(func));
+//        copy._head = func.apply(_head);
+//        copy = copy._tail;
+//        return new WeirdList(func.apply(_head), _tail.map(func));
+        return new WeirdList(func.apply(_head),_tail.map(func));
+    }
+//        WeirdList next = this._tail;
+//        WeirdList result = new WeirdList(_head, next);
+//
+//        int x = result._head;
+//        result._head = func.apply(x);
+//        return next.map(func);
+//        }
 ////        this._head = func(this._head);
 ////        WeirdList next = this._tail;
 ////
 ////        return result;
-        return null;
-    }
 
     /*
      * You should not add any methods to WeirdList, but you will need
@@ -91,6 +86,7 @@ public class WeirdList {
      * }
      * You are NOT required to do this, just an extra thing you can
      * do if you want to avoid making a separate .java file. */
+
 }
 
 /*

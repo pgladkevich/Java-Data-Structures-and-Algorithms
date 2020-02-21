@@ -16,7 +16,6 @@ public class WeirdListTest {
         WeirdList wl3 = new WeirdList(10, wl2);
         assertEquals(3, wl3.length());
         assertEquals(1, wl1.length());
-
         assertEquals(" 10 6 5", wl3.toString());
     }
 

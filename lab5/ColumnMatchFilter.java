@@ -1,4 +1,7 @@
 import com.sun.codemodel.internal.JType;
+import java.util.ArrayList;
+
+import java.util.HashMap;
 
 /**
  * TableFilter to filter for entries whose two columns match.
@@ -9,17 +12,24 @@ public class ColumnMatchFilter extends TableFilter {
 
     public ColumnMatchFilter(Table input, String colName1, String colName2) {
         super(input);
-        System.out.println(this);
-
-
+        this._table = input;
+        this._colName1 = colName1;
+        this._colName2 = colName2;
     }
 
     @Override
     protected boolean keep() {
-        // FIXME: Replace this line with your code.
+        Table.TableRow curRow = this.candidateNext();
+        String s1 = curRow.getValue(_table.colNameToIndex(_colName1));
+        String s2 = curRow.getValue(_table.colNameToIndex(_colName2));
+        if (s1.equals(s2)) {
+            return true;
+        }
         return false;
     }
 
-    // FIXME: Add instance variables?
-    private Table _inputTable;
+    private Table _table;
+    private String _colName1;
+    private String _colName2;
+    private Table.TableRow _curRow;
 }

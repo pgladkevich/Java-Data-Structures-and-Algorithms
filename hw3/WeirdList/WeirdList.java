@@ -34,11 +34,6 @@ public class WeirdList {
         return  " " + this._head + next.toString();
     }
 
-    /** Part 3b: Apply FUNC.apply to every element of THIS WeirdList in
-     *  sequence, and return a WeirdList of the resulting values. */
-    public WeirdList map(IntUnaryFunction func) {
-        return null;  // TODO: REPLACE THIS LINE
-    }
     public static class BaseCase extends WeirdList {
         public BaseCase() {
             super(0, null);
@@ -53,6 +48,17 @@ public class WeirdList {
         public String toString() {
             return "";
         }
+    }
+
+    /** Part 3b: Apply FUNC.apply to every element of THIS WeirdList in
+     *  sequence, and return a WeirdList of the resulting values. */
+    public WeirdList map(IntUnaryFunction func) {
+//        WeirdList result = this;
+////        this._head = func(this._head);
+////        WeirdList next = this._tail;
+////
+////        return result;
+        return null;
     }
 
     /*

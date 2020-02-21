@@ -15,31 +15,30 @@ public interface IntUnaryFunction {
             return x;
         }
     }
-    class setValFunc2 implements IntUnaryFunction {
-        public int val;
-        public setValFunc2 (int n) {
-            this.val = n;
+
+    class addFunc implements IntUnaryFunction {
+        private int n;
+
+        public void setN (int n) {
+            this.n = n;
         }
 
         @Override
-        public int apply (int n) {
-            return n;
+        public int apply(int x) {
+            return x + n;
         }
     }
 
-    class addFunc implements IntUnaryFunction {
+    class sumFunc implements IntUnaryFunction {
+        private int total = 0;
+
         @Override
         public int apply(int x) {
-            setValFunc2 val2 = new setValFunc2();
-            return x + setValFunc2.val;m
+            return total +=x ;
         }
-//        private int _n;
-//        public addFunc(int _n) {
-//            this._n;
-//        }
-//        @Override
-//        public int apply(int x) {
-//            return x;
-//        }
+
+        public int returnT () {
+            return total;
+        }
     }
 }

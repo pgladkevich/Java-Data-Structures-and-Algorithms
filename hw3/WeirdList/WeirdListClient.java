@@ -4,14 +4,15 @@ class WeirdListClient {
     /** Return the result of adding N to each element of L. */
     static WeirdList add(WeirdList L, int n) {
         IntUnaryFunction.addFunc func = new IntUnaryFunction.addFunc();
-        IntUnaryFunction.setValFunc1  val = new IntUnaryFunction.setValFunc1();
-
+        func.setN(n);
         return L.map(func);
     }
 
     /** Return the sum of all the elements in L. */
     static int sum(WeirdList L) {
-        return 0; // TODO: REPLACE THIS LINE
+        IntUnaryFunction.sumFunc func = new IntUnaryFunction.sumFunc();
+        L.map(func);
+        return func.returnT();
     }
 
     /* IMPORTANT: YOU ARE NOT ALLOWED TO USE RECURSION IN ADD AND SUM

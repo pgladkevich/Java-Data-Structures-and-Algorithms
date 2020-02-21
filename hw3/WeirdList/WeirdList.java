@@ -8,7 +8,7 @@ public class WeirdList {
     private WeirdList _tail;
 
     /** The empty sequence of integers. */
-    public static final WeirdList EMPTY = new WeirdList(0,null);
+    public static final WeirdList EMPTY = new BaseCase();// new WeirdList(0,null);
 
     /** A new WeirdList whose head is HEAD and tail is TAIL. */
     public WeirdList(int head, WeirdList tail) {
@@ -19,7 +19,10 @@ public class WeirdList {
     /** Returns the number of elements in the sequence that
      *  starts with THIS. */
     public int length() {
-        return 0;  // TODO: REPLACE THIS LINE
+        // WeirdList next = this._tail;
+        // return 1 + new WeirdList(next._head, _tail).length();
+        WeirdList next = this._tail;
+        return 1 + next.length();
     }
 
     /** Return a string containing my contents as a sequence of numerals
@@ -27,7 +30,8 @@ public class WeirdList {
      *  5, 4, and 2, this returns " 5 4 2". */
     @Override
     public String toString() {
-        return ""; // TODO: REPLACE THIS LINE
+        WeirdList next = this._tail;
+        return  " " + this._head + next.toString();
     }
 
     /** Part 3b: Apply FUNC.apply to every element of THIS WeirdList in
@@ -35,8 +39,20 @@ public class WeirdList {
     public WeirdList map(IntUnaryFunction func) {
         return null;  // TODO: REPLACE THIS LINE
     }
-    public WeirdList BaseCase(){
-        return null;
+    public static class BaseCase extends WeirdList {
+        public BaseCase() {
+            super(0, null);
+        }
+
+        @Override
+        public int length() {
+            return EMPTY._head;
+        }
+
+        @Override
+        public String toString() {
+            return "";
+        }
     }
 
     /*

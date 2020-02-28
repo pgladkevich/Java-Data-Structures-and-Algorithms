@@ -285,7 +285,6 @@ public class TestTable {
         testRow(filtered.getRow(2), expectedRow2);
     }
 
-
     /**
      * Testing Helper Functions
      */

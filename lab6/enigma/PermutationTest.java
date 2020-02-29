@@ -82,5 +82,22 @@ public abstract class PermutationTest {
         checkPerm("identity", UPPER_STRING, UPPER_STRING, perm, alpha);
     }
 
-    // FIXME: Add tests here that pass on a correct Permutation and fail on buggy Permutations.
+    @Test
+    public void testInvertChar() {
+        Permutation p = getNewPermutation("(BA       CD)",
+                getNewAlphabet("ABCD"));
+        assertEquals('B',p.invert('A'));
+        assertEquals('D',p.invert('B'));
+        assertEquals('A',p.invert('C'));
+        assertEquals('C',p.invert('D'));
+
+        Permutation p2 = getNewPermutation( "(AB)       (D)",
+                getNewAlphabet("ABCD"));
+        assertEquals('A', p.invert('B'));
+        assertEquals('B', p.invert('A'));
+        assertEquals('C', p.invert('C'));
+        assertEquals('D', p.invert('D'));
+    }
+
+    
 }

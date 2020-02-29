@@ -14,7 +14,7 @@ import static enigma.TestUtils.*;
  * this class concrete by removing the 4 abstract keywords and implementing the
  * 3 abstract methods.
  *
- *  @author
+ *  @author Pavel Gladkevich
  */
 public abstract class PermutationTest {
 

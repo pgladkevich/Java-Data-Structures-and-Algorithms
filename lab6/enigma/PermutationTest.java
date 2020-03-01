@@ -145,7 +145,7 @@ public abstract class PermutationTest {
         assertEquals(2, p2.invert(0));
         assertEquals(3, p2.invert(3));
         assertEquals(2, p2.invert(-4));
-        assertEquals(0, p.invert(5));
+        assertEquals(1, p.invert(6));
     }
 
     @Test

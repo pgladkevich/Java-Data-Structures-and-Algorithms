@@ -120,11 +120,13 @@ public abstract class PermutationTest {
                 getNewAlphabet("HILFNGR!^"));
         assertEquals(1, p.permute(0));
         assertEquals(7, p.permute(8));
+        assertEquals(-1, p.permute(-2));
 
         Permutation p2 = getNewPermutation( "(AB!)       (&)",
                 getNewAlphabet("AB!&"));
         assertEquals(0, p2.permute(2));
         assertEquals(3, p2.permute(3));
+        assertEquals(-1, p2.permute(-1));
     }
 
     @Test
@@ -133,11 +135,13 @@ public abstract class PermutationTest {
                 getNewAlphabet("HILFNGR!^"));
         assertEquals(0, p.invert(1));
         assertEquals(8, p.invert(7));
+        assertEquals(-2, p.invert(-1));
 
         Permutation p2 = getNewPermutation( "(AB!)       (&)",
                 getNewAlphabet("AB!&"));
         assertEquals(2, p2.invert(0));
         assertEquals(3, p2.invert(3));
+        assertEquals(-1, p.invert(-4));
     }
 
     @Test

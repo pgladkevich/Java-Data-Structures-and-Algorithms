@@ -177,6 +177,29 @@ public abstract class PermutationTest {
                 getNewAlphabet("A9CD"));
         assertEquals('9', p.invert('9'));
     }
+
+    @Test
+    public void testAlphabet() {
+
+    }
+
+    @Test
+    public void testDerangement() {
+        Permutation p = getNewPermutation("(BA       CD)",
+                getNewAlphabet("ABCD"));
+        assertEquals(true, p.derangement());
+        Permutation p2 = getNewPermutation("(BA     CD)",
+                getNewAlphabet("ABCD"));
+        assertEquals(true, p2.derangement());
+
+        Permutation p3 = getNewPermutation("(!&C)",
+                getNewAlphabet("!&CD"));
+        assertEquals(false, p3.derangement());
+        Permutation p4 = getNewPermutation( "",
+                getNewAlphabet("ABCX0"));
+        assertEquals(false, p4.derangement());
+    }
+
     @Test(expected = EnigmaException.class)
     public void testNoAlphabet() {
         Permutation p = getNewPermutation("",

@@ -31,7 +31,7 @@ public class TrReader extends Reader {
     cbuf: ['F','H','I','J','O'] : Some stuff is here. you overwrite it, who cares about it.
 
     we call read with cbuf, off = 2, len = 2, someone types cat
-    cbuf: ['F', 'H', 'C', 'a']
+    cbuf: ['F', 'H', 'C', 'a', 'O']
 
 
     // FILL IN

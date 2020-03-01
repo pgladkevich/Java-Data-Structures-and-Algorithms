@@ -4,7 +4,7 @@ import static enigma.EnigmaException.*;
 
 /** Represents a permutation of a range of integers starting at 0 corresponding
  *  to the characters of an alphabet.
- *  @author
+ *  @author Pavel Gladkevich
  */
 class Permutation {
 

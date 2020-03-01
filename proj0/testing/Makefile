@@ -71,3 +71,16 @@ outputs:
 	        mv $$out.tmp $$out; echo " (changed)"; \
 	    fi; \
 	done
+
+
+# Makes the student output for all the .in files and saves them as test0x_stud.std
+student_outputs:
+	"$(MAKE)" -C ..
+	@for inp in $(TESTS); do \
+	    stud=$$(basename $$inp .in)_stud.std; \
+	    echo -n $$inp "=>" $$stud; \
+	    CLASSPATH=..:$(CLASSPATH) \
+               java $(JFLAGS) $(MAIN) --testing --no-display \
+		   < $$inp > $$stud; \
+		   echo;\
+	done

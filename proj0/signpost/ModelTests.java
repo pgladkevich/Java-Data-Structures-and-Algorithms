@@ -161,6 +161,10 @@ public class ModelTests {
         Model model = new Model(tr(new int[][] { { 1, 2 } }));
         model.autoconnect();
         assertTrue("Trivial puzzle should be solved at birth.", model.solved());
+
+        Model model2 = new Model(tr(SOLN1));
+        model2.autoconnect();
+        assertFalse("SOLN1 should not be solved", model2.solved());
     }
 
     /* In sqConnectTest and sqDisconnectTest, we disregard the solution
@@ -328,6 +332,13 @@ public class ModelTests {
         { 9, 7, 15, 6, 8 },
         { 12, 11, 18, 5, 4 },
         { 10, 13, 14, 19, 20 }
+    };
+
+    private static final int[][] ARROWS2 = {
+            { 2, 2, 4, 6, 4 },
+            { 4, 2, 1, 6, 6 },
+            { 3, 6, 3, 8, 6 },
+            { 1, 2, 8, 2, 0 }
     };
 
     private static final int[][] BOARD2 = {

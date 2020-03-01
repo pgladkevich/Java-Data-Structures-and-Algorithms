@@ -8,7 +8,7 @@ import static signpost.Place.PlaceList;
 import static signpost.Utils.*;
 
 /** A creator of random Signpost puzzles.
- *  @author
+ *  @author Pavel Gladkevich
  */
 class PuzzleGenerator implements PuzzleSource {
 
@@ -22,9 +22,8 @@ class PuzzleGenerator implements PuzzleSource {
     public Model getPuzzle(int width, int height, boolean allowFreeEnds) {
         Model model =
             new Model(makePuzzleSolution(width, height, allowFreeEnds));
-        // FIXME: Remove the "//" on the following two lines.
-        // makeSolutionUnique(model);
-        // model.autoconnect();
+        makeSolutionUnique(model);
+        model.autoconnect();
         return model;
     }
 
@@ -52,17 +51,10 @@ class PuzzleGenerator implements PuzzleSource {
         }
         _vals[x0][y0] = 1;
         _vals[x1][y1] = last;
-        // FIXME: Remove the following return statement and uncomment the
-        //        next three lines.
-        return new int[][] {
-            { 14, 9, 8, 1 },
-            { 15, 10, 7, 2 },
-            { 13, 11, 6, 3 },
-            { 16, 12, 5, 4 }
-        };
-        //boolean ok = findSolutionPathFrom(x0, y0);
-        //assert ok;
-        //return _vals;
+
+        boolean ok = findSolutionPathFrom(x0, y0);
+        assert ok;
+        return _vals;
     }
 
     /** Try to find a random path of queen moves through VALS from (X0, Y0)
@@ -134,8 +126,41 @@ class PuzzleGenerator implements PuzzleSource {
      *  numbered square in the proper direction from START (with the next
      *  number in sequence). */
     static Sq findUniqueSuccessor(Model model, Sq start) {
-        // FIXME: Fill in to satisfy the comment.
-        return null;
+        if (start.successors() == null) {
+            return null;
+        } else if (!start.hasFixedNum()) {
+            PlaceList startSuccessors = start.successors();
+            Sq potentialUnique = null;
+            boolean thereIsOne = false;
+            for (Place P : startSuccessors) {
+                Sq currS = model.get(P);
+                if (!thereIsOne && start.connectable(currS)) {
+                    thereIsOne = true;
+                    potentialUnique = currS;
+                } else if (thereIsOne && start.connectable(currS)) {
+                    potentialUnique = null;
+                    break;
+                }
+            }
+            return potentialUnique;
+        } else {
+            PlaceList startSuccessors = start.successors();
+            Sq potentialUnique = null;
+            boolean thereIsOne = false;
+            for (Place P : startSuccessors) {
+                Sq currS = model.get(P);
+                if (currS.hasFixedNum()
+                        && (currS.sequenceNum() == start.sequenceNum() + 1)) {
+                    return currS;
+                } else if (!thereIsOne && start.connectable(currS)) {
+                    thereIsOne = true;
+                    potentialUnique = currS;
+                } else if (thereIsOne && start.connectable(currS)) {
+                    potentialUnique = null;
+                }
+            }
+            return potentialUnique;
+        }
     }
 
     /** Make all unique backward connections in MODEL (those in which there is
@@ -163,8 +188,22 @@ class PuzzleGenerator implements PuzzleSource {
      *  the only unconnected predecessor.  This is because findUniqueSuccessor
      *  already finds the other cases of numbered, unconnected cells. */
     static Sq findUniquePredecessor(Model model, Sq end) {
-        // FIXME: Replace the following to satisfy the comment.
-        return null;
+        boolean thereIsOne = false;
+        Sq potentialPredecessor = null;
+        PlaceList endPredecessors = end.predecessors();
+        for (Place P : endPredecessors) {
+            Sq currSquare = model.get(P);
+            if (currSquare.connectable(end) && currSquare.hasFixedNum()
+                    && end.hasFixedNum()) {
+                return currSquare;
+            } else if (!thereIsOne && currSquare.connectable(end)) {
+                thereIsOne = true;
+                potentialPredecessor = currSquare;
+            } else if (thereIsOne && currSquare.connectable(end)) {
+                potentialPredecessor = null;
+            }
+        }
+        return potentialPredecessor;
     }
 
     /** Remove all links in MODEL and unfix numbers (other than the first and

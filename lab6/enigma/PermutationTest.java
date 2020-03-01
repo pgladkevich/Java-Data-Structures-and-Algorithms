@@ -144,7 +144,7 @@ public abstract class PermutationTest {
                 getNewAlphabet("AB!&"));
         assertEquals(2, p2.invert(0));
         assertEquals(3, p2.invert(3));
-        assertEquals(3, p2.invert(-4));
+        assertEquals(2, p2.invert(-4));
         assertEquals(0, p.invert(5));
     }
 

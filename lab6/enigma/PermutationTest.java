@@ -105,8 +105,8 @@ public abstract class PermutationTest {
 
         Permutation p2 = getNewPermutation( "(AB!)       (&)",
                 getNewAlphabet("AB!&"));
-        assertEquals(0, p.permute(2));
-        assertEquals(3, p.permute(3));
+        assertEquals(0, p2.permute(2));
+        assertEquals(3, p2.permute(3));
     }
 
     @Test
@@ -118,8 +118,8 @@ public abstract class PermutationTest {
 
         Permutation p2 = getNewPermutation( "(AB!)       (&)",
                 getNewAlphabet("AB!&"));
-        assertEquals(2, p.invert(0));
-        assertEquals(3, p.invert(3));
+        assertEquals(2, p2.invert(0));
+        assertEquals(3, p2.invert(3));
     }
 
     @Test
@@ -132,21 +132,21 @@ public abstract class PermutationTest {
 
         Permutation p2 = getNewPermutation( "(AB!)       (&)",
                 getNewAlphabet("AB!&"));
-        assertEquals('A', p.permute('!'));
-        assertEquals('B', p.permute('A'));
-        assertEquals('!', p.permute('B'));
-        assertEquals('&', p.permute('&'));
+        assertEquals('A', p2.permute('!'));
+        assertEquals('B', p2.permute('A'));
+        assertEquals('!', p2.permute('B'));
+        assertEquals('&', p2.permute('&'));
 
         Permutation p3 = getNewPermutation( "(AB) (0)       (X)",
                 getNewAlphabet("ABCX0"));
-        assertEquals('A', p.permute('B'));
-        assertEquals('B', p.permute('A'));
-        assertEquals('C', p.permute('C'));
-        assertEquals('0', p.permute('0'));
+        assertEquals('A', p3.permute('B'));
+        assertEquals('B', p3.permute('A'));
+        assertEquals('C', p3.permute('C'));
+        assertEquals('0', p3.permute('0'));
 
         Permutation p4 = getNewPermutation("",
                 getNewAlphabet("A9CD"));
-        assertEquals('9', p.permute('9'));
+        assertEquals('9', p4.permute('9'));
 
     }
 
@@ -161,21 +161,21 @@ public abstract class PermutationTest {
 
         Permutation p2 = getNewPermutation( "(AB!)       (&)",
                 getNewAlphabet("AB!&"));
-        assertEquals('B', p.invert('!'));
-        assertEquals('!', p.invert('A'));
-        assertEquals('A', p.invert('B'));
-        assertEquals('&', p.invert('&'));
+        assertEquals('B', p2.invert('!'));
+        assertEquals('!', p2.invert('A'));
+        assertEquals('A', p2.invert('B'));
+        assertEquals('&', p2.invert('&'));
 
         Permutation p3 = getNewPermutation( "(AB) (0)       (X)",
                 getNewAlphabet("ABCX0"));
-        assertEquals('A', p.invert('B'));
-        assertEquals('B', p.invert('A'));
-        assertEquals('C', p.invert('C'));
-        assertEquals('0', p.invert('0'));
+        assertEquals('A', p3.invert('B'));
+        assertEquals('B', p3.invert('A'));
+        assertEquals('C', p3.invert('C'));
+        assertEquals('0', p3.invert('0'));
 
         Permutation p4 = getNewPermutation("",
                 getNewAlphabet("A9CD"));
-        assertEquals('9', p.invert('9'));
+        assertEquals('9', p4.invert('9'));
     }
 
     @Test
@@ -194,13 +194,13 @@ public abstract class PermutationTest {
                 getNewAlphabet("ABCX0"));
         assertEquals(false, p4.derangement());
     }
-
+    /* Maybe this isn't an incorrect edge case?
     @Test(expected = EnigmaException.class)
     public void testNoAlphabet() {
         Permutation p = getNewPermutation("",
                 getNewAlphabet(""));
 
-    }
+    } */
     @Test(expected = EnigmaException.class)
     public void testNotInAlphabet() {
         Permutation p = getNewPermutation("(ABCD)",

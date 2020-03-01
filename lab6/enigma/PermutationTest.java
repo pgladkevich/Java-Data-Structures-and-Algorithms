@@ -221,14 +221,14 @@ public abstract class PermutationTest {
         Permutation p4 = getNewPermutation( "",
                 getNewAlphabet("ABCX0"));
         assertEquals(false, p4.derangement());
-//        Permutation p5 = getNewPermutation( "",
-//                getNewAlphabet(""));
-//        assertEquals(false, p5.derangement());
+        Permutation p5 = getNewPermutation( "",
+                getNewAlphabet(""));
+        assertEquals(false, p5.derangement());
         Permutation p7 = getNewPermutation( "(X)",
                 getNewAlphabet("ABCX0"));
         assertEquals(false, p7.derangement());
-        Permutation p8 = getNewPermutation( "(X)(X)",
-                getNewAlphabet("ABCX0"));
+        Permutation p8 = getNewPermutation( "(@)",
+                getNewAlphabet("@"));
         assertEquals(false, p8.derangement());
 
     }

@@ -165,11 +165,6 @@ public abstract class PermutationTest {
         Permutation p4 = getNewPermutation("",
                 getNewAlphabet("A9CD"));
         assertEquals('9', p4.permute('9'));
-
-        Permutation p5 = getNewPermutation("",
-                getNewAlphabet(""));
-        assertEquals("", p5.permute(' '));
-
     }
 
     @Test
@@ -218,9 +213,9 @@ public abstract class PermutationTest {
         Permutation p4 = getNewPermutation( "",
                 getNewAlphabet("ABCX0"));
         assertEquals(false, p4.derangement());
-        Permutation p5 = getNewPermutation( "",
-                getNewAlphabet(""));
-        assertEquals(false, p5.derangement());
+//        Permutation p5 = getNewPermutation( "",
+//                getNewAlphabet(""));
+//        assertEquals(false, p5.derangement());
         Permutation p7 = getNewPermutation( "(X)",
                 getNewAlphabet("ABCX0"));
         assertEquals(false, p7.derangement());

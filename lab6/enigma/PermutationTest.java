@@ -179,11 +179,6 @@ public abstract class PermutationTest {
     }
 
     @Test
-    public void testAlphabet() {
-
-    }
-
-    @Test
     public void testDerangement() {
         Permutation p = getNewPermutation("(BA       CD)",
                 getNewAlphabet("ABCD"));

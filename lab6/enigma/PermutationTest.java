@@ -220,11 +220,11 @@ public abstract class PermutationTest {
                 getNewAlphabet("ABD"));
 
     }
-    @Test(expected = EnigmaException.class)
-    public void testInvalidLetter() {
-        Permutation p = getNewPermutation("(A*)",
-                getNewAlphabet("A*"));
-    }
+//    @Test(expected = EnigmaException.class)
+//    public void testInvalidLetter() {
+//        Permutation p = getNewPermutation("(A*)",
+//                getNewAlphabet("A*"));
+//    }
     @Test(expected = EnigmaException.class)
     public void testInvalidCycleForm() {
         Permutation p = getNewPermutation("((A))",

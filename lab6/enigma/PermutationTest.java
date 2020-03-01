@@ -84,7 +84,7 @@ public abstract class PermutationTest {
 
     @Test
     public void testSize() {
-        Permutation p = getNewPermutation("0",
+        Permutation p = getNewPermutation("(0)",
                 getNewAlphabet("0"));
         assertEquals(1, p.size());
 
@@ -106,7 +106,7 @@ public abstract class PermutationTest {
         Permutation p2 = getNewPermutation( "(AB!)       (&)",
                 getNewAlphabet("AB!&"));
         assertEquals(0, p.permute(2));
-        assertEquals(4, p.permute(4));
+        assertEquals(3, p.permute(3));
     }
 
     @Test
@@ -118,13 +118,13 @@ public abstract class PermutationTest {
 
         Permutation p2 = getNewPermutation( "(AB!)       (&)",
                 getNewAlphabet("AB!&"));
-        assertEquals(2, p.invert(4));
-        assertEquals(4, p.invert(4));
+        assertEquals(2, p.invert(0));
+        assertEquals(3, p.invert(3));
     }
 
     @Test
     public void testPermuteChar() {
-        Permutation p = getNewPermutation("(BA       CD)",
+        Permutation p = getNewPermutation("(BACD)",
                 getNewAlphabet("ABCD"));
         assertEquals('C',p.permute('A'));
         assertEquals('D',p.permute('C'));
@@ -152,7 +152,7 @@ public abstract class PermutationTest {
 
     @Test
     public void testInvertChar() {
-        Permutation p = getNewPermutation("(BA       CD)",
+        Permutation p = getNewPermutation("(BACD)",
                 getNewAlphabet("ABCD"));
         assertEquals('B',p.invert('A'));
         assertEquals('D',p.invert('B'));
@@ -180,10 +180,10 @@ public abstract class PermutationTest {
 
     @Test
     public void testDerangement() {
-        Permutation p = getNewPermutation("(BA       CD)",
+        Permutation p = getNewPermutation("(BA)     (CD)",
                 getNewAlphabet("ABCD"));
         assertEquals(true, p.derangement());
-        Permutation p2 = getNewPermutation("(BA     CD)",
+        Permutation p2 = getNewPermutation("(BA)(CD)",
                 getNewAlphabet("ABCD"));
         assertEquals(true, p2.derangement());
 
@@ -222,8 +222,13 @@ public abstract class PermutationTest {
     }
     @Test(expected = EnigmaException.class)
     public void testInvalidLetter() {
-        Permutation p = getNewPermutation("A*(",
-                getNewAlphabet("A*()"));
+        Permutation p = getNewPermutation("(A*)",
+                getNewAlphabet("A*"));
+    }
+    @Test(expected = EnigmaException.class)
+    public void testInvalidCycleForm() {
+        Permutation p = getNewPermutation("((A))",
+                getNewAlphabet("AB"));
     }
 
 

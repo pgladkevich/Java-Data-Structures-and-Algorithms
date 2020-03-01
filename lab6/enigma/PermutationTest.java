@@ -83,6 +83,74 @@ public abstract class PermutationTest {
     }
 
     @Test
+    public void testSize() {
+        Permutation p = getNewPermutation("0",
+                getNewAlphabet("0"));
+        assertEquals(1, p.size());
+
+        Permutation p2 = getNewPermutation("", getNewAlphabet());
+        assertEquals(26, p2.size());
+
+        Permutation p3 = getNewPermutation("(1?)",
+                getNewAlphabet("1?0R"));
+        assertEquals(4, p3.size());
+    }
+
+    @Test
+    public void testPermuteInt() {
+        Permutation p = getNewPermutation("(HIL) (FNGR) (!^)",
+                getNewAlphabet("HILFNGR!^"));
+        assertEquals(1, p.permute(0));
+        assertEquals(7, p.permute(8));
+
+        Permutation p2 = getNewPermutation( "(AB!)       (&)",
+                getNewAlphabet("AB!&"));
+        assertEquals(0, p.permute(2));
+        assertEquals(4, p.permute(4));
+    }
+
+    @Test
+    public void testInvertInt() {
+        Permutation p = getNewPermutation("(HIL) (FNGR) (!^)",
+                getNewAlphabet("HILFNGR!^"));
+        assertEquals(0, p.invert(1));
+        assertEquals(8, p.invert(7));
+
+        Permutation p2 = getNewPermutation( "(AB!)       (&)",
+                getNewAlphabet("AB!&"));
+        assertEquals(2, p.invert(4));
+        assertEquals(4, p.invert(4));
+    }
+
+    @Test
+    public void testPermuteChar() {
+        Permutation p = getNewPermutation("(BA       CD)",
+                getNewAlphabet("ABCD"));
+        assertEquals('C',p.permute('A'));
+        assertEquals('D',p.permute('C'));
+        assertEquals('B',p.permute('D'));
+
+        Permutation p2 = getNewPermutation( "(AB!)       (&)",
+                getNewAlphabet("AB!&"));
+        assertEquals('A', p.permute('!'));
+        assertEquals('B', p.permute('A'));
+        assertEquals('!', p.permute('B'));
+        assertEquals('&', p.permute('&'));
+
+        Permutation p3 = getNewPermutation( "(AB) (0)       (X)",
+                getNewAlphabet("ABCX0"));
+        assertEquals('A', p.permute('B'));
+        assertEquals('B', p.permute('A'));
+        assertEquals('C', p.permute('C'));
+        assertEquals('0', p.permute('0'));
+
+        Permutation p4 = getNewPermutation("",
+                getNewAlphabet("A9CD"));
+        assertEquals('9', p.permute('9'));
+
+    }
+
+    @Test
     public void testInvertChar() {
         Permutation p = getNewPermutation("(BA       CD)",
                 getNewAlphabet("ABCD"));
@@ -91,13 +159,55 @@ public abstract class PermutationTest {
         assertEquals('A',p.invert('C'));
         assertEquals('C',p.invert('D'));
 
-        Permutation p2 = getNewPermutation( "(AB)       (D)",
-                getNewAlphabet("ABCD"));
+        Permutation p2 = getNewPermutation( "(AB!)       (&)",
+                getNewAlphabet("AB!&"));
+        assertEquals('B', p.invert('!'));
+        assertEquals('!', p.invert('A'));
+        assertEquals('A', p.invert('B'));
+        assertEquals('&', p.invert('&'));
+
+        Permutation p3 = getNewPermutation( "(AB) (0)       (X)",
+                getNewAlphabet("ABCX0"));
         assertEquals('A', p.invert('B'));
         assertEquals('B', p.invert('A'));
         assertEquals('C', p.invert('C'));
-        assertEquals('D', p.invert('D'));
+        assertEquals('0', p.invert('0'));
+
+        Permutation p4 = getNewPermutation("",
+                getNewAlphabet("A9CD"));
+        assertEquals('9', p.invert('9'));
+    }
+    @Test(expected = EnigmaException.class)
+    public void testNoAlphabet() {
+        Permutation p = getNewPermutation("",
+                getNewAlphabet(""));
+
+    }
+    @Test(expected = EnigmaException.class)
+    public void testNotInAlphabet() {
+        Permutation p = getNewPermutation("(ABCD)",
+                getNewAlphabet("ABC"));
+
     }
 
-    
+    @Test(expected = EnigmaException.class)
+    public void testInAlphabetTwice() {
+        Permutation p = getNewPermutation("(ABD)",
+                getNewAlphabet("ABBD"));
+
+    }
+    @Test(expected = EnigmaException.class)
+    public void testInCyclesTwice() {
+        Permutation p = getNewPermutation("(ABBD)",
+                getNewAlphabet("ABD"));
+
+    }
+    @Test(expected = EnigmaException.class)
+    public void testInvalidLetter() {
+        Permutation p = getNewPermutation("A*(",
+                getNewAlphabet("A*()"));
+    }
+
+
+
 }

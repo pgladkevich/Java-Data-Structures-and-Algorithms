@@ -83,6 +83,16 @@ public abstract class PermutationTest {
     }
 
     @Test
+    public void testGetAlphabet() {
+        Alphabet a = getNewAlphabet();
+        Permutation p = getNewPermutation("", a);
+        assertEquals(a,p.alphabet());
+
+        Alphabet a1 = getNewAlphabet("");
+        Permutation p1 = getNewPermutation("",a1);
+        assertEquals(a1,p1.alphabet());
+    }
+    @Test
     public void testSize() {
         Permutation p = getNewPermutation("(0)",
                 getNewAlphabet("0"));

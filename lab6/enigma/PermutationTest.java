@@ -138,7 +138,7 @@ public abstract class PermutationTest {
         assertEquals(0, p.invert(1));
         assertEquals(8, p.invert(7));
         assertEquals(7, p.invert(-1));
-        assertEquals(8, p.invert(9));
+        assertEquals(2, p.invert(9));
 
         Permutation p2 = getNewPermutation( "(AB!)       (&)",
                 getNewAlphabet("AB!&"));

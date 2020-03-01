@@ -214,7 +214,6 @@ public abstract class PermutationTest {
         Permutation p6 = getNewPermutation("(3D)(!C)",
                 getNewAlphabet("!3CD"));
         assertEquals(true, p6.derangement());
-
         Permutation p3 = getNewPermutation("(!&C)",
                 getNewAlphabet("!&CD"));
         assertEquals(false, p3.derangement());
@@ -223,7 +222,7 @@ public abstract class PermutationTest {
         assertEquals(false, p4.derangement());
         Permutation p5 = getNewPermutation( "",
                 getNewAlphabet(""));
-        assertEquals(false, p5.derangement());
+        assertEquals(true, p5.derangement());
         Permutation p7 = getNewPermutation( "(X)",
                 getNewAlphabet("ABCX0"));
         assertEquals(false, p7.derangement());

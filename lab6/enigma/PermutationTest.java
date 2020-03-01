@@ -227,6 +227,9 @@ public abstract class PermutationTest {
         Permutation p7 = getNewPermutation( "(X)",
                 getNewAlphabet("ABCX0"));
         assertEquals(false, p7.derangement());
+        Permutation p8 = getNewPermutation( "(X)(X)",
+                getNewAlphabet("ABCX0"));
+        assertEquals(false, p8.derangement());
 
     }
 //    @Test(expected = IllegalArgumentException.class)

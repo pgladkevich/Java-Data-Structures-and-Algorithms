@@ -91,6 +91,11 @@ public abstract class PermutationTest {
         Alphabet a1 = getNewAlphabet("");
         Permutation p1 = getNewPermutation("",a1);
         assertEquals(a1,p1.alphabet());
+
+        Alphabet a2 = getNewAlphabet("@#$%");
+        Permutation p2 = getNewPermutation("",a2);
+        assertEquals(a2,p2.alphabet());
+
     }
     @Test
     public void testSize() {
@@ -161,6 +166,10 @@ public abstract class PermutationTest {
                 getNewAlphabet("A9CD"));
         assertEquals('9', p4.permute('9'));
 
+        Permutation p5 = getNewPermutation("",
+                getNewAlphabet(""));
+        assertEquals("", p5.permute(' '));
+
     }
 
     @Test
@@ -199,6 +208,9 @@ public abstract class PermutationTest {
         Permutation p2 = getNewPermutation("(BA)(CD)",
                 getNewAlphabet("ABCD"));
         assertEquals(true, p2.derangement());
+        Permutation p6 = getNewPermutation("(3D)(!C)",
+                getNewAlphabet("!3CD"));
+        assertEquals(true, p6.derangement());
 
         Permutation p3 = getNewPermutation("(!&C)",
                 getNewAlphabet("!&CD"));
@@ -206,6 +218,13 @@ public abstract class PermutationTest {
         Permutation p4 = getNewPermutation( "",
                 getNewAlphabet("ABCX0"));
         assertEquals(false, p4.derangement());
+        Permutation p5 = getNewPermutation( "",
+                getNewAlphabet(""));
+        assertEquals(false, p5.derangement());
+        Permutation p7 = getNewPermutation( "(X)",
+                getNewAlphabet("ABCX0"));
+        assertEquals(false, p7.derangement());
+
     }
 //    @Test(expected = IllegalArgumentException.class)
 //    public void testNoAlphabet() {

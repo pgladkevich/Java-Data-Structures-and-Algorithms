@@ -194,13 +194,15 @@ public abstract class PermutationTest {
                 getNewAlphabet("ABCX0"));
         assertEquals(false, p4.derangement());
     }
-    /* Maybe this isn't an incorrect edge case?
-    @Test(expected = EnigmaException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testNoAlphabet() {
         Permutation p = getNewPermutation("",
                 getNewAlphabet(""));
+        if (p.size()==0) {
+            throw new IllegalArgumentException("No alphabet.");
+        }
 
-    } */
+    }
     @Test(expected = EnigmaException.class)
     public void testNotInAlphabet() {
         Permutation p = getNewPermutation("(ABCD)",
@@ -220,11 +222,16 @@ public abstract class PermutationTest {
                 getNewAlphabet("ABD"));
 
     }
-//    @Test(expected = EnigmaException.class)
-//    public void testInvalidLetter() {
-//        Permutation p = getNewPermutation("(A*)",
-//                getNewAlphabet("A*"));
-//    }
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidLetter() {
+        Alphabet a = getNewAlphabet("A*");
+        Alphabet a1 = getNewAlphabet("A(");
+        Alphabet a2 = getNewAlphabet("A)");
+        if (a.contains('*') || a1.contains('(') || a2.contains(')')) {
+            throw new IllegalArgumentException("Alphabet can't contain *, (, " +
+                    "or ) characters");
+        }
+    }
     @Test(expected = EnigmaException.class)
     public void testInvalidCycleForm() {
         Permutation p = getNewPermutation("((A))",

@@ -220,7 +220,6 @@ public class PermutationTest {
         Permutation p9 = getNewPermutation( "(@) (5) (7) (9)",
                 getNewAlphabet("@"));
         assertEquals(false, p8.derangement());
-
     }
 
 }

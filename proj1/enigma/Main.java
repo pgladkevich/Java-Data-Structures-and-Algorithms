@@ -11,7 +11,7 @@ import java.util.Scanner;
 import static enigma.EnigmaException.*;
 
 /** Enigma simulator.
- *  @author
+ *  @author Pavel Gladkevich
  */
 public final class Main {
 

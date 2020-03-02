@@ -18,7 +18,7 @@ class Permutation {
      *  Whitespace is ignored. */
     Permutation(String cycles, Alphabet alphabet) {
         _alphabet = alphabet;
-        _cycles = cycles.split("\\(([^]]+)\\)");
+        _cycles = cycles.split("\\((.*?)\\)");
         _pHM = new HashMap<Integer,Integer>();
         for (String e : _cycles) {
             addCycle(e);
@@ -62,13 +62,20 @@ class Permutation {
     /** Return the result of applying this permutation to P modulo the
      *  alphabet size. */
     int permute(int p) {
-        return 0;  // FIXME
+        int pWrap = wrap(p);
+        return _pHM.get(pWrap);
     }
 
     /** Return the result of applying the inverse of this permutation
      *  to  C modulo the alphabet size. */
     int invert(int c) {
-        return 0;  // FIXME
+        int cWrap = wrap(c);
+        for (Map.Entry entry : _pHM.entrySet()) {
+            if (Objects.equals(cWrap, entry.getValue())) {
+                return (int) entry.getKey();
+            }
+        }
+        return -1;
     }
 
     /** Return the result of applying this permutation to the index of P

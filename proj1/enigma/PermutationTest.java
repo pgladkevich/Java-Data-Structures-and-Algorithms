@@ -57,6 +57,15 @@ public class PermutationTest {
     /* ***** TESTS ***** */
 
     @Test
+    public void testAlphabet() {
+        Alphabet a = getNewAlphabet();
+        assertEquals(7,a.toInt('H'));
+        assertEquals(8,a.toInt('I'));
+        assertEquals(0,a.toInt('A'));
+        assertEquals(25,a.toInt('Z'));
+    }
+
+    @Test
     public void checkIdTransform() {
         perm = new Permutation("", UPPER);
         checkPerm("identity", UPPER_STRING, UPPER_STRING);

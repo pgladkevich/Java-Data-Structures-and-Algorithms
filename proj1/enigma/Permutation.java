@@ -18,10 +18,14 @@ class Permutation {
      *  Whitespace is ignored. */
     Permutation(String cycles, Alphabet alphabet) {
         _alphabet = alphabet;
-        _cycles = cycles.split("\\((.*?)\\)");
+        cycles = cycles.replace("(","").replace(")",
+                "").trim().replaceAll(" +", " ");
+        _cycles = cycles.split(" ");
         _pHM = new HashMap<Integer,Integer>();
+        int index = 0;
         for (String e : _cycles) {
-            addCycle(e);
+            addCycle(e,index);
+            index += e.length();
         }
         for(Map.Entry entry : alphabet._hm.entrySet()) {
             if (!_pHM.containsKey(entry.getKey())) {
@@ -32,15 +36,15 @@ class Permutation {
 
     /** Add the cycle c0->c1->...->cm->c0 to the permutation, where CYCLE is
      *  c0c1...cm. */
-    private void addCycle(String cycle) {
+    private void addCycle(String cycle, int index) {
         for (int i = 0; i < cycle.length(); i+=1) {
             if (i == cycle.length() - 1) {
-                int v = _alphabet.toInt(cycle.charAt(0));
-                _pHM.put(i,v);
+                int v = this._alphabet.toInt(cycle.charAt(0));
+                _pHM.put(index +i, v);
             }
             else {
-                int v= _alphabet.toInt(cycle.charAt(i+1));
-                _pHM.put(i,v);
+                Character s = cycle.charAt(i+1);
+                _pHM.put(index + i, this._alphabet.toInt(cycle.charAt(i+1)));
             }
         }
     }

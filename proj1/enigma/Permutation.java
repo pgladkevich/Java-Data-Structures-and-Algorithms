@@ -1,6 +1,9 @@
 package enigma;
 
 import static enigma.EnigmaException.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /** Represents a permutation of a range of integers starting at 0 corresponding
  *  to the characters of an alphabet.
@@ -15,13 +18,31 @@ class Permutation {
      *  Whitespace is ignored. */
     Permutation(String cycles, Alphabet alphabet) {
         _alphabet = alphabet;
-        // FIXME
+        _cycles = cycles.split("\\(([^]]+)\\)");
+        _pHM = new HashMap<Integer,Integer>();
+        for (String e : _cycles) {
+            addCycle(e);
+        }
+        for(Map.Entry entry : alphabet._hm.entrySet()) {
+            if (!_pHM.containsKey(entry.getKey())) {
+                _pHM.put((int) entry.getKey(), (int) entry.getKey());
+            }
+        }
     }
 
     /** Add the cycle c0->c1->...->cm->c0 to the permutation, where CYCLE is
      *  c0c1...cm. */
     private void addCycle(String cycle) {
-        // FIXME
+        for (int i = 0; i < cycle.length(); i+=1) {
+            if (i == cycle.length() - 1) {
+                int v = _alphabet.toInt(cycle.charAt(0));
+                _pHM.put(i,v);
+            }
+            else {
+                int v= _alphabet.toInt(cycle.charAt(i+1));
+                _pHM.put(i,v);
+            }
+        }
     }
 
     /** Return the value of P modulo the size of this permutation. */
@@ -35,7 +56,7 @@ class Permutation {
 
     /** Returns the size of the alphabet I permute. */
     int size() {
-        return 0; // FIXME
+        return _alphabet.size();
     }
 
     /** Return the result of applying this permutation to P modulo the
@@ -74,6 +95,6 @@ class Permutation {
 
     /** Alphabet of this permutation. */
     private Alphabet _alphabet;
-
-    // FIXME: ADDITIONAL FIELDS HERE, AS NEEDED
+    private HashMap<Integer,Integer> _pHM;
+    private String[] _cycles;
 }

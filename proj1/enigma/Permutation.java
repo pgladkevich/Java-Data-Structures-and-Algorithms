@@ -18,14 +18,13 @@ class Permutation {
      *  Whitespace is ignored. */
     Permutation(String cycles, Alphabet alphabet) {
         _alphabet = alphabet;
-        cycles = cycles.replace("(","").replace(")",
+        cycles = cycles.replace(")(", ") (").replace(
+                "(","").replace(")",
                 "").trim().replaceAll(" +", " ");
         _cycles = cycles.split(" ");
         _pHM = new HashMap<Integer,Integer>();
-        int index = 0;
         for (String e : _cycles) {
-            addCycle(e,index);
-            index += e.length();
+            addCycle(e);
         }
         for(Map.Entry entry : alphabet._hm.entrySet()) {
             if (!_pHM.containsKey(entry.getKey())) {
@@ -36,15 +35,15 @@ class Permutation {
 
     /** Add the cycle c0->c1->...->cm->c0 to the permutation, where CYCLE is
      *  c0c1...cm. */
-    private void addCycle(String cycle, int index) {
+    private void addCycle(String cycle) {
         for (int i = 0; i < cycle.length(); i+=1) {
+            int k = this._alphabet.toInt(cycle.charAt(i));
             if (i == cycle.length() - 1) {
                 int v = this._alphabet.toInt(cycle.charAt(0));
-                _pHM.put(index +i, v);
+                _pHM.put(k, v);
             }
             else {
-                Character s = cycle.charAt(i+1);
-                _pHM.put(index + i, this._alphabet.toInt(cycle.charAt(i+1)));
+                _pHM.put(k, this._alphabet.toInt(cycle.charAt(i+1)));
             }
         }
     }
@@ -85,12 +84,16 @@ class Permutation {
     /** Return the result of applying this permutation to the index of P
      *  in ALPHABET, and converting the result to a character of ALPHABET. */
     char permute(char p) {
-        return 0;  // FIXME
+        int pWrap = wrap(_alphabet.toInt(p));
+        int kP = this.permute(pWrap);
+        return this._alphabet.toChar(kP);
     }
 
     /** Return the result of applying the inverse of this permutation to C. */
     char invert(char c) {
-        return 0;  // FIXME
+        int cWrap = wrap(_alphabet.toInt(c));
+        int kC = this.invert(cWrap);
+        return this._alphabet.toChar(kC);
     }
 
     /** Return the alphabet used to initialize this Permutation. */
@@ -101,7 +104,12 @@ class Permutation {
     /** Return true iff this permutation is a derangement (i.e., a
      *  permutation for which no value maps to itself). */
     boolean derangement() {
-        return true;  // FIXME
+        for (Map.Entry entry : _pHM.entrySet()) {
+            if (Objects.equals(entry.getKey(), entry.getValue())) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /** Alphabet of this permutation. */

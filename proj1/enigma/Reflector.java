@@ -12,7 +12,7 @@ class Reflector extends FixedRotor {
     Reflector(String name, Permutation perm) {
         super(name, perm);
         if (!perm.derangement()) {
-            throw new EnigmaException("This is not a valid reflector, it" +
+            throw error("This is not a valid reflector, it" +
                     "must be a derangement.");
         }
     }

@@ -6,7 +6,7 @@ import java.util.Collection;
 import static enigma.EnigmaException.*;
 
 /** Class that represents a complete enigma machine.
- *  @author
+ *  @author Pavel Gladkevich
  */
 class Machine {
 

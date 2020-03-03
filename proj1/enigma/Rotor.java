@@ -11,7 +11,7 @@ class Rotor {
     Rotor(String name, Permutation perm) {
         _name = name;
         _permutation = perm;
-        // FIXME
+        _sposn = 0;
     }
 
     /** Return my name. */
@@ -46,29 +46,30 @@ class Rotor {
 
     /** Return my current setting. */
     int setting() {
-        return 0; // FIXME
+        return _sposn;
     }
 
     /** Set setting() to POSN.  */
     void set(int posn) {
-        // FIXME
+        _sposn = posn;
     }
 
     /** Set setting() to character CPOSN. */
     void set(char cposn) {
-        // FIXME
+        Alphabet a = this.alphabet();
+        _sposn = a.toInt(cposn);
     }
 
     /** Return the conversion of P (an integer in the range 0..size()-1)
      *  according to my permutation. */
     int convertForward(int p) {
-        return 0;  // FIXME
+        return (p + _sposn) % this.size();
     }
 
     /** Return the conversion of E (an integer in the range 0..size()-1)
      *  according to the inverse of my permutation. */
     int convertBackward(int e) {
-        return 0;  // FIXME
+        return (e - _sposn) % this.size();
     }
 
     /** Returns true iff I am positioned to allow the rotor to my left
@@ -92,6 +93,7 @@ class Rotor {
     /** The permutation implemented by this rotor in its 0 position. */
     private Permutation _permutation;
 
-    // FIXME: ADDITIONAL FIELDS HERE, AS NEEDED
+    /** The position that the rotor is currently set to. Starts at 0 */
+    private int _sposn;
 
 }

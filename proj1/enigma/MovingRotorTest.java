@@ -49,14 +49,47 @@ public class MovingRotorTest {
                                 notches);
     }
 
+    /** Set a basic rotor with the given NAME entry in ROTORS */
+    private void setBasicRotor(String name, HashMap<String, String> rotors) {
+        rotor = new Rotor(name, new Permutation(rotors.get(name), UPPER));
+    }
+    /** Set a reflector rotor with the given NAME entry in ROTORS */
+    private void setReflectorRotor(String name, HashMap<String, String> rotors) {
+        rotor = new Rotor(name, new Permutation(rotors.get(name), UPPER));
+    }
+    /** Set a Fixed rotor with the given NAME entry in ROTORS */
+    private void setFixedRotor(String name, HashMap<String, String> rotors) {
+        rotor = new Rotor(name, new Permutation(rotors.get(name), UPPER));
+    }
+
     /* ***** TESTS ***** */
+    @Test
+    public void checkBasicRotor() {
+        setBasicRotor("I", NAVALA);
+        Alphabet a = rotor.alphabet();
+        assertEquals(0, rotor.setting());
+        assertEquals(26, rotor.size());
+        assertEquals('E', a.toChar(rotor.convertForward(0)));
+
+        rotor.set(1);
+        assertEquals(1, rotor.setting());
+        assertEquals('J', a.toChar(rotor.convertForward(0)));
+        assertEquals( 'T', a.toChar(rotor.convertBackward(25)));
+
+        rotor.set('C');
+        assertEquals(2, rotor.setting());
+    }
 
     @Test
     public void checkRotorAtA() {
         setRotor("I", NAVALA, "");
         checkRotor("Rotor I (A)", UPPER_STRING, NAVALA_MAP.get("I"));
     }
+    // NAVALA.put("I", "(AELTPHQXRU) (BKNW) (CMOY) (DFG) (IV) (JZ) (S)");
+    // NAVALA_MAP.put("I", "EKMFLGDQVZNTOWYHXUSPAIBRCJ");
 
+    // NAVALB.put("I", " (ZDKSOGPWQT) (AJMV) (BLNX) (CEF) (HU) (IY) (R) ");
+    // NAVALB_MAP.put("I", "JLEKFCPUYMSNVXGWTROZHAQBID");
     @Test
     public void checkRotorAdvance() {
         setRotor("I", NAVALA, "");
@@ -70,5 +103,49 @@ public class MovingRotorTest {
         rotor.set(25);
         checkRotor("Rotor I set", UPPER_STRING, NAVALZ_MAP.get("I"));
     }
+//    @Test(expected = IllegalArgumentException.class)
+//    public void testNoAlphabet() {
+//        Permutation p = getNewPermutation("",
+//                getNewAlphabet(""));
+//        if (p.size()==0) {
+//            throw new IllegalArgumentException("No alphabet.");
+//        }
+//
+//    }
+//    @Test(expected = EnigmaException.class)
+//    public void testNotInAlphabet() {
+//        Permutation p = getNewPermutation("(ABCD)",
+//                getNewAlphabet("ABC"));
+//
+//    }
+//
+//    @Test(expected = EnigmaException.class)
+//    public void testInAlphabetTwice() {
+//        Permutation p = getNewPermutation("(ABD)",
+//                getNewAlphabet("ABBD"));
+//
+//    }
+//    @Test(expected = EnigmaException.class)
+//    public void testInCyclesTwice() {
+//        Permutation p = getNewPermutation("(ABBD)",
+//                getNewAlphabet("ABD"));
+//
+//    }
+//    @Test(expected = IllegalArgumentException.class)
+//    public void testInvalidLetter() {
+//        Alphabet a = getNewAlphabet("A*");
+//        Alphabet a1 = getNewAlphabet("A(");
+//        Alphabet a2 = getNewAlphabet("A)");
+//        if (a.contains('*') || a1.contains('(') || a2.contains(')')) {
+//            throw new IllegalArgumentException("Alphabet can't contain *, (, " +
+//                    "or ) characters");
+//        }
+//    }
+//    @Test(expected = EnigmaException.class)
+//    public void testInvalidCycleForm() {
+//        Permutation p = getNewPermutation("((A))",
+//                getNewAlphabet("AB"));
+//    }
+
 
 }

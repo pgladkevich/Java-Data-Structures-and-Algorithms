@@ -44,14 +44,16 @@ public class ReadInts {
      *  Use the hasNext(), next(), nextInt() and hasNextInt() methods
      *  on Scanners. */
     public static List<Integer> smartReadInts(String input) {
-        ArrayList<Integer> L = new ArrayList<>();
+        List<Integer> L = new ArrayList<>();
 
         Scanner s = new Scanner(input);
         while (s.hasNext()) {
-            Character sCURR = s.next().charAt(0);
-            // System.out.println(sCURR);
-            if ((sCURR < 58) && (sCURR > 47)) {
-                L.add(Character.getNumericValue(sCURR));
+            if (s.hasNextInt()) {
+                int sCURR = s.nextInt();
+                L.add(sCURR);
+            }
+            else {
+                s.next();
             }
         }
         return L;

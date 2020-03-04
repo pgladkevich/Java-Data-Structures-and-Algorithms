@@ -85,11 +85,7 @@ public class MovingRotorTest {
         setRotor("I", NAVALA, "");
         checkRotor("Rotor I (A)", UPPER_STRING, NAVALA_MAP.get("I"));
     }
-    // NAVALA.put("I", "(AELTPHQXRU) (BKNW) (CMOY) (DFG) (IV) (JZ) (S)");
-    // NAVALA_MAP.put("I", "EKMFLGDQVZNTOWYHXUSPAIBRCJ");
 
-    // NAVALB.put("I", " (ZDKSOGPWQT) (AJMV) (BLNX) (CEF) (HU) (IY) (R) ");
-    // NAVALB_MAP.put("I", "JLEKFCPUYMSNVXGWTROZHAQBID");
     @Test
     public void checkRotorAdvance() {
         setRotor("I", NAVALA, "");

@@ -55,11 +55,11 @@ public class MovingRotorTest {
     }
     /** Set a reflector rotor with the given NAME entry in ROTORS */
     private void setReflectorRotor(String name, HashMap<String, String> rotors) {
-        rotor = new Rotor(name, new Permutation(rotors.get(name), UPPER));
+        rotor = new Reflector(name, new Permutation(rotors.get(name), UPPER));
     }
     /** Set a Fixed rotor with the given NAME entry in ROTORS */
     private void setFixedRotor(String name, HashMap<String, String> rotors) {
-        rotor = new Rotor(name, new Permutation(rotors.get(name), UPPER));
+        rotor = new FixedRotor(name, new Permutation(rotors.get(name), UPPER));
     }
 
     /* ***** TESTS ***** */
@@ -78,6 +78,40 @@ public class MovingRotorTest {
 
         rotor.set('C');
         assertEquals(2, rotor.setting());
+    }
+
+    @Test
+    public void checkReflecting() {
+        setReflectorRotor("B", NAVALA);
+        assertEquals(true, rotor.reflecting());
+        rotor.set(0);
+    }
+
+    @Test(expected = EnigmaException.class)
+    public void checkReflectorSet() {
+        setReflectorRotor("B", NAVALA);
+        rotor.set(1);
+    }
+
+    @Test(expected = EnigmaException.class)
+    public void checkReflectorSuper() {
+        rotor = new Reflector("R", new Permutation("(AE) (BN) " +
+                    "(CK) (DQ) (FU) (GY) (HW) (IJ) (LO) "
+                    + "(MP) (RX) (SZ) (TV) (x)", new Alphabet("AEBNC" +
+                "KDQFUGYHWIJLOMPRXSZTVX")));
+    }
+
+    @Test
+    public void checkFixedRotor() {
+        setFixedRotor("Beta", NAVALA);
+        checkRotor("Rotor Beta (A)", UPPER_STRING,
+                NAVALA_MAP.get("Beta"));
+        rotor.set(1);
+        checkRotor("Rotor Beta (B)", UPPER_STRING,
+                NAVALB_MAP.get("Beta"));
+        rotor.set('Z');
+        checkRotor("Rotor Beta (Z)", UPPER_STRING,
+                NAVALZ_MAP.get("Beta"));
     }
 
     @Test

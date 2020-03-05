@@ -16,17 +16,19 @@ class Machine {
     Machine(Alphabet alpha, int numRotors, int pawls,
             Collection<Rotor> allRotors) {
         _alphabet = alpha;
-        // FIXME
+        _numRotors = numRotors;
+        _pawls = pawls;
+        _allRotors = (HashMap<String, Rotor>) allRotors;
     }
 
     /** Return the number of rotor slots I have. */
     int numRotors() {
-        return 0; // FIXME
+        return _numRotors;
     }
 
     /** Return the number pawls (and thus rotating rotors) I have. */
     int numPawls() {
-        return 0; // FIXME
+        return _pawls;
     }
 
     /** Set my rotor slots to the rotors named ROTORS from my set of
@@ -64,6 +66,7 @@ class Machine {
 
     /** Common alphabet of my rotors. */
     private final Alphabet _alphabet;
-
-    // FIXME: ADDITIONAL FIELDS HERE, IF NEEDED.
+    private int _numRotors;
+    private int _pawls;
+    private HashMap<String,Rotor> _allRotors;
 }

@@ -1,5 +1,6 @@
 package enigma;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Collection;
 
@@ -18,7 +19,8 @@ class Machine {
         _alphabet = alpha;
         _numRotors = numRotors;
         _pawls = pawls;
-        _allRotors = (HashMap<String, Rotor>) allRotors;
+        _allRotors = (ArrayList) allRotors;
+        _selectedRotors = new HashMap<String,Rotor>();
     }
 
     /** Return the number of rotor slots I have. */
@@ -36,6 +38,9 @@ class Machine {
      *  Initially, all rotors are set at their 0 setting. */
     void insertRotors(String[] rotors) {
         // FIXME
+    }
+    Rotor returnSelectedRotor(String name) {
+        return _selectedRotors.get(name);
     }
 
     /** Set my rotors according to SETTING, which must be a string of
@@ -68,5 +73,6 @@ class Machine {
     private final Alphabet _alphabet;
     private int _numRotors;
     private int _pawls;
-    private HashMap<String,Rotor> _allRotors;
+    private  ArrayList<Rotor> _allRotors;
+    private HashMap<String,Rotor> _selectedRotors;
 }

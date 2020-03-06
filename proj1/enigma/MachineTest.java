@@ -13,8 +13,8 @@ import static enigma.TestUtils.*;
 
 public class MachineTest {
     /** Testing time limit. */
-    @Rule
-    public Timeout globalTimeout = Timeout.seconds(5);
+    //@Rule
+    //public Timeout globalTimeout = Timeout.seconds(5);
 
     /* ***** TESTING UTILITIES ***** */
     private String alpha = UPPER_STRING;
@@ -56,6 +56,30 @@ public class MachineTest {
 
     /* ***** TESTS ***** */
     public void main(String[] Args){
+//        HashMap<String,Rotor> navalRotors = new HashMap<String,Rotor>();
+//        navalRotors.put("I", I);
+//        navalRotors.put("II", II);
+//        navalRotors.put("III", III);
+//        navalRotors.put("IV", IV);
+//        navalRotors.put("V", V);
+//        navalRotors.put("VI", VI);
+//        navalRotors.put("VII", VII);
+//        navalRotors.put("Beta", Beta);
+//        navalRotors.put("Gamma", Gamma);
+//        navalRotors.put("B", B);
+//        navalRotors.put("C", C);
+    }
+
+    @Test
+    public void checkNumRotorsAndPawls() {
+        Machine m = new Machine(UPPER,5,3,
+                navalRotors);
+        assertEquals(5,m.numRotors());
+        assertEquals(3,m.numPawls());
+    }
+
+    @Test
+    public void checkInsertRotors() {
         I = returnMovingRotor("I", NAVALA, "Q");
         II = returnMovingRotor("II", NAVALA, "E");
         III = returnMovingRotor("III", NAVALA, "V");
@@ -83,30 +107,6 @@ public class MachineTest {
         navalRotors.add(B);
         navalRotors.add(C);
 
-//        HashMap<String,Rotor> navalRotors = new HashMap<String,Rotor>();
-//        navalRotors.put("I", I);
-//        navalRotors.put("II", II);
-//        navalRotors.put("III", III);
-//        navalRotors.put("IV", IV);
-//        navalRotors.put("V", V);
-//        navalRotors.put("VI", VI);
-//        navalRotors.put("VII", VII);
-//        navalRotors.put("Beta", Beta);
-//        navalRotors.put("Gamma", Gamma);
-//        navalRotors.put("B", B);
-//        navalRotors.put("C", C);
-    }
-
-    @Test
-    public void checkNumRotorsAndPawls() {
-        Machine m = new Machine(UPPER,5,3,
-                navalRotors);
-        assertEquals(5,m.numRotors());
-        assertEquals(3,m.numPawls());
-    }
-
-    @Test
-    public void checkInsertRotors() {
         Machine m = new Machine(UPPER,5,3,
                 navalRotors);
         assertEquals(null,m.returnSelectedRotor("I"));
@@ -121,7 +121,7 @@ public class MachineTest {
     }
 
     // There will always be one moving rotor right, the rightmost one? Else, we should throw an error? --> YES
-    // Fixed rotors don't have pawls. You can have only fixed rotors and no moving rotors and therefore you'd have no pawls.
+    // Fixed rotors don't have pawls. You can have only fixed rotors and no moving rotors and therefore you'd have no pawls --> Contradicts previous statement?
     // For insertRotors, except for making sure that rotor[0] is a reflector, should we also check whether rotor[numRotors - pawls] to rotor[numRotors - 1] are all moving rotors?
     // Akshit Annadi 2 days ago Yes, you should also check that the remaining rotors are fixed too,
 }

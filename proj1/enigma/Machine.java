@@ -38,8 +38,8 @@ class Machine {
      *  available rotors (ROTORS[0] names the reflector).
      *  Initially, all rotors are set at their 0 setting. */
     void insertRotors(String[] rotors) {
-        int S = 0;
-        int P = 0;
+        int S = 0; int P = 0;
+        _rotorOrder = rotors;
 
         if (rotors.length != numRotors()) {
             throw error("Incorrect number of rotors was provided "
@@ -47,43 +47,42 @@ class Machine {
         }
 
         for (int i = 0; i < rotors.length; i += 1) {
-            String name = rotors[0];
+            String name = rotors[i];
             _allRotorIterator = _allRotors.listIterator();
             int index = _allRotors.size();
             while (_allRotorIterator.hasNext()) {
-                Rotor curr = _allRotorIterator.next();
-                index -= 1;
+                Rotor curr = _allRotorIterator.next(); index -= 1;
                 if (!curr.name().equals(name) && index == 0) {
                     throw error("The rotor name was not found in" +
-                            "allRotors that was taken from the configuration" +
-                            "file.");
+                            "allRotors.");
                 }
                 if (curr.name().equals(name)) {
                     if (i == 0) {
                         if (!curr.reflecting()) {
                             throw error("The first rotor was not a "
-                                    + "reflector, this is an incorrect input for"
-                                    + "Insert Rotors");
+                                    + "reflector.");
                         }
                         _selectedRotors.put(name, curr);
                         S += 1; break;
 
-                    }
-                    else if (i == numRotors()) {
+                    } else if (i == numRotors()) {
                         if (!curr.rotates()) {
                             throw error("The right most rotor was " +
-                                    "not a moving rotor, this is an incorrect" +
-                                    "input for Insert Rotors");
+                                    "not a moving rotor.");
                         }
                         _selectedRotors.put(name, curr);
                         S += 1; P += 1; break;
-                    }
-                    else {
-                        if (i+1 > 2 && i+1 <= numRotors() - numPawls() &&
-                                (curr.rotates() || curr.rotates()) {
-
+                    } else {
+                        if (i+1 <= numRotors() - numPawls()) {
+                            if (curr.rotates() || curr.reflecting()) {
+                                throw error("There was a reflector "
+                                        + " or moving rotor where it should " +
+                                        "be fixed.");
+                            }
+                            _selectedRotors.put(name,curr); S += 1; break;
                         }
-                        S += 1; P += 1;
+                        _selectedRotors.put(name,curr);
+                        S += 1; P += 1; break;
                     }
                 }
             }
@@ -134,4 +133,5 @@ class Machine {
     private  ArrayList<Rotor> _allRotors;
     private HashMap<String,Rotor> _selectedRotors;
     private ListIterator<Rotor> _allRotorIterator;
+    private String[] _rotorOrder;
 }

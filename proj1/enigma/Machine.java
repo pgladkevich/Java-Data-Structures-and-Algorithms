@@ -65,7 +65,7 @@ class Machine {
                         _selectedRotors.put(name, curr);
                         S += 1; break;
 
-                    } else if (i == numRotors()) {
+                    } else if (i == numRotors() - 1) {
                         if (!curr.rotates()) {
                             throw error("The right most rotor was " +
                                     "not a moving rotor.");
@@ -80,6 +80,10 @@ class Machine {
                                         "be fixed.");
                             }
                             _selectedRotors.put(name,curr); S += 1; break;
+                        }
+                        if (!curr.rotates()) {
+                            throw error("There was a non-moving" +
+                                    "rotor where it should be a moving rotor.");
                         }
                         _selectedRotors.put(name,curr);
                         S += 1; P += 1; break;

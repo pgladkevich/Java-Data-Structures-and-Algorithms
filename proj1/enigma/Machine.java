@@ -1,5 +1,6 @@
 package enigma;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -74,7 +75,7 @@ class Machine {
                         _selectedRotors.put(name, curr);
                         S += 1; P += 1; break;
                     } else {
-                        if (i+1 <= numRotors() - numPawls()) {
+                        if (i+1 <= _numRotors - _pawls) {
                             if (curr.rotates() || curr.reflecting()) {
                                 throw error("There was a reflector "
                                         + " or moving rotor where it should " +
@@ -92,7 +93,7 @@ class Machine {
                 }
             }
         }
-        if (P != numPawls() || S != numRotors()) {
+        if (P != _pawls || S != _numRotors) {
             throw error("You put in the wrong number of moving" +
                     "rotors as specified by the configuration, or something" +
                     "went wrong with inserting rotors.");
@@ -103,6 +104,17 @@ class Machine {
      * it from the _selectedRotors hashmap by indexing it via its NAME */
     Rotor returnSelectedRotor(String name) {
         return _selectedRotors.get(name);
+    }
+    /** Once a set of rotors has been selected as a part of a configuration
+     * return their current settings as a int[] */
+    int[] returnSelectedRotorSettings() {
+        int[] settings = new int[_rotorOrder.length];
+        for(int i = 0; i < _rotorOrder.length; i += 1) {
+            Rotor r = _selectedRotors.get(_rotorOrder[i]);
+            int rs = r.setting();
+            settings[i] = rs;
+        }
+        return settings;
     }
 
     /** Set my rotors according to SETTING, which must be a string of
@@ -126,7 +138,7 @@ class Machine {
 
     /** Set the plugboard to PLUGBOARD. */
     void setPlugboard(Permutation plugboard) {
-        // FIXME
+        _plugboard = plugboard;
     }
 
     /** Returns the result of converting the input character C (as an
@@ -134,7 +146,16 @@ class Machine {
 
      *  the machine. */
     int convert(int c) {
-        return 0; // FIXME
+        boolean[] willRotate = new boolean[_numRotors];
+        willRotate[_numRotors - 1] = true;
+        for (int i = _numRotors - 1; i > (_numRotors - _pawls); i -= 1) {
+            Rotor r = _selectedRotors.get(_rotorOrder[i]);
+            if (r.atNotch()) {
+                willRotate[i] = true;
+                willRotate[i-1] = true;
+            }
+        }
+        return 0;
     }
 
     /** Returns the encoding/decoding of MSG, updating the state of
@@ -151,4 +172,5 @@ class Machine {
     private HashMap<String,Rotor> _selectedRotors;
     private ListIterator<Rotor> _allRotorIterator;
     private String[] _rotorOrder;
+    private Permutation _plugboard;
 }

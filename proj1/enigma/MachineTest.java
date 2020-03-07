@@ -6,7 +6,6 @@ import org.junit.rules.Timeout;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 
 import static enigma.TestUtils.*;
@@ -114,25 +113,10 @@ public class MachineTest {
     }
 
     /* ***** TESTS ***** */
-    public void main(String[] Args){
-//        HashMap<String,Rotor> navalRotors = new HashMap<String,Rotor>();
-//        navalRotors.put("I", I);
-//        navalRotors.put("II", II);
-//        navalRotors.put("III", III);
-//        navalRotors.put("IV", IV);
-//        navalRotors.put("V", V);
-//        navalRotors.put("VI", VI);
-//        navalRotors.put("VII", VII);
-//        navalRotors.put("Beta", Beta);
-//        navalRotors.put("Gamma", Gamma);
-//        navalRotors.put("B", B);
-//        navalRotors.put("C", C);
-    }
 
     @Test
     public void checkNumRotorsAndPawls() {
-        Machine m = new Machine(UPPER,5,3,
-                navalRotors);
+        Machine m = new Machine(UPPER,5,3, navalRotors);
         assertEquals(5,m.numRotors());
         assertEquals(3,m.numPawls());
     }
@@ -140,8 +124,7 @@ public class MachineTest {
     @Test
     public void checkInsertRotors() {
         CreateNavalA();
-        Machine m = new Machine(UPPER,5,3,
-                navalRotors);
+        Machine m = new Machine(UPPER,5,3, navalRotors);
         assertEquals(null,m.returnSelectedRotor("I"));
         String[] trivial = new String[] {"B", "Beta", "I", "II", "III"};
         m.insertRotors(trivial);
@@ -158,8 +141,7 @@ public class MachineTest {
     @Test(expected = EnigmaException.class)
     public void checkTooManyRotorsInsert() {
         CreateNavalA();
-        Machine m = new Machine(UPPER,5,3,
-                navalRotors);
+        Machine m = new Machine(UPPER,5,3, navalRotors);
         String[] trivial = new String[] {"B", "C", "Beta", "I", "II", "III"};
         m.insertRotors(trivial);
 
@@ -167,48 +149,42 @@ public class MachineTest {
     @Test(expected = EnigmaException.class)
     public void checkTooFewRotorsInsert() {
         CreateNavalA();
-        Machine m = new Machine(UPPER,5,3,
-                navalRotors);
+        Machine m = new Machine(UPPER,5,3, navalRotors);
         String[] trivial = new String[] {"Beta", "I", "II", "III"};
         m.insertRotors(trivial);
     }
     @Test(expected = EnigmaException.class)
     public void checkFirstNotReflector() {
         CreateNavalA();
-        Machine m = new Machine(UPPER,5,3,
-                navalRotors);
+        Machine m = new Machine(UPPER,5,3, navalRotors);
         String[] trivial = new String[] {"I", "Beta", "C", "II", "III"};
         m.insertRotors(trivial);
     }
     @Test(expected = EnigmaException.class)
     public void checkRotorNotInMachine() {
         CreateNavalA();
-        Machine m = new Machine(UPPER,5,3,
-                navalRotors);
+        Machine m = new Machine(UPPER,5,3, navalRotors);
         String[] trivial = new String[] {"B", "Beta", "D", "II", "III"};
         m.insertRotors(trivial);
     }
     @Test(expected = EnigmaException.class)
     public void checkNonMovingRotorRightmost() {
         CreateNavalA();
-        Machine m = new Machine(UPPER,5,3,
-                navalRotors);
+        Machine m = new Machine(UPPER,5,3, navalRotors);
         String[] trivial = new String[] {"B", "Beta", "I", "II", "Gamma"};
         m.insertRotors(trivial);
     }
     @Test(expected = EnigmaException.class)
     public void checkMovingRotorWrongSpot() {
         CreateNavalA();
-        Machine m = new Machine(UPPER,5,3,
-                navalRotors);
+        Machine m = new Machine(UPPER,5,3, navalRotors);
         String[] trivial = new String[] {"B", "I", "Beta", "II", "III"};
         m.insertRotors(trivial);
     }
     @Test(expected = EnigmaException.class)
     public void checkReflectorWrongSpot() {
         CreateNavalA();
-        Machine m = new Machine(UPPER,5,3,
-                navalRotors);
+        Machine m = new Machine(UPPER,5,3, navalRotors);
         String[] trivial = new String[] {"B", "Beta", "C", "II", "III"};
         m.insertRotors(trivial);
     }
@@ -217,8 +193,7 @@ public class MachineTest {
     public void checkSetRotors() {
         CreateNavalA();
         CreateNavalB();
-        Machine m = new Machine(UPPER,5,3,
-                navalRotors);
+        Machine m = new Machine(UPPER,5,3, navalRotors);
         String[] trivial = new String[] {"B", "Beta", "I", "II", "III"};
         m.insertRotors(trivial);
         m.setRotors("BBBB");
@@ -226,12 +201,34 @@ public class MachineTest {
         assertEquals(0, testB.setting());
         Rotor testI = m.returnSelectedRotor("I");
         assertEquals(1, testI.setting());
-        // JLEKFCPUYMSNVXGWTROZHAQBID
         assertEquals(9,testI.convertForward(0));
         assertEquals(8,testI.convertForward(24));
         assertEquals(3,testI.convertForward(-1));
         assertEquals(8,testI.convertForward(50));
+    }
 
+    @Test
+    public void checkSetPlugBoard() {
+        CreateNavalA();
+        Machine m = new Machine(UPPER,5,3, navalRotors);
+        String[] trivial = new String[] {"B", "Beta", "I", "II", "III"};
+        m.insertRotors(trivial);
+        Alphabet a = new Alphabet();
+        Permutation p = new Permutation("(AB) (CD) (EF)", a);
+        m.setPlugboard(p);
+    }
+
+    @Test
+    public void checkConvert() {
+        CreateNavalA();
+        Machine m = new Machine(UPPER,5,3, navalRotors);
+        String[] trivial = new String[] {"B", "Beta", "III", "IV", "I"};
+        m.insertRotors(trivial);
+        m.setRotors("AXLE");
+        m.setPlugboard(new Permutation("(YF) (ZH)", new Alphabet()));
+        assertEquals(4,m.returnSelectedRotorSettings()[4]);
+        m.convert(24);
+        assertEquals(25, m.convert(24));
     }
 
     // There will always be one moving rotor right, the rightmost one? Else, we should throw an error? --> YES

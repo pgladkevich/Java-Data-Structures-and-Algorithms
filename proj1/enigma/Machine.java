@@ -2,6 +2,7 @@ package enigma;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Collection;
 import java.util.ListIterator;
 
@@ -108,7 +109,19 @@ class Machine {
      *  numRotors()-1 characters in my alphabet. The first letter refers
      *  to the leftmost rotor setting (not counting the reflector).  */
     void setRotors(String setting) {
-        // FIXME
+        if (setting.length() != numRotors()-1) {
+            throw error("There were either too many or not" +
+                    "enough letters to set the needed number of rotors.");
+        }
+        for (int j =0,i = 1; j< setting.length(); j += 1, i += 1) {
+            String cRNAME = _rotorOrder[i];
+            Character pLetter = setting.charAt(j);
+            if (!_alphabet.contains(pLetter)) {
+                throw error("There was a letter not in the" +
+                        "configured alphabet in the settings string.");
+            }
+            _selectedRotors.get(cRNAME).set(pLetter);
+        }
     }
 
     /** Set the plugboard to PLUGBOARD. */

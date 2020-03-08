@@ -87,6 +87,12 @@ public class MovingRotorTest {
         rotor.set(0);
     }
 
+    @Test
+    public void checkReflector() {
+        setReflectorRotor("B", NAVALA);
+        assertEquals(4,rotor.convertForward(0));
+    }
+
     @Test(expected = EnigmaException.class)
     public void checkReflectorSet() {
         setReflectorRotor("B", NAVALA);

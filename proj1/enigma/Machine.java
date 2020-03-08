@@ -105,6 +105,7 @@ class Machine {
     Rotor returnSelectedRotor(String name) {
         return _selectedRotors.get(name);
     }
+
     /** Once a set of rotors has been selected as a part of a configuration
      * return their current settings as a int[] */
     int[] returnSelectedRotorSettings() {
@@ -155,8 +156,22 @@ class Machine {
                 willRotate[i-1] = true;
             }
         }
-        return 0;
+        for (int i = 1; i < _rotorOrder.length; i += 1) {
+            if (willRotate[i]) {
+                _selectedRotors.get(_rotorOrder[i]).advance();
+            }
+        }
+        c = _plugboard.permute(c);
+        for (int i = _rotorOrder.length; i > 0; i -= 1) {
+            c = _selectedRotors.get(_rotorOrder[i-1]).convertForward(c);
+        }
+        for (int i = 1; i < _rotorOrder.length; i += 1) {
+            c = _selectedRotors.get(_rotorOrder[i]).convertBackward(c);
+        }
+        c = _plugboard.permute(c);
+        return c;
     }
+
 
     /** Returns the encoding/decoding of MSG, updating the state of
      *  the rotors accordingly. */

@@ -1,9 +1,12 @@
 package enigma;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Collection;
 import java.util.ListIterator;
 
@@ -161,14 +164,15 @@ class Machine {
                 _selectedRotors.get(_rotorOrder[i]).advance();
             }
         }
-        c = _plugboard.permute(c);
+        if (_plugboard != null) { c = _plugboard.permute(c); }
+
         for (int i = _rotorOrder.length; i > 0; i -= 1) {
             c = _selectedRotors.get(_rotorOrder[i-1]).convertForward(c);
         }
         for (int i = 1; i < _rotorOrder.length; i += 1) {
             c = _selectedRotors.get(_rotorOrder[i]).convertBackward(c);
         }
-        c = _plugboard.permute(c);
+        if (_plugboard != null) { c = _plugboard.permute(c); }
         return c;
     }
 
@@ -176,7 +180,25 @@ class Machine {
     /** Returns the encoding/decoding of MSG, updating the state of
      *  the rotors accordingly. */
     String convert(String msg) {
-        return ""; // FIXME
+        ArrayList<Character> converted = new ArrayList<Character>();
+        String[] message = msg.split(" ");
+        StringBuilder msgOUTPUT = new StringBuilder();
+        for (String word : message) {
+            for (int i = 0; i < word.length(); i +=1) {
+                int k = this._alphabet.toInt(word.charAt(i));
+                int cINT = this.convert(k);
+                Character c = this._alphabet.toChar(cINT);
+                converted.add(c);
+            }
+        }
+
+        for (int i = 0; i < converted.size(); i += 1) {
+            if (i % 5 == 0 && i != 0) {
+                msgOUTPUT.append(" ");
+            }
+            msgOUTPUT.append(converted.get(i));
+        }
+        return msgOUTPUT.toString();
     }
 
     /** Common alphabet of my rotors. */

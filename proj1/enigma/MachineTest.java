@@ -7,6 +7,8 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Scanner;
+import java.util.stream.IntStream;
 
 import static enigma.TestUtils.*;
 
@@ -227,8 +229,54 @@ public class MachineTest {
         m.setRotors("AXLE");
         m.setPlugboard(new Permutation("(YF) (ZH)", new Alphabet()));
         assertEquals(4,m.returnSelectedRotorSettings()[4]);
-        m.convert(24);
         assertEquals(25, m.convert(24));
+        assertEquals(5,m.returnSelectedRotorSettings()[4]);
+
+        int[] size11PLUSONESO12 = new int[11];
+        for (int i : size11PLUSONESO12) {
+            m.convert(0);
+        }
+        int[] a = new int[] {0, 0, 23, 11, 16};
+        for (int i = 0; i < a.length; i += 1) {
+            assertEquals(a[i], m.returnSelectedRotorSettings()[i]);
+        }
+        m.convert(0);
+        assertEquals(12, m.returnSelectedRotorSettings()[3]);
+        assertEquals(17, m.returnSelectedRotorSettings()[4]);
+
+        int[] size597 = new int[597];
+        for(int i : size597) {
+            m.convert(0);
+        }
+        int[] a1 = new int[] {0, 0, 23, 8, 16};
+        for (int i = 0; i < a.length; i += 1) {
+            assertEquals(a1[i], m.returnSelectedRotorSettings()[i]);
+        }
+
+        m.convert(0);
+        m.convert(1);
+        int[] a2 = new int[] {0, 0, 24, 10, 18};
+        for (int i = 0; i < a.length; i += 1) {
+            assertEquals(a2[i], m.returnSelectedRotorSettings()[i]);
+        }
+        m.setRotors("AVKS");
+        m.convert(0);
+        int[] a3 = new int[] {0, 0, 21, 10, 19};
+        for (int i = 0; i < a.length; i += 1) {
+            assertEquals(a3[i], m.returnSelectedRotorSettings()[i]);
+        }
+    }
+
+    @Test
+    public void checkConvertMessageTrivial() {
+        CreateNavalA();
+        Machine m = new Machine(UPPER, 5, 3, navalRotors);
+        String[] trivial = new String[]{"B", "Beta", "I", "II", "III" };
+        m.insertRotors(trivial);
+        m.setRotors("AAAA");
+        assertEquals("ILBDA AMTAZ", m.convert("HELLO WORLD"));
+        m.setRotors("AAAA");
+        assertEquals("HELLO WORLD", m.convert("ILBDA AMTAZ"));
     }
 
     // There will always be one moving rotor right, the rightmost one? Else, we should throw an error? --> YES

@@ -16,7 +16,8 @@ class MovingRotor extends Rotor {
      */
     MovingRotor(String name, Permutation perm, String notches) {
         super(name, perm);
-        if (_notches != null) {
+        if (notches != null) {
+            _notches = new ArrayList<Character>(notches.length());
             for (int i = 0; i < notches.length(); i += 1) {
                 _notches.add(notches.charAt(i));
             }
@@ -37,6 +38,10 @@ class MovingRotor extends Rotor {
     boolean atNotch() {
         char cposn = this.alphabet().toChar(this.setting());
         return _notches.contains(cposn);
+    }
+
+    Character returnNotch(int index) {
+        return _notches.get(index);
     }
 
     ArrayList<Character> _notches;

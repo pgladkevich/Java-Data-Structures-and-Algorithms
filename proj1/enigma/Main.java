@@ -77,7 +77,35 @@ public final class Main {
      *  file _config and apply it to the messages in _input, sending the
      *  results to _output. */
     private void process() {
-        // FIXME
+        /*  Need to figure out how to account for cycles that span multiple lines:
+
+         am using scanner to determine the configuration and I am having trouble getting over this issue:
+        Sometimes a rotor's permutation extends to the next line, such as:
+        B R       (AE) (BN) (CK) (DQ) (FU) (GY) (HW) (IJ) (LO) (MP)
+           (RX) (SZ) (TV) */
+
+        int lineINDEX = 0;
+        while(_config.hasNextLine()) {
+            if (lineINDEX == 0) {
+                /* this has to be an alphabet of ASCII characters not including *()
+                 and it must have no whitespace inside of it */
+                _alphabet = new Alphabet(_config.next()); lineINDEX += 1;
+            } else if (lineINDEX == 1) {
+                // this has to be two integers (a b) where a > 1 && b > 0
+            } else {
+                /* this has to be rotors that have a name containing any non-blank characters
+                other than parentheses, followed by R, N, or M. If the config file doesn't
+                have at least one R and M then it should throw an error. a = lineINDEX - 1
+                b = number of lines with M
+
+                R has to be followed by (Cycles) where each of the letters in the Cycles must be
+                in the alphabet. Nothing after that line.*/
+            }
+        }
+        /* After I have created a machine without any selected rotors now I need
+        to
+         */
+        // Need to call printMessageLine and then send the results to _output
     }
 
     /** Return an Enigma machine configured from the contents of configuration
@@ -124,4 +152,9 @@ public final class Main {
 
     /** File for encoded/decoded messages. */
     private PrintStream _output;
+
+    /* the information in _config will be in the order alphabet, numRotors, numPawls, rotors info.
+     Information will consistently be in that order, but will not have
+     a consistent format and we should check for everything on one line, everything on separate lines,
+     some things on the same, some things separate, etc etc. and make sure we have error checks along the way. */
 }

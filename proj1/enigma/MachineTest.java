@@ -279,6 +279,35 @@ public class MachineTest {
         assertEquals("HELLO WORLD", m.convert("ILBDA AMTAZ"));
     }
 
+    @Test
+    public void checkConvertMessageWithTail() {
+        CreateNavalA();
+        Machine m = new Machine(UPPER, 5, 3, navalRotors);
+        String[] trivial = new String[]{"B", "Beta", "III", "IV", "I" };
+        m.insertRotors(trivial);
+        m.setRotors("AXLE");
+        m.setPlugboard(new Permutation("(HQ) (EX) (IP) (TR) (BY)",
+                new Alphabet()));
+        assertEquals("QVPQS OKOIL PUBKJ ZPISF XDW",
+                m.convert("FROM HIS SHOULDER HIAWATHA"));
+    }
+
+    @Test
+    public void checkSwapRotors() {
+        CreateNavalA();
+        Machine m = new Machine(UPPER, 5, 3, navalRotors);
+        String[] trivial = new String[]{"B", "Beta", "III", "IV", "I" };
+        m.insertRotors(trivial);
+        m.setRotors("AXLE");
+        m.setPlugboard(new Permutation("(HQ) (EX) (IP) (TR) (BY)",
+                new Alphabet()));
+        String[] basic = new String[]{"B", "Beta", "I", "II", "III" };
+        m.insertRotors(basic);
+        m.setRotors("AAAA");
+        m.setPlugboard(null);
+        assertEquals("HELLO WORLD", m.convert("ILBDA AMTAZ"));
+    }
+
     // There will always be one moving rotor right, the rightmost one? Else, we should throw an error? --> YES
     // Fixed rotors don't have pawls. You can have only fixed rotors and no moving rotors and therefore you'd have no pawls --> Contradicts previous statement?
     // For insertRotors, except for making sure that rotor[0] is a reflector, should we also check whether rotor[numRotors - pawls] to rotor[numRotors - 1] are all moving rotors?

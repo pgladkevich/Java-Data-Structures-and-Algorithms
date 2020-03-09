@@ -218,7 +218,7 @@ public class PermutationTest {
                 getNewAlphabet("@"));
         assertEquals(false, p8.derangement());
         Permutation p9 = getNewPermutation( "(@) (5) (7) (9)",
-                getNewAlphabet("@"));
+                getNewAlphabet("@579"));
         assertEquals(false, p8.derangement());
     }
 

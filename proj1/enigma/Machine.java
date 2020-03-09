@@ -20,7 +20,7 @@ class Machine {
         _alphabet = alpha;
         _numRotors = numRotors;
         _pawls = pawls;
-        _allRotors = (ArrayList) allRotors;
+        _allRotors = (ArrayList<Rotor>) allRotors;
         _selectedRotors = new HashMap<>();
     }
 
@@ -40,6 +40,9 @@ class Machine {
     void insertRotors(String[] rotors) {
         int S = 0; int P = 0;
         _rotorOrder = rotors;
+//        for (int k = 0; k < rotors.length; k += 1) {
+//            System.out.println(rotors[k]);
+//        }
 
         if (rotors.length != numRotors()) {
             throw error("Incorrect number of rotors was provided "
@@ -52,11 +55,15 @@ class Machine {
             int index = _allRotors.size();
             while (_allRotorIterator.hasNext()) {
                 Rotor curr = _allRotorIterator.next(); index -= 1;
-                if (!curr.name().equals(name) && index == 0) {
-                    throw error("The rotor name was not found in" +
-                            "allRotors.");
+                if (!(curr.name().compareTo(name) == 0) && index == 0) {
+                    for (int j = 0; j < _allRotors.size(); j += 1) {
+                        System.out.println(_allRotors.get(j).name());
+                    }
+
+                    throw error("The rotor " + curr.name() +
+                            " was not found in" + "allRotors.");
                 }
-                if (curr.name().equals(name)) {
+                if (curr.name().compareTo(name) == 0) {
                     if (i == 0) {
                         if (!curr.reflecting()) {
                             throw error("The first rotor was not a "

@@ -81,10 +81,10 @@ public final class Main {
         try {
             while (_input.hasNextLine()) {
                 String curr = _input.nextLine().trim();
-                if ("*".compareTo("" + curr.charAt(0)) == 0) {
-                    this.setUp(m, curr);
-                } else if (curr.compareTo("") == 0){
+                if (curr.compareTo("") == 0) {
                     _output.println();
+                } else if ("*".compareTo("" + curr.charAt(0)) == 0) {
+                    this.setUp(m, curr);
                 }
                 else {
                     _output.println(m.convert(curr));
@@ -223,6 +223,7 @@ public final class Main {
     private void setUp(Machine M, String settings) {
         try {
             Scanner s = new Scanner(settings);
+            s.next();
             String[] rotors = new String[_S];
             for (int i = 0; i < _S; i += 1) {
                 rotors[i] = s.next();
@@ -234,6 +235,7 @@ public final class Main {
             }
             M.insertRotors(rotors);
             M.setRotors(setSTRING);
+            M.setPlugboard(new Permutation(cycles.toString(), this._alphabet));
         }
         catch (NoSuchElementException excp) {
             throw error("Input settings string truncated");

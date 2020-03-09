@@ -168,7 +168,7 @@ public final class Main {
             if (rTNOTCH.length() > 1) {
                 notches = rTNOTCH.substring(1);
                 for (int i = 0; i<notches.length(); i += 1) {
-                    if (this._alphabet.contains(notches.charAt(i))) {
+                    if (!this._alphabet.contains(notches.charAt(i))) {
                         throw error("One of the notches was not in" +
                                 "the alphabet.");
                     }

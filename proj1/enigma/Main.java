@@ -78,8 +78,21 @@ public final class Main {
      *  results to _output. */
     private void process() {
         Machine m = readConfig();
-        while (_input.hasNextLine()) {
-            if (_input.nextLine();
+        try {
+            while (_input.hasNextLine()) {
+                String curr = _input.nextLine().trim();
+                if ("*".compareTo("" + curr.charAt(0)) == 0) {
+                    this.setUp(m, curr);
+                } else if (curr.compareTo("") == 0){
+                    _output.println();
+                }
+                else {
+                    _output.println(m.convert(curr));
+                }
+            }
+        }
+        catch (NoSuchElementException excp) {
+            throw error("Input file truncated");
         }
         // Need to call printMessageLine and then send the results to _output
         // There should be a newline at the end of every output
@@ -207,7 +220,23 @@ public final class Main {
     /** Set M according to the specification given on SETTINGS,
      *  which must have the format specified in the assignment. */
     private void setUp(Machine M, String settings) {
-        // FIXME
+        try {
+            Scanner s = new Scanner(settings);
+            String[] rotors = new String[_S];
+            for (int i = 0; i < _S; i += 1) {
+                rotors[i] = s.next();
+            }
+            String setSTRING = s.next();
+            StringBuilder cycles = new StringBuilder();
+            while (s.hasNext(" *\\((.*?)\\) *")) {
+                cycles.append(s.next());
+            }
+            M.insertRotors(rotors);
+            M.setRotors(setSTRING);
+        }
+        catch (NoSuchElementException excp) {
+            throw error("Input settings string truncated");
+        }
     }
 
     /** Print MSG in groups of five (except that the last group may

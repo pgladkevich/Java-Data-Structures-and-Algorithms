@@ -59,10 +59,10 @@ public class PermutationTest {
     @Test
     public void testAlphabet() {
         Alphabet a = getNewAlphabet();
-        assertEquals(7,a.toInt('H'));
-        assertEquals(8,a.toInt('I'));
-        assertEquals(0,a.toInt('A'));
-        assertEquals(25,a.toInt('Z'));
+        assertEquals(7, a.toInt('H'));
+        assertEquals(8, a.toInt('I'));
+        assertEquals(0, a.toInt('A'));
+        assertEquals(25, a.toInt('Z'));
     }
 
     @Test
@@ -75,15 +75,15 @@ public class PermutationTest {
     public void testGetAlphabet() {
         Alphabet a = getNewAlphabet();
         Permutation p = getNewPermutation("", a);
-        assertEquals(a,p.alphabet());
+        assertEquals(a, p.alphabet());
 
         Alphabet a1 = getNewAlphabet("");
-        Permutation p1 = getNewPermutation("",a1);
-        assertEquals(a1,p1.alphabet());
+        Permutation p1 = getNewPermutation("", a1);
+        assertEquals(a1, p1.alphabet());
 
         Alphabet a2 = getNewAlphabet("@#$%");
-        Permutation p2 = getNewPermutation("",a2);
-        assertEquals(a2,p2.alphabet());
+        Permutation p2 = getNewPermutation("", a2);
+        assertEquals(a2, p2.alphabet());
     }
     @Test
     public void testSize() {
@@ -111,7 +111,7 @@ public class PermutationTest {
         assertEquals(8, p.permute(-2));
         assertEquals(1, p.permute(9));
 
-        Permutation p2 = getNewPermutation( "(AB!)       (&)",
+        Permutation p2 = getNewPermutation("(AB!)       (&)",
                 getNewAlphabet("AB!&"));
         assertEquals(0, p2.permute(2));
         assertEquals(3, p2.permute(3));
@@ -128,7 +128,7 @@ public class PermutationTest {
         assertEquals(7, p.invert(-1));
         assertEquals(2, p.invert(9));
 
-        Permutation p2 = getNewPermutation( "(AB!)       (&)",
+        Permutation p2 = getNewPermutation("(AB!)       (&)",
                 getNewAlphabet("AB!&"));
         assertEquals(2, p2.invert(0));
         assertEquals(3, p2.invert(3));
@@ -140,18 +140,18 @@ public class PermutationTest {
     public void testPermuteChar() {
         Permutation p = getNewPermutation("(BACD)",
                 getNewAlphabet("ABCD"));
-        assertEquals('C',p.permute('A'));
-        assertEquals('D',p.permute('C'));
-        assertEquals('B',p.permute('D'));
+        assertEquals('C', p.permute('A'));
+        assertEquals('D', p.permute('C'));
+        assertEquals('B', p.permute('D'));
 
-        Permutation p2 = getNewPermutation( "(AB!)       (&)",
+        Permutation p2 = getNewPermutation("(AB!)       (&)",
                 getNewAlphabet("AB!&"));
         assertEquals('A', p2.permute('!'));
         assertEquals('B', p2.permute('A'));
         assertEquals('!', p2.permute('B'));
         assertEquals('&', p2.permute('&'));
 
-        Permutation p3 = getNewPermutation( "(AB) (0)       (X)",
+        Permutation p3 = getNewPermutation("(AB) (0)       (X)",
                 getNewAlphabet("ABCX0"));
         assertEquals('A', p3.permute('B'));
         assertEquals('B', p3.permute('A'));
@@ -167,19 +167,19 @@ public class PermutationTest {
     public void testInvertChar() {
         Permutation p = getNewPermutation("(BACD)",
                 getNewAlphabet("ABCD"));
-        assertEquals('B',p.invert('A'));
-        assertEquals('D',p.invert('B'));
-        assertEquals('A',p.invert('C'));
-        assertEquals('C',p.invert('D'));
+        assertEquals('B', p.invert('A'));
+        assertEquals('D', p.invert('B'));
+        assertEquals('A', p.invert('C'));
+        assertEquals('C', p.invert('D'));
 
-        Permutation p2 = getNewPermutation( "(AB!)       (&)",
+        Permutation p2 = getNewPermutation("(AB!)       (&)",
                 getNewAlphabet("AB!&"));
         assertEquals('B', p2.invert('!'));
         assertEquals('!', p2.invert('A'));
         assertEquals('A', p2.invert('B'));
         assertEquals('&', p2.invert('&'));
 
-        Permutation p3 = getNewPermutation( "(AB) (0)       (X)",
+        Permutation p3 = getNewPermutation("(AB) (0)       (X)",
                 getNewAlphabet("ABCX0"));
         assertEquals('A', p3.invert('B'));
         assertEquals('B', p3.invert('A'));
@@ -195,31 +195,31 @@ public class PermutationTest {
     public void testDerangement() {
         Permutation p = getNewPermutation("(BA)     (CD)",
                 getNewAlphabet("ABCD"));
-        assertEquals(true, p.derangement());
+        assertTrue(p.derangement());
         Permutation p2 = getNewPermutation("(BA)(CD)",
                 getNewAlphabet("ABCD"));
-        assertEquals(true, p2.derangement());
+        assertTrue(p2.derangement());
         Permutation p6 = getNewPermutation("(3D)(!C)",
                 getNewAlphabet("!3CD"));
-        assertEquals(true, p6.derangement());
+        assertTrue(p6.derangement());
         Permutation p3 = getNewPermutation("(!&C)",
                 getNewAlphabet("!&CD"));
-        assertEquals(false, p3.derangement());
-        Permutation p4 = getNewPermutation( "",
+        assertFalse(p3.derangement());
+        Permutation p4 = getNewPermutation("",
                 getNewAlphabet("ABCX0"));
-        assertEquals(false, p4.derangement());
-        Permutation p5 = getNewPermutation( "",
+        assertFalse(p4.derangement());
+        Permutation p5 = getNewPermutation("",
                 getNewAlphabet(""));
-        assertEquals(true, p5.derangement());
-        Permutation p7 = getNewPermutation( "(X)",
+        assertTrue(p5.derangement());
+        Permutation p7 = getNewPermutation("(X)",
                 getNewAlphabet("ABCX0"));
-        assertEquals(false, p7.derangement());
-        Permutation p8 = getNewPermutation( "(@)",
+        assertFalse(p7.derangement());
+        Permutation p8 = getNewPermutation("(@)",
                 getNewAlphabet("@"));
-        assertEquals(false, p8.derangement());
-        Permutation p9 = getNewPermutation( "(@) (5) (7) (9)",
+        assertFalse(p8.derangement());
+        Permutation p9 = getNewPermutation("(@) (5) (7) (9)",
                 getNewAlphabet("@579"));
-        assertEquals(false, p8.derangement());
+        assertFalse(p8.derangement());
     }
 
 }

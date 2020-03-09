@@ -67,8 +67,6 @@ class Rotor {
                 _permutation.permute((p + _sposn) % this.size())
                         - _sposn);
     }
-//    _permutation.invert((e - _sposn) % this.size())
-//            - _sposn
     /** Return the conversion of E (an integer in the range 0..size()-1)
      *  according to the inverse of my permutation. */
     int convertBackward(int e) {

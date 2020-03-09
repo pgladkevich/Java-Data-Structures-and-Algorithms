@@ -38,17 +38,11 @@ class Machine {
      *  available rotors (ROTORS[0] names the reflector).
      *  Initially, all rotors are set at their 0 setting. */
     void insertRotors(String[] rotors) {
-        int S = 0; int P = 0;
-        _rotorOrder = rotors;
-//        for (int k = 0; k < rotors.length; k += 1) {
-//            System.out.println(rotors[k]);
-//        }
-
+        int S = 0; int P = 0; _rotorOrder = rotors;
         if (rotors.length != numRotors()) {
             throw error("Incorrect number of rotors was provided "
                     + "as input into insertRotors");
         }
-
         for (int i = 0; i < rotors.length; i += 1) {
             String name = rotors[i];
             _allRotorIterator = _allRotors.listIterator();
@@ -59,38 +53,31 @@ class Machine {
                     for (int j = 0; j < _allRotors.size(); j += 1) {
                         System.out.println(_allRotors.get(j).name());
                     }
-
-                    throw error("The rotor " + curr.name() +
-                            " was not found in" + "allRotors.");
+                    throw error("Rotor not found in allRotors.");
                 }
                 if (curr.name().compareTo(name) == 0) {
                     if (i == 0) {
                         if (!curr.reflecting()) {
-                            throw error("The first rotor was not a "
-                                    + "reflector.");
+                            throw error("First rotor != reflector.");
                         }
-                        _selectedRotors.put(name, curr);
-                        S += 1; break;
-
+                        _selectedRotors.put(name, curr); S += 1; break;
                     } else if (i == numRotors() - 1) {
                         if (!curr.rotates()) {
-                            throw error("The right most rotor was " +
-                                    "not a moving rotor.");
+                            throw error("S rotor != moving.");
                         }
-                        _selectedRotors.put(name, curr);
-                        S += 1; P += 1; break;
+                        _selectedRotors.put(name, curr); S += 1; P += 1; break;
                     } else {
                         if (i+1 <= _numRotors - _pawls) {
                             if (curr.rotates() || curr.reflecting()) {
                                 throw error("There was a reflector "
-                                        + " or moving rotor where it should " +
-                                        "be fixed.");
+                                        + " or moving rotor where it should "
+                                        + "be fixed.");
                             }
                             _selectedRotors.put(name,curr); S += 1; break;
                         }
                         if (!curr.rotates()) {
-                            throw error("There was a non-moving" +
-                                    "rotor where it should be a moving rotor.");
+                            throw error("There was a non-moving"
+                                    + "rotor where it should be moving rotor.");
                         }
                         _selectedRotors.put(name,curr);
                         S += 1; P += 1; break;
@@ -99,23 +86,23 @@ class Machine {
             }
         }
         if (P != _pawls || S != _numRotors) {
-            throw error("You put in the wrong number of moving" +
-                    "rotors as specified by the configuration, or something" +
-                    "went wrong with inserting rotors.");
+            throw error("You put in the wrong number of moving"
+                    + "rotors as specified by the configuration, or something"
+                    + "went wrong with inserting rotors.");
         }
     }
 
     /** Once a rotor has been selected as a part of a configuration return
-     * it from the _selectedRotors hashmap by indexing it via its NAME */
+     * it from the _selectedRotors hashmap by indexing it via its NAME. */
     Rotor returnSelectedRotor(String name) {
         return _selectedRotors.get(name);
     }
 
     /** Once a set of rotors has been selected as a part of a configuration
-     * return their current settings as a int[] */
+     * return their current settings as a int[]. */
     int[] returnSelectedRotorSettings() {
         int[] settings = new int[_rotorOrder.length];
-        for(int i = 0; i < _rotorOrder.length; i += 1) {
+        for (int i = 0; i < _rotorOrder.length; i += 1) {
             Rotor r = _selectedRotors.get(_rotorOrder[i]);
             int rs = r.setting();
             settings[i] = rs;
@@ -127,11 +114,11 @@ class Machine {
      *  numRotors()-1 characters in my alphabet. The first letter refers
      *  to the leftmost rotor setting (not counting the reflector).  */
     void setRotors(String setting) {
-        if (setting.length() != numRotors()-1) {
-            throw error("There were either too many or not" +
-                    "enough letters to set the needed number of rotors.");
+        if (setting.length() != numRotors() - 1) {
+            throw error("There were either too many or not"
+                    + "enough letters to set the needed number of rotors.");
         }
-        for (int j =0,i = 1; j< setting.length(); j += 1, i += 1) {
+        for (int j = 0, i = 1; j < setting.length(); j += 1, i += 1) {
             String cRNAME = _rotorOrder[i];
             Character pLetter = setting.charAt(j);
             if (!_alphabet.contains(pLetter)) {

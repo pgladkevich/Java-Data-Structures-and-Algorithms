@@ -79,6 +79,10 @@ public final class Main {
     private void process() {
         Machine m = readConfig();
         try {
+            if (!_input.hasNext("\\*")) {
+                throw error("There was a message without a " +
+                        "configuration");
+            }
             while (_input.hasNextLine()) {
                 String curr = _input.nextLine().trim();
                 if (curr.compareTo("") == 0) {
@@ -101,30 +105,21 @@ public final class Main {
 
 
     /** Return an Enigma machine configured from the contents of configuration
-     *  file _config. */
+     *  file _config.
+     *
+     *  _config will be in the order alphabet, numRotors, numPawls, rotors info.
+     *  Information will consistently be in that order, but will not have
+     *  a consistent format and we should check for everything on one line,
+     *  everything on separate lines, some things on the same,
+     *  some things separate, etc. Make sure we have error checks. */
     private Machine readConfig() {
         try {
-             /* the information in _config will be in the order alphabet, numRotors, numPawls, rotors info.
-     Information will consistently be in that order, but will not have
-     a consistent format and we should check for everything on one line, everything on separate lines,
-     some things on the same, some things separate, etc etc. and make sure we have error checks along the way. */
-
-             /*  Need to figure out how to account for cycles that span multiple lines:
-
-         am using scanner to determine the configuration and I am having trouble getting over this issue:
-        Sometimes a rotor's permutation extends to the next line, such as:
-        B R       (AE) (BN) (CK) (DQ) (FU) (GY) (HW) (IJ) (LO) (MP)
-           (RX) (SZ) (TV) */
-
              _alphabet = new Alphabet(_config.next());
              _allRotors = new ArrayList<Rotor>();
-             /* this has to be an alphabet of ASCII characters not including *()
-                 and it must have no whitespace inside of it */
              if (_alphabet.contains('*') || _alphabet.contains('(') ||
                      _alphabet.contains(')')) { throw error("" +
                      "The input alphabet contained not allowed characters" +
                      " '*', '(', or ')'."); }
-            // this has to be two integers S P where S > 1 && P > 0
              for (int i = 0; i < 2; i += 1) {
                  if (!_config.hasNextInt()) { throw error("Either " +
                          "S or P were not configured properly"); }
@@ -136,13 +131,7 @@ public final class Main {
              while (_config.hasNext()) {
                  _allRotors.add(readRotor());
              }
-             /* _allRotors has to be rotors that have a name containing any non-blank characters
-                other than parentheses, followed by R, N, or M. If the config file doesn't
-                have at least one R and M then it should throw an error. */
              checkRotorConfiguration();
-
-        /* Now that I have a machine without any selected rotors now I need
-        to return a machine with all of the information*/
             return new Machine(_alphabet, _S, _P, _allRotors);
         } catch (NoSuchElementException excp) {
             throw error("configuration file truncated");
@@ -192,7 +181,10 @@ public final class Main {
         }
     }
 
-    /** Checks for different incorrect scenarios of _allRotors */
+    /** Checks for different incorrect scenarios of _allRotors.
+     *  _allRotors has to be rotors that have a name containing any non-blank characters
+     *  other than parentheses, followed by R, N, or M. If the config file doesn't
+     *  have at least one R and M then it should throw an error. */
     private void checkRotorConfiguration() {
         if (_allRotors == null || _allRotors.size() < _S) {
             throw error("Not enough rotors added to meet " +

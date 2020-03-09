@@ -12,13 +12,15 @@ class Reflector extends FixedRotor {
     Reflector(String name, Permutation perm) {
         super(name, perm);
         if (!perm.derangement()) {
-            throw error("This is not a valid reflector, it" +
-                    "must be a derangement.");
+            throw error("This is not a valid reflector, it"
+                    + "must be a derangement.");
         }
     }
 
     @Override
-    boolean reflecting() { return true; }
+    boolean reflecting() {
+        return true;
+    }
 
     @Override
     void set(int posn) {

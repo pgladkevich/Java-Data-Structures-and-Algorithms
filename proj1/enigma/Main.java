@@ -77,43 +77,57 @@ public final class Main {
      *  file _config and apply it to the messages in _input, sending the
      *  results to _output. */
     private void process() {
-        /*  Need to figure out how to account for cycles that span multiple lines:
+        // Need to call printMessageLine and then send the results to _output
+        // There should be a newline at the end of every output
+    }
+
+
+    /** Return an Enigma machine configured from the contents of configuration
+     *  file _config. */
+    private Machine readConfig() {
+        try {
+             /* the information in _config will be in the order alphabet, numRotors, numPawls, rotors info.
+     Information will consistently be in that order, but will not have
+     a consistent format and we should check for everything on one line, everything on separate lines,
+     some things on the same, some things separate, etc etc. and make sure we have error checks along the way. */
+
+             /*  Need to figure out how to account for cycles that span multiple lines:
 
          am using scanner to determine the configuration and I am having trouble getting over this issue:
         Sometimes a rotor's permutation extends to the next line, such as:
         B R       (AE) (BN) (CK) (DQ) (FU) (GY) (HW) (IJ) (LO) (MP)
            (RX) (SZ) (TV) */
 
-        int lineINDEX = 0;
-        while(_config.hasNextLine()) {
-            if (lineINDEX == 0) {
-                /* this has to be an alphabet of ASCII characters not including *()
+             _alphabet = new Alphabet(_config.next());
+             /* this has to be an alphabet of ASCII characters not including *()
                  and it must have no whitespace inside of it */
-                _alphabet = new Alphabet(_config.next()); lineINDEX += 1;
-            } else if (lineINDEX == 1) {
-                // this has to be two integers (a b) where a > 1 && b > 0
-            } else {
+             if (_alphabet.contains('*') || _alphabet.contains('(') ||
+                     _alphabet.contains(')')) { throw error("" +
+                     "The input alphabet contained not allowed characters" +
+                     " '*', '(', or ')'."); }
+            // this has to be two integers S P where S > 1 && P > 0
+             for (int i = 0; i < 2; i += 1) {
+                 if (!_config.hasNextInt()) { throw error("Either " +
+                         "S or P were not configured properly"); }
+                 if (i==0) { _S =_config.nextInt(); }
+                 else { _P = _config.nextInt(); if (_P >= _S || _P < 1
+                         || _S < 2) { throw error("Either " +
+                             "S or P were not configured properly"); } }
+             }
+             while (_config.hasNext()) {
+                 _allRotors.add(readRotor());
+             }
+             checkRotorConfiguration();
+
                 /* this has to be rotors that have a name containing any non-blank characters
                 other than parentheses, followed by R, N, or M. If the config file doesn't
-                have at least one R and M then it should throw an error. a = lineINDEX - 1
-                b = number of lines with M
+                have at least one R and M then it should throw an error.
 
                 R has to be followed by (Cycles) where each of the letters in the Cycles must be
                 in the alphabet. Nothing after that line.*/
-            }
-        }
-        /* After I have created a machine without any selected rotors now I need
-        to
-         */
-        // Need to call printMessageLine and then send the results to _output
-    }
 
-    /** Return an Enigma machine configured from the contents of configuration
-     *  file _config. */
-    private Machine readConfig() {
-        try {
-            // FIXME
-            _alphabet = new Alphabet();
+        /* After I have created a machine without any selected rotors now I need
+        to */
             return new Machine(_alphabet, 2, 1, null);
         } catch (NoSuchElementException excp) {
             throw error("configuration file truncated");
@@ -123,9 +137,37 @@ public final class Main {
     /** Return a rotor, reading its description from _config. */
     private Rotor readRotor() {
         try {
-            return null; // FIXME
+            _config
+
+            return null;
         } catch (NoSuchElementException excp) {
             throw error("bad rotor description");
+        }
+    }
+
+    /** Checks for different incorrect scenarios of _allRotors */
+    private void checkRotorConfiguration() {
+        if (_allRotors == null || _allRotors.size() < _S) {
+            throw error("Not enough rotors added to meet " +
+                    "the minimum of S"); }
+        int moving = 0;
+        int reflectors = 0;
+        int fixed = 0;
+        for (Rotor r : _allRotors) {
+            if (r.reflecting()) {
+                reflectors += 1;
+            } else if( r.rotates() ) {
+                moving += 1;
+            } else {
+                fixed += 1;
+            }
+        }
+        if (reflectors < 2) { throw error("Machine needs at least " +
+                "one reflector"); } else if (moving < _P) {
+            throw error("Not enough moving rotors added to meet  " +
+                    "the minimum of _P"); } else if (_S - 1 - _P > fixed) {
+            throw error("Not enough fixed rotors added to meet" +
+                    "the minimum required.");
         }
     }
 
@@ -143,18 +185,16 @@ public final class Main {
 
     /** Alphabet used in this machine. */
     private Alphabet _alphabet;
-
+    /** Rotors used in this machine. */
+    private  ArrayList<Rotor> _allRotors;
     /** Source of input messages. */
     private Scanner _input;
-
     /** Source of machine configuration. */
     private Scanner _config;
-
     /** File for encoded/decoded messages. */
     private PrintStream _output;
-
-    /* the information in _config will be in the order alphabet, numRotors, numPawls, rotors info.
-     Information will consistently be in that order, but will not have
-     a consistent format and we should check for everything on one line, everything on separate lines,
-     some things on the same, some things separate, etc etc. and make sure we have error checks along the way. */
+    /** Number of Rotors. */
+    private int _S;
+    /** Number of Pawls. */
+    private int _P;
 }

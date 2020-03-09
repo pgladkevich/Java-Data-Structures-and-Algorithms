@@ -24,6 +24,12 @@ class Permutation {
         _cycles = cycles.split(" ");
         _pHM = new HashMap<Integer,Integer>();
         for (String e : _cycles) {
+            for (int i = 0; i < e.length(); i += 1) {
+                if (!alphabet.contains(e.charAt(i))) {
+                    throw error("Character in cycle not found" +
+                            "in  the alphabet.");
+                }
+            }
             addCycle(e);
         }
         for(Map.Entry entry : alphabet._hm.entrySet()) {

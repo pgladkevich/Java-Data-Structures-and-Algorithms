@@ -77,6 +77,10 @@ public final class Main {
      *  file _config and apply it to the messages in _input, sending the
      *  results to _output. */
     private void process() {
+        Machine m = readConfig();
+        while (_input.hasNextLine()) {
+            if (_input.nextLine();
+        }
         // Need to call printMessageLine and then send the results to _output
         // There should be a newline at the end of every output
     }
@@ -99,6 +103,7 @@ public final class Main {
            (RX) (SZ) (TV) */
 
              _alphabet = new Alphabet(_config.next());
+             _allRotors = new ArrayList<Rotor>();
              /* this has to be an alphabet of ASCII characters not including *()
                  and it must have no whitespace inside of it */
              if (_alphabet.contains('*') || _alphabet.contains('(') ||
@@ -117,18 +122,14 @@ public final class Main {
              while (_config.hasNext()) {
                  _allRotors.add(readRotor());
              }
+             /* _allRotors has to be rotors that have a name containing any non-blank characters
+                other than parentheses, followed by R, N, or M. If the config file doesn't
+                have at least one R and M then it should throw an error. */
              checkRotorConfiguration();
 
-                /* this has to be rotors that have a name containing any non-blank characters
-                other than parentheses, followed by R, N, or M. If the config file doesn't
-                have at least one R and M then it should throw an error.
-
-                R has to be followed by (Cycles) where each of the letters in the Cycles must be
-                in the alphabet. Nothing after that line.*/
-
-        /* After I have created a machine without any selected rotors now I need
-        to */
-            return new Machine(_alphabet, 2, 1, null);
+        /* Now that I have a machine without any selected rotors now I need
+        to return a machine with all of the information*/
+            return new Machine(_alphabet, _S, _P, _allRotors);
         } catch (NoSuchElementException excp) {
             throw error("configuration file truncated");
         }
@@ -137,9 +138,41 @@ public final class Main {
     /** Return a rotor, reading its description from _config. */
     private Rotor readRotor() {
         try {
-            _config
-
-            return null;
+            String name = _config.next();
+            if (name.contains("(") || name.contains(")")) {
+                throw error("Rotor name can't have '(' or ')'.");
+            }
+            String rTNOTCH = _config.next();
+            String rTYPE = rTNOTCH.substring(0,1);
+            if (!"MNR".contains(rTYPE)) {
+                throw error("Not a valid type of rotor. Must be" +
+                        "either 'M', 'N', or 'R'."); }
+            if ("NR".contains(rTYPE) && rTNOTCH.length() > 1) {
+                throw error("Only M rotors can have notches.");
+            }
+            String notches = ""; StringBuilder cycles = new StringBuilder();
+            if (rTNOTCH.length() > 1) {
+                notches = rTNOTCH.substring(1);
+                for (int i = 0; i<notches.length(); i += 1) {
+                    if (this._alphabet.contains(notches.charAt(i))) {
+                        throw error("One of the notches was not in" +
+                                "the alphabet.");
+                    }
+                }
+            }
+            while (_config.hasNext(" *\\((.*?)\\) *")) {
+               cycles.append(_config.next());
+            }
+            if (rTYPE.compareTo("R") == 0) {
+                return new Reflector(name, new Permutation(cycles.toString(),
+                        this._alphabet));
+            } else if (rTYPE.compareTo("N") == 0) {
+                return new FixedRotor(name, new Permutation(cycles.toString(),
+                        this._alphabet));
+            } else {
+                return new MovingRotor(name, new Permutation(cycles.toString(),
+                        this._alphabet), notches);
+            }
         } catch (NoSuchElementException excp) {
             throw error("bad rotor description");
         }

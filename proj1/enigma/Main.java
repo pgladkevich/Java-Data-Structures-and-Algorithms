@@ -90,7 +90,7 @@ public final class Main {
                     _output.println(m.convert(curr));
                 }
             }
-            _output.println();
+            //_output.println();
         }
         catch (NoSuchElementException excp) {
             throw error("Input file truncated");

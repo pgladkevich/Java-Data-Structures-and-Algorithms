@@ -209,7 +209,7 @@ public final class Main {
                 fixed += 1;
             }
         }
-        if (reflectors < 2) { throw error("Machine needs at least " +
+        if (reflectors < 1) { throw error("Machine needs at least " +
                 "one reflector"); } else if (moving < _P) {
             throw error("Not enough moving rotors added to meet  " +
                     "the minimum of _P"); } else if (_S - 1 - _P > fixed) {

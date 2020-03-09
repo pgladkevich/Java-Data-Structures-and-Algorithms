@@ -50,9 +50,6 @@ class Machine {
             while (_allRotorIterator.hasNext()) {
                 Rotor curr = _allRotorIterator.next(); index -= 1;
                 if (!(curr.name().compareTo(name) == 0) && index == 0) {
-                    for (int j = 0; j < _allRotors.size(); j += 1) {
-                        System.out.println(_allRotors.get(j).name());
-                    }
                     throw error("Rotor not found in allRotors.");
                 }
                 if (curr.name().compareTo(name) == 0) {
@@ -67,19 +64,19 @@ class Machine {
                         }
                         _selectedRotors.put(name, curr); S += 1; P += 1; break;
                     } else {
-                        if (i+1 <= _numRotors - _pawls) {
+                        if (i + 1 <= _numRotors - _pawls) {
                             if (curr.rotates() || curr.reflecting()) {
                                 throw error("There was a reflector "
                                         + " or moving rotor where it should "
                                         + "be fixed.");
                             }
-                            _selectedRotors.put(name,curr); S += 1; break;
+                            _selectedRotors.put(name, curr); S += 1; break;
                         }
                         if (!curr.rotates()) {
                             throw error("There was a non-moving"
                                     + "rotor where it should be moving rotor.");
                         }
-                        _selectedRotors.put(name,curr);
+                        _selectedRotors.put(name, curr);
                         S += 1; P += 1; break;
                     }
                 }
@@ -122,8 +119,8 @@ class Machine {
             String cRNAME = _rotorOrder[i];
             Character pLetter = setting.charAt(j);
             if (!_alphabet.contains(pLetter)) {
-                throw error("There was a letter not in the" +
-                        "configured alphabet in the settings string.");
+                throw error("There was a letter not in the"
+                        + "configured alphabet in the settings string.");
             }
             _selectedRotors.get(cRNAME).set(pLetter);
         }
@@ -145,7 +142,7 @@ class Machine {
             Rotor r = _selectedRotors.get(_rotorOrder[i]);
             if (r.atNotch()) {
                 willRotate[i] = true;
-                willRotate[i-1] = true;
+                willRotate[i - 1] = true;
             }
         }
         for (int i = 1; i < _rotorOrder.length; i += 1) {
@@ -153,15 +150,19 @@ class Machine {
                 _selectedRotors.get(_rotorOrder[i]).advance();
             }
         }
-        if (_plugboard != null) { c = _plugboard.permute(c); }
+        if (_plugboard != null) {
+            c = _plugboard.permute(c);
+        }
 
         for (int i = _rotorOrder.length; i > 0; i -= 1) {
-            c = _selectedRotors.get(_rotorOrder[i-1]).convertForward(c);
+            c = _selectedRotors.get(_rotorOrder[i - 1]).convertForward(c);
         }
         for (int i = 1; i < _rotorOrder.length; i += 1) {
             c = _selectedRotors.get(_rotorOrder[i]).convertBackward(c);
         }
-        if (_plugboard != null) { c = _plugboard.permute(c); }
+        if (_plugboard != null) {
+            c = _plugboard.permute(c);
+        }
         return c;
     }
 
@@ -173,7 +174,7 @@ class Machine {
         String[] message = msg.split(" ");
         StringBuilder msgOUTPUT = new StringBuilder();
         for (String word : message) {
-            for (int i = 0; i < word.length(); i +=1) {
+            for (int i = 0; i < word.length(); i += 1) {
                 int k = this._alphabet.toInt(word.charAt(i));
                 int cINT = this.convert(k);
                 Character c = this._alphabet.toChar(cINT);
@@ -192,11 +193,18 @@ class Machine {
 
     /** Common alphabet of my rotors. */
     private final Alphabet _alphabet;
+    /** Number of rotors, S. */
     private int _numRotors;
+    /** Number of pawls, P. */
     private int _pawls;
+    /** All Rotors Collection. */
     private  ArrayList<Rotor> _allRotors;
-    private HashMap<String,Rotor> _selectedRotors;
+    /** Selected rotors in a mapping by name. */
+    private HashMap<String, Rotor> _selectedRotors;
+    /** Iterator object for the All Rotors Collection. */
     private ListIterator<Rotor> _allRotorIterator;
+    /** String containing rotor names in order from 1 to N. */
     private String[] _rotorOrder;
+    /** Plugboard as a Permutation object. */
     private Permutation _plugboard;
 }

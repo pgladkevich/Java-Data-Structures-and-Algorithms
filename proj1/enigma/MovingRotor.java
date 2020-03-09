@@ -40,10 +40,7 @@ class MovingRotor extends Rotor {
         return _notches.contains(cposn);
     }
 
-    Character returnNotch(int index) {
-        return _notches.get(index);
-    }
-
-    ArrayList<Character> _notches;
+    /** The notches of the rotor. */
+    private ArrayList<Character> _notches;
 
 }

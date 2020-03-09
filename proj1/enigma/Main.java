@@ -75,13 +75,15 @@ public final class Main {
 
     /** Configure an Enigma machine from the contents of configuration
      *  file _config and apply it to the messages in _input, sending the
-     *  results to _output. */
+     *  results to _output.
+     *  Need to call printMessageLine and then send the results to _output
+     *  There should be a newline at the end of every output */
     private void process() {
         Machine m = readConfig();
         try {
             if (!_input.hasNext("\\*")) {
-                throw error("There was a message without a " +
-                        "configuration");
+                throw error("There was a message without a "
+                        + "configuration");
             }
             while (_input.hasNextLine()) {
                 String curr = _input.nextLine().trim();
@@ -89,18 +91,13 @@ public final class Main {
                     _output.println();
                 } else if ("*".compareTo("" + curr.charAt(0)) == 0) {
                     this.setUp(m, curr);
-                }
-                else {
+                } else {
                     _output.println(m.convert(curr));
                 }
             }
-            //_output.println();
-        }
-        catch (NoSuchElementException excp) {
+        } catch (NoSuchElementException excp) {
             throw error("Input file truncated");
         }
-        // Need to call printMessageLine and then send the results to _output
-        // There should be a newline at the end of every output
     }
 
 
@@ -114,24 +111,30 @@ public final class Main {
      *  some things separate, etc. Make sure we have error checks. */
     private Machine readConfig() {
         try {
-             _alphabet = new Alphabet(_config.next());
-             _allRotors = new ArrayList<Rotor>();
-             if (_alphabet.contains('*') || _alphabet.contains('(') ||
-                     _alphabet.contains(')')) { throw error("" +
-                     "The input alphabet contained not allowed characters" +
-                     " '*', '(', or ')'."); }
-             for (int i = 0; i < 2; i += 1) {
-                 if (!_config.hasNextInt()) { throw error("Either " +
-                         "S or P were not configured properly"); }
-                 if (i==0) { _S =_config.nextInt(); }
-                 else { _P = _config.nextInt(); if (_P >= _S || _P < 1
-                         || _S < 2) { throw error("Either " +
-                             "S or P were not configured properly"); } }
-             }
-             while (_config.hasNext()) {
-                 _allRotors.add(readRotor());
-             }
-             checkRotorConfiguration();
+            _alphabet = new Alphabet(_config.next());
+            _allRotors = new ArrayList<Rotor>();
+            if (_alphabet.contains('*') || _alphabet.contains('(')
+                    || _alphabet.contains(')')) {
+                throw error("" + "The input alphabet contained not"
+                        + " allowed characters '*', '(', or ')'.");
+            }
+            for (int i = 0; i < 2; i += 1) {
+                if (!_config.hasNextInt()) {
+                    throw error("Either S or P were not set right");
+                }
+                if (i == 0) {
+                    _S = _config.nextInt();
+                } else {
+                    _P = _config.nextInt();
+                    if (_P >= _S || _P < 1 || _S < 2) {
+                        throw error("Either S or P were not right");
+                    }
+                }
+            }
+            while (_config.hasNext()) {
+                _allRotors.add(readRotor());
+            }
+            checkRotorConfiguration();
             return new Machine(_alphabet, _S, _P, _allRotors);
         } catch (NoSuchElementException excp) {
             throw error("configuration file truncated");
@@ -146,25 +149,26 @@ public final class Main {
                 throw error("Rotor name can't have '(' or ')'.");
             }
             String rTNOTCH = _config.next();
-            String rTYPE = rTNOTCH.substring(0,1);
+            String rTYPE = rTNOTCH.substring(0, 1);
             if (!"MNR".contains(rTYPE)) {
-                throw error("Not a valid type of rotor. Must be" +
-                        "either 'M', 'N', or 'R'."); }
+                throw error("Not a valid type of rotor. Must be"
+                        + "either 'M', 'N', or 'R'.");
+            }
             if ("NR".contains(rTYPE) && rTNOTCH.length() > 1) {
                 throw error("Only M rotors can have notches.");
             }
             String notches = ""; StringBuilder cycles = new StringBuilder();
             if (rTNOTCH.length() > 1) {
                 notches = rTNOTCH.substring(1);
-                for (int i = 0; i<notches.length(); i += 1) {
+                for (int i = 0; i < notches.length(); i += 1) {
                     if (!this._alphabet.contains(notches.charAt(i))) {
-                        throw error("One of the notches was not in" +
-                                "the alphabet.");
+                        throw error("One of the notches was not in"
+                                + "the alphabet.");
                     }
                 }
             }
             while (_config.hasNext(" *\\((.*?)\\) *")) {
-               cycles.append(_config.next());
+                cycles.append(_config.next());
             }
             if (rTYPE.compareTo("R") == 0) {
                 return new Reflector(name, new Permutation(cycles.toString(),
@@ -182,31 +186,34 @@ public final class Main {
     }
 
     /** Checks for different incorrect scenarios of _allRotors.
-     *  _allRotors has to be rotors that have a name containing any non-blank characters
-     *  other than parentheses, followed by R, N, or M. If the config file doesn't
-     *  have at least one R and M then it should throw an error. */
+     *  _allRotors has to be rotors that have a name containing any non-blank
+     *  characters other than parentheses, followed by R, N, or M.
+     *  If the config file doesn't have at least one R and M then it should
+     *  throw an error. */
     private void checkRotorConfiguration() {
         if (_allRotors == null || _allRotors.size() < _S) {
-            throw error("Not enough rotors added to meet " +
-                    "the minimum of S"); }
-        int moving = 0;
-        int reflectors = 0;
-        int fixed = 0;
+            throw error("Not enough rotors added to meet "
+                    + "the minimum of S");
+        }
+        int moving = 0; int reflectors = 0; int fixed = 0;
         for (Rotor r : _allRotors) {
             if (r.reflecting()) {
                 reflectors += 1;
-            } else if( r.rotates() ) {
+            } else if (r.rotates()) {
                 moving += 1;
             } else {
                 fixed += 1;
             }
         }
-        if (reflectors < 1) { throw error("Machine needs at least " +
-                "one reflector"); } else if (moving < _P) {
-            throw error("Not enough moving rotors added to meet  " +
-                    "the minimum of _P"); } else if (_S - 1 - _P > fixed) {
-            throw error("Not enough fixed rotors added to meet" +
-                    "the minimum required.");
+        if (reflectors < 1) {
+            throw error("Machine needs at least "
+                + "one reflector");
+        } else if (moving < _P) {
+            throw error("Not enough moving rotors added to meet  "
+                    + "the minimum of _P");
+        } else if (_S - 1 - _P > fixed) {
+            throw error("Not enough fixed rotors added to meet"
+                    + "the minimum required.");
         }
     }
 
@@ -228,16 +235,9 @@ public final class Main {
             M.insertRotors(rotors);
             M.setRotors(setSTRING);
             M.setPlugboard(new Permutation(cycles.toString(), this._alphabet));
-        }
-        catch (NoSuchElementException excp) {
+        } catch (NoSuchElementException excp) {
             throw error("Input settings string truncated");
         }
-    }
-
-    /** Print MSG in groups of five (except that the last group may
-     *  have fewer letters). */
-    private void printMessageLine(String msg) {
-        // FIXME
     }
 
     /** Alphabet used in this machine. */

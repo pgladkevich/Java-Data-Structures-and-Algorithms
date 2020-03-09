@@ -32,7 +32,7 @@ class Permutation {
             }
             addCycle(e);
         }
-        for (Map.Entry entry : alphabet._hm.entrySet()) {
+        for (Map.Entry entry : alphabet.returnHM().entrySet()) {
             if (!_pHM.containsKey(entry.getKey())) {
                 _pHM.put((int) entry.getKey(), (int) entry.getKey());
             }

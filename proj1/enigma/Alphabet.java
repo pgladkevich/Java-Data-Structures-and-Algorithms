@@ -9,14 +9,20 @@ import java.util.Objects;
  *  @author Pavel Gladkevich
  */
 class Alphabet {
-    public HashMap<Integer,Character> _hm;
+    /** A hashmap of all of the characters. */
+    private HashMap<Integer, Character> _hm;
     /** A new alphabet containing CHARS.  Character number #k has index
      *  K (numbering from 0). No character may be duplicated. */
     Alphabet(String chars) {
-        _hm = new HashMap<Integer,Character>();
-        for (int i =0;i < chars.length(); i+=1) {
+        _hm = new HashMap<Integer, Character>();
+        for (int i = 0; i < chars.length(); i += 1) {
             _hm.put(i, chars.charAt(i));
         }
+    }
+    /** Return the HashMap of ints and chars.
+     * @return*/
+    HashMap<Integer, Character> returnHM() {
+        return this._hm;
     }
 
     /** A default alphabet of all upper-case characters. */

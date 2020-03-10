@@ -227,13 +227,21 @@ public final class Main {
             for (int i = 0; i < _S; i += 1) {
                 rotors[i] = s.next();
             }
-            String setSTRING = s.next();
+            String setSTRING = s.next(); String setRINGS = "";
+            if (s.hasNext(" *[^(] *")) {
+                 setRINGS = s.next();
+            }
             StringBuilder cycles = new StringBuilder();
             while (s.hasNext(" *\\((.*?)\\) *")) {
                 cycles.append(s.next());
             }
             M.insertRotors(rotors);
             M.setRotors(setSTRING);
+            if (setRINGS.compareTo("") == 0) {
+                M.setRotorRings("A".repeat(setSTRING.length()));
+            } else {
+                M.setRotorRings(setRINGS);
+            }
             M.setPlugboard(new Permutation(cycles.toString(), this._alphabet));
         } catch (NoSuchElementException excp) {
             throw error("Input settings string truncated");

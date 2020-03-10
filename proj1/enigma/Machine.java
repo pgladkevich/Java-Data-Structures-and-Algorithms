@@ -126,6 +126,25 @@ class Machine {
         }
     }
 
+    /** Set my rotors according to SETTING, which must be a string of
+     *  numRotors()-1 characters in my alphabet. The first letter refers
+     *  to the leftmost rotor setting (not counting the reflector).  */
+    void setRotorRings(String rings) {
+        if (rings.length() != numRotors() - 1) {
+            throw error("There were either too many or not"
+                    + "enough rings to set for the selected rotors.");
+        }
+        for (int j = 0, i = 1; j < rings.length(); j += 1, i += 1) {
+            String cRNAME = _rotorOrder[i];
+            Character pLetter = rings.charAt(j);
+            if (!_alphabet.contains(pLetter)) {
+                throw error("There was a letter not in the"
+                        + "configured alphabet in the rings string.");
+            }
+            _selectedRotors.get(cRNAME).setRING(pLetter);
+        }
+    }
+
     /** Set the plugboard to PLUGBOARD. */
     void setPlugboard(Permutation plugboard) {
         _plugboard = plugboard;

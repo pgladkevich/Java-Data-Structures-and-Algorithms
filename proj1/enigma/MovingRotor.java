@@ -36,7 +36,9 @@ class MovingRotor extends Rotor {
 
     @Override
     boolean atNotch() {
-        char cposn = this.alphabet().toChar(this.setting());
+        int truePOSN = this.permutation().wrap(this.setting()
+                - this.getPRING());
+        char cposn = this.alphabet().toChar(truePOSN);
         return _notches.contains(cposn);
     }
 

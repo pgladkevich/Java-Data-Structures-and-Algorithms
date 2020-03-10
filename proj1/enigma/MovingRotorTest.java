@@ -139,4 +139,17 @@ public class MovingRotorTest {
         rotor.set(25);
         checkRotor("Rotor I set", UPPER_STRING, NAVALZ_MAP.get("I"));
     }
+
+    @Test
+    public void checkMovingRing() {
+        setRotor("III", NAVALA, "");
+        rotor.set('A');
+        assertEquals(19, rotor.convertForward(9));
+        assertEquals(9, rotor.convertBackward(19));
+        rotor.setRING('B');
+        rotor.set('B');
+        assertEquals(19, rotor.convertForward(9));
+        assertEquals(9, rotor.convertBackward(19));
+
+    }
 }

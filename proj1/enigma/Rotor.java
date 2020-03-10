@@ -55,15 +55,10 @@ class Rotor {
         _sposn = posn;
     }
 
-    /** Set setting() to POSN.  */
+    /** Set position of Ring to PRING.  */
     void setRING(char pring) {
         Alphabet a = this.alphabet();
         _pring = a.toInt(pring);
-    }
-
-    /** Return my current setting. */
-    int getPRING() {
-        return _pring;
     }
 
     /** Set setting() to character CPOSN. */

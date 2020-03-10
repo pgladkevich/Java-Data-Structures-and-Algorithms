@@ -227,18 +227,26 @@ public final class Main {
             for (int i = 0; i < _S; i += 1) {
                 rotors[i] = s.next();
             }
-            String setSTRING = s.next(); String setRINGS = "";
-            if (s.hasNext(" *[^(] *")) {
-                 setRINGS = s.next();
-            }
+            String setSTRING = s.next();
+            String setRINGS = "";
             StringBuilder cycles = new StringBuilder();
-            while (s.hasNext(" *\\((.*?)\\) *")) {
-                cycles.append(s.next());
+            if (s.hasNext(" *\\((.*?)\\) *")) {
+                while (s.hasNext(" *\\((.*?)\\) *")) {
+                    cycles.append(s.next());
+                }
+            } else if (s.hasNextLine()) {
+                setRINGS = s.next();
+                while (s.hasNext(" *\\((.*?)\\) *")) {
+                    cycles.append(s.next());
+                }
             }
             M.insertRotors(rotors);
             M.setRotors(setSTRING);
             if (setRINGS.compareTo("") == 0) {
-                M.setRotorRings("A".repeat(setSTRING.length()));
+                M.setRotorRings(
+                        String.valueOf(
+                                this._alphabet.toChar(0)).repeat(
+                                        setSTRING.length()));
             } else {
                 M.setRotorRings(setRINGS);
             }

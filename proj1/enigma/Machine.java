@@ -126,9 +126,9 @@ class Machine {
         }
     }
 
-    /** Set my rotors according to SETTING, which must be a string of
+    /** Set my rotors ring's according to RINGS, which must be a string of
      *  numRotors()-1 characters in my alphabet. The first letter refers
-     *  to the leftmost rotor setting (not counting the reflector).  */
+     *  to the leftmost rotor ring (not counting the reflector).  */
     void setRotorRings(String rings) {
         if (rings.length() != numRotors() - 1) {
             throw error("There were either too many or not"

@@ -26,6 +26,7 @@ public class TreeMap<K extends Comparable<K>, V> implements SimpleMap<K, V> {
      */
     private TreeMapNode putHelper(TreeMapNode node, K key, V value) {
         // FIXME
+        return null;
     }
 
     /**
@@ -38,6 +39,7 @@ public class TreeMap<K extends Comparable<K>, V> implements SimpleMap<K, V> {
      */
     private V getHelper(TreeMapNode node, K key) {
         // FIXME
+        return null;
     }
 
     private TreeMapNode _root;

@@ -50,7 +50,7 @@ public class AmortizationTiming {
 
                 List<Double> xVals = new ArrayList<>();
 
-                for (int i = 1; i < maxSize; i += 1) {
+                for (int i = 1; i <= maxSize; i += 1) {
                     xVals.add(i * 1.0);
                 }
 

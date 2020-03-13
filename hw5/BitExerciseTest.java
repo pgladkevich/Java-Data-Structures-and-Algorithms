@@ -10,14 +10,27 @@ public class BitExerciseTest {
     public void testLastBit() {
         int four = BitExercise.lastBit(100);
         assertEquals(4, four);
+        assertEquals(1, BitExercise.lastBit(1));
+        assertEquals(1, BitExercise.lastBit(-1));
+        assertEquals(2, BitExercise.lastBit(-2));
+        assertEquals(2, BitExercise.lastBit(10));
+        assertEquals(0, BitExercise.lastBit(0));
     }
 
     @Test
     public void testPowerOfTwo() {
         boolean powOfTwo = BitExercise.powerOfTwo(32);
         assertTrue(powOfTwo);
+        // 00010000
+        // 11110000
+        // 10
+        // 10
+
         boolean notPower = BitExercise.powerOfTwo(7);
         assertFalse(notPower);
+        // 000000111
+        // 111111001
+
     }
 
     @Test

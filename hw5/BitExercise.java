@@ -1,5 +1,5 @@
 /** A collection of bit twiddling exercises.
- *  @author
+ *  @author Pavel Gladkevich
  */
 
 public class BitExercise {
@@ -11,7 +11,7 @@ public class BitExercise {
     * should return 4, which in binary is 0b100.
     */
     public static int lastBit(int x) {
-        return 0; //TODO: Your code here
+        return x & (~x + 1);
     }
 
     /** Fill in the function below so that it returns 
@@ -30,5 +30,16 @@ public class BitExercise {
     */
     public static int absolute(int x) {
         return 0; //TODO: your code here
-    } 
+    }
+
+    /** Discussion problem 1 NUM I. */
+    public static boolean isBitIOn(int num, int i) {
+        int mask = 1 << i;
+        return (num & mask) >>> i == 1;
+    }
+    /** Discussion problem 2 NUM I. */
+    public static int turnBitIOn(int num, int i) {
+        int mask = 1 << i;
+        return (num | mask);
+    }
 }

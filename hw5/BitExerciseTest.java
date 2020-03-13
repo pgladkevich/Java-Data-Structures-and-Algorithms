@@ -30,6 +30,22 @@ public class BitExerciseTest {
         assertEquals(0,zero);
     }
 
+    @Test
+    public void testisBitOn() {
+        assertFalse(BitExercise.isBitIOn(2, 0));
+        assertTrue(BitExercise.isBitIOn(2, 1));
+        assertTrue(BitExercise.isBitIOn(7,2));
+        assertFalse(BitExercise.isBitIOn(8,2));
+        assertTrue(BitExercise.isBitIOn(8,3));
+    }
+
+    @Test
+    public void testturnBitIOn() {
+        assertEquals(3,BitExercise.turnBitIOn(1,1));
+        assertEquals(1,BitExercise.turnBitIOn(1,0));
+        assertEquals(9,BitExercise.turnBitIOn(8,0));
+    }
+
     public static void main(String[] args) {
         System.exit(ucb.junit.textui.runClasses(BitExerciseTest.class));
     }

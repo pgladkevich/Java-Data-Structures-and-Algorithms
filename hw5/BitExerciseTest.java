@@ -31,6 +31,10 @@ public class BitExerciseTest {
         // 000000111
         // 111111001
 
+        boolean notPower2 = BitExercise.powerOfTwo(25);
+        assertFalse(notPower2);
+        assertFalse(BitExercise.powerOfTwo(0));
+
     }
 
     @Test

@@ -39,6 +39,7 @@ public class BitExerciseTest {
 
     @Test
     public void testAbsolute() {
+        System.out.println();
         int hundred = BitExercise.absolute(100);
         assertEquals(100, hundred);
         int negative = BitExercise.absolute(-100);

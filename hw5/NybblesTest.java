@@ -10,9 +10,13 @@ public class NybblesTest {
     public void testPos() {
         Nybbles arr = new Nybbles(16);
         for (int i = 0; i < arr.size(); i += 1) {
+//            System.out.println(i);
+//            System.out.println(i%8);
             arr.set(i, i % 8);
         }
         for (int i = 0; i < arr.size(); i += 1) {
+//            System.out.println(i%8);
+//            System.out.println(arr.get(i));
             assertEquals(i % 8, arr.get(i));
         }
     }
@@ -24,6 +28,8 @@ public class NybblesTest {
             arr.set(i, i % 8 - 8);
         }
         for (int i = 0; i < arr.size(); i += 1) {
+//            System.out.println(i % 8 - 8);
+//            System.out.println(arr.get(i));
             assertEquals(i % 8 - 8, arr.get(i));
         }
     }
@@ -36,6 +42,8 @@ public class NybblesTest {
             arr.set(i + 1, i / 2);
         }
         for (int i = 0; i < arr.size(); i += 2) {
+            //System.out.println(i/2 -8);
+           // System.out.println(i/2);
             assertEquals(i / 2 - 8, arr.get(i));
             assertEquals(i / 2, arr.get(i + 1));
         }

@@ -28,8 +28,6 @@ public class BitExercise {
     * For example, absolute(1) should return 1 and 
     * absolute(-1) should return 1.
     */
-    //0001
-    //1110
     public static int absolute(int x) {
         int mask = x >> (32 - 1);
         return ((x + mask) ^ mask);

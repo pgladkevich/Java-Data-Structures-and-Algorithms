@@ -33,6 +33,16 @@ public class NybblesTest {
             assertEquals(i % 8 - 8, arr.get(i));
         }
     }
+    @Test
+    public void testWritten() {
+        // System.out.println(1 << 31);
+        // System.out.println(1 >> 1);
+        // System.out.println(1&2);
+        // System.out.println((1 << 31) | (1 >> 1));
+        // System.out.println(~(2^(-3)) + (1<<2));
+        // System.out.println(1 << (8 ^ (1 &2)));
+        System.out.println((1 ^ (1<<1)) + (-1));
+    }
 
     @Test
     public void testMixed() {

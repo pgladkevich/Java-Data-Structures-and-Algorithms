@@ -1,11 +1,15 @@
 Q: Is one GrowList implementation always better than the others?
-A:
+A: No. It depends on the size of the array passed into the algorithms and the number of elements at which an algorithm spikes.
 
 Q: Why is the runtime for N insertions into a geometrically resizing list a Theta(N) operation?
-A:
+A: Because a geometrically resizing list will have an amortized time that evens out its doubling operation that expands
+the size of the list. So even though it will spike at the elements where it needs to double the size of the list, the
+other elements all have a Theta(1) insertion time since the list is already expanded. This results in an amortized time
+of Theta(N) for N insertions.
 
 Q: Why is the runtime for N insertions into a arithmetically resizing list a Theta(N^2) operation?
-A:
+A: Because an arithmetically resizing list has to not only create a new list every time, but copy over the old elements
+into the new list. The combination of these two actions results in a Theta(N^2) operation.
 
 Q: How does the runtime per operation for the ArithGrowList compare to that of GeomGrowList and JavaGrowList? Specifically look at the non-accumulated plots and desribe the trends for how long each operation takes as a function of how many elements have already been inserted in the list.
 A:

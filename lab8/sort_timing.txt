@@ -26,4 +26,9 @@ A: No, even my own plot is not the same as my own plot repeated with the equival
 random lists being generated that are use with the sorting algorithms.
 
 Q: Optional: Look at the source code for BubbleSorter to WipingBubbleSorter. After looking at the plots, can you intuitively explain why WipingBubbleSorter is usually 2x as fast as BubbleSorter? (Hint: Consider the immobility of some elements when the swapping passes are single directional (i.e. only going forward), and how this "Wiping" strategy helps deal with that issue.) Can you come up with an example that shows the difference in runtime?
-A:
+A: If you have a mechanism to go backwards instead of just going forwards then you are sometimes emulating a similar
+mechanism to insertion sort which will not only move larger elements forward, but it will move smaller elements back.
+This speeds up the process roughly two fold because you are not continuously moving over the same elements as eventually
+the bottom of the list becomes more sorted. An example would be if the list were sorted in perfect descending order and
+passed into the two algorithms. Wiping Bubble Sorter would perform much better because it would not move elements one
+directionally forward.

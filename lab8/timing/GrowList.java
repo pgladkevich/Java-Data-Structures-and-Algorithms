@@ -52,7 +52,7 @@ class GeomGrowList extends GrowList {
     @Override
     public void add(int e) {
         if (_size == _arr.length) {
-            int[] newArr = new int[_size * 2];
+            int[] newArr = new int[_size * 3];
             System.arraycopy(_arr, 0, newArr, 0, _size);
             _arr = newArr;
         }
@@ -72,7 +72,7 @@ class GeomGrowList extends GrowList {
 class ArithGrowList extends GrowList {
 
     public ArithGrowList() {
-        _arr = new int[8];
+        _arr = new int[1];
         _size = 0;
     }
 

@@ -185,7 +185,7 @@ class Board {
     /** Return true if a move from FROM to TO is blocked by an opposing
      *  piece or by a friendly piece on the target square. */
     private boolean blocked(Square from, Square to) {
-        return false; // FALSE
+        return false; // FIXME
     }
 
     /** Return the size of the as-yet unvisited cluster of squares

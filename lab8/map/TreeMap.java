@@ -23,10 +23,28 @@ public class TreeMap<K extends Comparable<K>, V> implements SimpleMap<K, V> {
      * If node is null then a new Node without any descendants is created.
      * Otherwise the function is recursively called on either the left and
      * right descendant based on the rules of BSTs.
+     *
+     * Hint: The keys of the map will be Comparable<K> which means that you
+     * should use the compareTo(K key) function in order to compare keys.
+     * This will be useful for traversing through the tree correctly.
      */
     private TreeMapNode putHelper(TreeMapNode node, K key, V value) {
-        // FIXME
-        return null;
+        if (node == null && _root == null) {
+            return new TreeMapNode(key, value, null, null);
+        }
+        if (node != null && node._key.compareTo(key) == 0) {
+            node = new TreeMapNode(key, value, node._left, node._right);
+        }
+        else if (node != null && node._key.compareTo(key) > 0) {
+            node._left = putHelper(node._left, key, value);
+        }
+        else if (node != null && node._key.compareTo(key) < 0) {
+            node._right = putHelper(node._right, key, value);
+        }
+        else {
+            return new TreeMapNode(key, value, null, null);
+        }
+        return node;
     }
 
     /**

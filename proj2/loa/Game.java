@@ -124,15 +124,17 @@ class Game {
                 setCommand(command.group(2), command.group(3).toLowerCase(),
                            command.group(4).toLowerCase());
                 break;
+            case "limit":
+                limitCommand(command.group(2));
+                break;
             case "?": case "help":
                 help();
                 break;
-            default: {
+            default:
                 if (!processMove(line)) {
                     error("unknown command: %s%n", line);
                 }
                 break;
-            }
             }
         }
     }
@@ -213,6 +215,17 @@ class Game {
         } catch (IllegalArgumentException excp) {
             error("invalid arguments to set: set %s %s %s%n", S, content,
                   nextPlayer);
+        }
+    }
+
+    /** Set the corrent move limit according to the numeral in LIMIT.  LIMIT
+     *  must be a valid numeral that is greater than the current number of
+     *  moves by either player in the current game. */
+    private void limitCommand(String limit) {
+        try {
+            _board.setMoveLimit(Integer.parseInt(limit));
+        } catch (NumberFormatException excp) {
+            throw new IllegalArgumentException("badly formed numeral");
         }
     }
 

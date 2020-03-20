@@ -237,14 +237,12 @@ class Game {
             return false;
         } else if (!_playing) {
             error("no game in progress%n");
-            return false;
         } else if (!_board.isLegal(move)) {
             error("illegal move: %s%n", line);
-            return false;
         } else {
             _board.makeMove(move);
-            return true;
         }
+        return true;
     }
 
     /** Play this game, printing any results. */

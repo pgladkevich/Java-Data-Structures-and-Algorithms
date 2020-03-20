@@ -91,7 +91,7 @@ public class Main {
         Reporter reporter;
 
         if (options.contains("--display")) {
-            gui = new GUI("Tablut 61B");
+            gui = new GUI("LOA 61B");
             reporter = gui;
             gui.display(true);
             view = gui;

@@ -1,16 +1,47 @@
 import org.junit.Test;
 import static org.junit.Assert.*;
+
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Test of a BST-based String Set.
- * @author
+ * @author Pavel Gladkevich
  */
 public class BSTStringSetTest  {
-    // FIXME: Add your own tests for your BST StringSet
 
     @Test
-    public void testNothing() {
-        // FIXME: Delete this function and add your own tests
+    public void testEmpty() {
+        BSTStringSet t = new BSTStringSet();
+        t.put("");
+        assertTrue(t.contains(""));
     }
+
+    @Test
+    public void testBasic() {
+        BSTStringSet t = new BSTStringSet();
+        String[] word1 = {"f", "c", "a", "d", "e", "b"};
+        for (String i : word1) {
+            t.put(i);
+        }
+    }
+
+    @Test
+    public void testAsList() {
+        BSTStringSet t = new BSTStringSet();
+        String[] word1 = {"f", "c", "a", "d", "e", "b"};
+        for (String i : word1) {
+            t.put(i);
+        }
+        String[] word1S = {"a", "b", "c", "d", "e", "f"};
+        List<String> aL = t.asList();
+        for (int i = 0; i < word1.length; i += 1) {
+            assertEquals(word1S[i], aL.get(i));
+        }
+    }
+
+
+//for (Iterator<String> i = s.iterator("b", "e"); i.hasNext();) {
+//        System.out.println(i.next());
+//    }
 }

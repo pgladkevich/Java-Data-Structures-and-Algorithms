@@ -6,7 +6,7 @@ import java.util.Stack;
 
 /**
  * Implementation of a BST based String Set.
- * @author
+ * @author Pavel Gladkevich
  */
 public class BSTStringSet implements StringSet, Iterable<String> {
     /** Creates a new empty set. */
@@ -16,17 +16,47 @@ public class BSTStringSet implements StringSet, Iterable<String> {
 
     @Override
     public void put(String s) {
-        // FIXME: PART A
+        if (!contains(s)) {
+            _root = putHelper(_root, s);
+        }
+    }
+    private Node putHelper(Node node, String s) {
+        if (node == null) {
+            return new Node(s);
+        }
+        if (node.compare(s) > 0) {
+            node.setLeft(putHelper(node.getLeft(node), s));
+        }
+        else {
+            node.setRight(putHelper(node.getRight(node), s));
+        }
+        return node;
     }
 
     @Override
     public boolean contains(String s) {
-        return false; // FIXME: PART A
+        if (_root == null) {
+            return false;
+        }
+        else {
+            BSTIterator I = new BSTIterator(_root);
+            while(I.hasNext()) {
+                if (s.compareTo(I.next()) == 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override
     public List<String> asList() {
-        return null; // FIXME: PART A
+        ArrayList<String> aL = new ArrayList<String>();
+        BSTIterator I = new BSTIterator(_root);
+        while(I.hasNext()) {
+            aL.add(I.next());
+        }
+        return aL;
     }
 
 
@@ -42,6 +72,26 @@ public class BSTStringSet implements StringSet, Iterable<String> {
         /** Creates a Node containing SP. */
         Node(String sp) {
             s = sp;
+        }
+
+        public int compare(String s2) {
+            return s.compareTo(s2);
+        }
+
+        public void setRight(Node right) {
+            this.right = right;
+        }
+
+        public void setLeft(Node left) {
+            this.left = left;
+        }
+
+        public Node getRight(Node right) {
+            return this.right;
+        }
+
+        public Node getLeft(Node left) {
+            return this.left;
         }
     }
 

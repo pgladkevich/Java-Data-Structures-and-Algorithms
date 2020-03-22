@@ -17,19 +17,43 @@ public class BSTStringSet implements StringSet, SortedStringSet,
 
     @Override
     public void put(String s) {
-        if (!contains(s)) {
+        if (_root == null) {
+            _root = new Node(s);
+        }
+        else if (!contains(s)) {
             _root = putHelper(_root, s);
         }
     }
+//    private Node putHelper(Node node, String s) {
+//        if (node == null) {
+//            return new Node(s);
+//        }
+//        if (node.compare(s) > 0) {
+//            node.setLeft(putHelper(node.getLeft(node), s));
+//        }
+//        else {
+//            node.setRight(putHelper(node.getRight(node), s));
+//        }
+//        return node;
+//    }
     private Node putHelper(Node node, String s) {
-        if (node == null) {
-            return new Node(s);
+        Node prevNode = node;
+        Node currNode = node;
+        while (currNode != null) {
+            if (currNode.compare(s) > 0) {
+                prevNode = currNode;
+                currNode = currNode.getLeft(node);
+            }
+            else {
+                prevNode = currNode;
+                currNode = currNode.getRight(node);
+            }
         }
-        if (node.compare(s) > 0) {
-            node.setLeft(putHelper(node.getLeft(node), s));
+        if (prevNode.compare(s) > 0) {
+            prevNode.setLeft(new Node(s));
         }
         else {
-            node.setRight(putHelper(node.getRight(node), s));
+            prevNode.setRight(new Node(s));
         }
         return node;
     }

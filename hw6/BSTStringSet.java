@@ -236,6 +236,9 @@ public class BSTStringSet implements StringSet, SortedStringSet,
                 _toDo.push(node);
                 node = node.left;
             }
+            if (node != null && node.right.compare(_low) >= 0) {
+                addTree(node.right);
+            }
         }
     }
 

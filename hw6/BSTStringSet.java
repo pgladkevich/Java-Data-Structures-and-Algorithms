@@ -229,16 +229,27 @@ public class BSTStringSet implements StringSet, SortedStringSet,
 
         /** Add the relevant subtrees of the tree rooted at NODE. */
         private void addTree(Node node) {
-            while (node != null && node.compare(_high) > 0) {
-                node = node.left;
+            Node currNode = node;
+            while (currNode != null && currNode.compare(_high) >= 0) {
+                currNode = currNode.left;
             }
-            while (node != null && node.compare(_low) >= 0) {
-                _toDo.push(node);
-                node = node.left;
+            while (currNode != null && currNode.compare(_low) >= 0) {
+                _toDo.push(currNode);
+                if (currNode.left != null && currNode.left.right != null
+                        && currNode.left.right.compare(_low) >= 0) {
+                    addTree(currNode.left.right);
+                }
+                currNode = currNode.left;
             }
-            if (node != null && node.right.compare(_low) >= 0) {
-                addTree(node.right);
-            }
+//            if (node != null && node.right != null) {
+//                addRight(node.right);
+//            }
+        }
+        private void addRight(Node node) {
+//            while (node != null && node.compare(_low) >= 0) {
+//                _toDo.push(node);
+//                node = node.right;
+//            }
         }
     }
 

@@ -42,8 +42,8 @@ public class BSTStringSetRangeTest {
         }
         Collections.shuffle(WORDS1, new Random(seed));
     }
-
-    @Test(timeout = 100)
+    // (timeout = 100)
+    @Test
     public void testGetRange() {
         ArrayList<String> found = new ArrayList<>();
 

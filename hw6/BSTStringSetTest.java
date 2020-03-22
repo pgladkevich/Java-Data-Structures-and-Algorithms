@@ -53,4 +53,16 @@ public class BSTStringSetTest  {
             System.out.println(i.next());
         }
     }
+    @Test
+    public void testIterator2() {
+        BSTStringSet t = new BSTStringSet();
+        String[] word1 = {"f", "c", "a", "d", "e", "b"};
+        for (String i : word1) {
+            t.put(i);
+        }
+        for (Iterator<String> i = t.iterator("a", "e");
+             i.hasNext();) {
+            System.out.println(i.next());
+        }
+    }
 }

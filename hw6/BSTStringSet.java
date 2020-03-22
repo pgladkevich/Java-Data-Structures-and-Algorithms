@@ -235,7 +235,8 @@ public class BSTStringSet implements StringSet, SortedStringSet,
             }
             while (currNode != null && currNode.compare(_low) >= 0) {
                 _toDo.push(currNode);
-                if (currNode.left != null && currNode.left.right != null
+                if (currNode.compare(_low) == 0 && currNode.left != null
+                        && currNode.left.right != null
                         && currNode.left.right.compare(_low) >= 0) {
                     addTree(currNode.left.right);
                 }
@@ -245,12 +246,12 @@ public class BSTStringSet implements StringSet, SortedStringSet,
 //                addRight(node.right);
 //            }
         }
-        private void addRight(Node node) {
+//        private void addRight(Node node) {
 //            while (node != null && node.compare(_low) >= 0) {
 //                _toDo.push(node);
 //                node = node.right;
 //            }
-        }
+//        }
     }
 
     @Override

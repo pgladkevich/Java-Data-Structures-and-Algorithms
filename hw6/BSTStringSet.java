@@ -218,7 +218,7 @@ public class BSTStringSet implements StringSet, SortedStringSet,
             }
 
             Node node = _toDo.pop();
-            addTree(node.right);
+            //addTree(node.right);
             return node.s;
         }
 
@@ -229,30 +229,88 @@ public class BSTStringSet implements StringSet, SortedStringSet,
 
         /** Add the relevant subtrees of the tree rooted at NODE. */
         private void addTree(Node node) {
-            Node currNode = node;
-            while (currNode != null && currNode.compare(_high) >= 0) {
-                currNode = currNode.left;
-            }
-            while (currNode != null && currNode.compare(_low) >= 0) {
-                _toDo.push(currNode);
-                if (currNode.compare(_low) == 0 && currNode.left != null
-                        && currNode.left.right != null
-                        && currNode.left.right.compare(_low) >= 0) {
-                    addTree(currNode.left.right);
+            while (node != null) {
+                if (node.compare(_low) >= 0 && node.compare(_high) < 0) {
+                    addTree(node.right);
+                    _toDo.add(node);
+                    addTree(node.left);
                 }
-                currNode = currNode.left;
+                if (node.compare(_low) < 0 && node.compare(_high) < 0) {
+                    addTree(node.right);
+                }
+                if (node.compare(_low) >= 0 && node.compare(_high) >= 0) {
+                    addTree(node.left);
+                }
+                if (node.compare(_low) < 0 && node. compare(_high) >= 0) {
+                    addTree(node.left);
+                    addTree(node.right);
+
+                } else {
+                    break;
+                }
             }
-//            if (node != null && node.right != null) {
-//                addRight(node.right);
-//            }
         }
-//        private void addRight(Node node) {
-//            while (node != null && node.compare(_low) >= 0) {
-//                _toDo.push(node);
-//                node = node.right;
-//            }
-//        }
+        private void searchRight(Node node) {
+            while (node!= null) {
+                if (node.compare(_low) >= 0) {
+                    addTree(node);
+                    break;
+                }
+                node = node.right;
+            }
+            addTree(node);
+        }
+        private void searchLeft(Node node) {
+            while (node!= null) {
+                if (node.compare(_high) < 0) {
+                    addTree(node);
+                    break;
+                }
+                node = node.left;
+            }
+            addTree(node);
+        }
     }
+
+//    private void addTree(Node node) {
+//        while (node != null && node.compare(_high) >= 0) {
+//            node = node.left;
+//        }
+//        while (node != null) {
+//            if (node.compare(_low) >= 0) {
+//                _toDo.push(node);
+//            }
+//            if (node.left != null
+//                    && node.left.compare(_low) < 0
+//                    && node.left.right != null) {
+//                addRight(node.left.right);
+//                break;
+//            }
+//            if (node.right != null
+//                    && node.right.compare(_high) >= 0) {
+//                searchLeft(node.right.left);
+//                break;
+//            }
+//            node = node.left;
+//        }
+//    }
+//    private void addRight(Node node) {
+//        while (node!= null) {
+//            if (node.compare(_low) >= 0) {
+//                addTree(node);
+//            }
+//            node = node.right;
+//        }
+//    }
+//    private void searchLeft(Node node) {
+//        while (node!= null) {
+//            if (node.compare(_low) >= 0 && node.compare(_high) < 0) {
+//                addTree(node);
+//            }
+//            node = node.left;
+//        }
+//    }
+//}
 
     @Override
     public Iterator<String> iterator() {

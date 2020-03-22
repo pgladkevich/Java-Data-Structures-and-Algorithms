@@ -65,4 +65,29 @@ public class BSTStringSetTest  {
             System.out.println(i.next());
         }
     }
+    @Test
+    public void testIterator3() {
+        BSTStringSet t = new BSTStringSet();
+        String[] word1 = {"acasdcs", "ccsadcsd", "asdfasdf", "safdsadfd",
+                "asdfsfe", "basfsdfa"};
+        for (String i : word1) {
+            t.put(i);
+        }
+        for (Iterator<String> i = t.iterator("a", "z");
+             i.hasNext();) {
+            System.out.println(i.next());
+        }
+    }
+    @Test
+    public void testIterator4() {
+        BSTStringSet t = new BSTStringSet();
+        String[] word1 = {"a", "f", "b", "d", "c", "e"};
+        for (String i : word1) {
+            t.put(i);
+        }
+        for (Iterator<String> i = t.iterator("b", "e");
+             i.hasNext();) {
+            System.out.println(i.next());
+        }
+    }
 }

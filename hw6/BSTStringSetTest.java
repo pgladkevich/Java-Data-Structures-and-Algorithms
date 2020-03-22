@@ -2,6 +2,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -40,8 +41,16 @@ public class BSTStringSetTest  {
         }
     }
 
-
-//for (Iterator<String> i = s.iterator("b", "e"); i.hasNext();) {
-//        System.out.println(i.next());
-//    }
+    @Test
+    public void testIterator() {
+        BSTStringSet t = new BSTStringSet();
+        String[] word1 = {"f", "c", "a", "d", "e", "b"};
+        for (String i : word1) {
+            t.put(i);
+        }
+        for (Iterator<String> i = t.iterator("b", "e");
+             i.hasNext();) {
+            System.out.println(i.next());
+        }
+    }
 }

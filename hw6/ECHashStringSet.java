@@ -1,7 +1,7 @@
 import java.util.List;
 
 /** A set of String values.
- *  @author
+ *  @author Pavel Gladkevich
  */
 class ECHashStringSet implements StringSet {
     @Override

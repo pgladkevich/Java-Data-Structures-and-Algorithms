@@ -187,17 +187,6 @@ public class ArrayHeap<T> {
                 bubbleDown(n);
             }
         }
-//        if (L == null) {
-//            return;
-//        } else if (L.priority() < p && R == null) {
-//            swap(index, l);
-//        } else if (L.priority() >= p && R.priority() >= p){
-//            return;
-//        } else {
-//            int n = L.priority() <= R.priority() ? l : r;
-//            swap(index, n);
-//            bubbleDown(n);
-//        }
     }
 
     /** Inserts an item with the given priority value. Assume that item is
@@ -229,6 +218,19 @@ public class ArrayHeap<T> {
      * same item. Does nothing if the item is not in the heap. Check for
      * item equality with .equals(), not == */
     public void changePriority(T item, double priority) {
-        // TODO
+        int i = 1;
+        while(i <= size()) {
+            Node g = getNode(i);
+            if (g.item() == item) {
+                if (priority < g.priority()) {
+                    g.setPriority(priority);
+                    bubbleUp(i);
+                } else {
+                    g.setPriority(priority);
+                    bubbleDown(i);
+                }
+            }
+            i += 1;
+        }
     }
 }

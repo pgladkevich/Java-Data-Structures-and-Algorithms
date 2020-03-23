@@ -3,7 +3,7 @@ import java.util.ArrayList;
 /** A Generic heap class. Unlike Java's priority queue, this heap doesn't just
  * store Comparable objects. Instead, it can store any type of object
  * (represented by type T) and an associated priority value.
- * @author */
+ * @author Pavel Gladkevich */
 public class ArrayHeap<T> {
 
     /* DO NOT CHANGE THESE METHODS. */
@@ -117,29 +117,32 @@ public class ArrayHeap<T> {
 
     /** Returns the index of the left child of the node at i. */
     private int getLeftOf(int i) {
-        // TODO
-        return 0;
+        return i*2;
     }
 
     /** Returns the index of the right child of the node at i. */
     private int getRightOf(int i) {
-        // TODO
-        return 0;
+        return (i * 2) + 1;
     }
 
     /** Returns the index of the node that is the parent of the
      *  node at i. */
     private int getParentOf(int i) {
-        // TODO
-        return 0;
+        return i/2;
     }
 
     /** Returns the index of the node with smaller priority. If one
      * node is null, then returns the index of the non-null node.
      * Precondition: at least one of the nodes is not null. */
     private int min(int index1, int index2) {
-        // TODO
-        return 0;
+        if (getNode(index1) == null) {
+            return index2;
+        } else if (getNode(index2) == null) {
+            return index1;
+        } else {
+            return getNode(index1).priority() > getNode(index2).priority()
+                    ? index2 : index1;
+        }
     }
 
     /** Returns the item with the smallest priority value, but does
@@ -147,20 +150,44 @@ public class ArrayHeap<T> {
      * priority value, returns any of them. Returns null if heap is
      * empty. */
     public T peek() {
-        // TODO
-        return null;
+        if (getNode(1) == null) {
+            return null;
+        } else {
+            return getNode(1).item();
+        }
     }
 
     /** Bubbles up the node currently at the given index until no longer
      *  needed. */
     private void bubbleUp(int index) {
-        // TODO
+        double np = getNode(index).priority();
+        double pp = getNode(getParentOf(index)).priority();
+        if (np < pp ) {
+            int nI = getParentOf(index);
+            swap(nI, index);
+            bubbleUp(nI);
+        }
     }
 
     /** Bubbles down the node currently at the given index until no longer
      *  needed. */
     private void bubbleDown(int index) {
-        // TODO
+        double p = getNode(index).priority();
+        int l = getLeftOf(index);
+        int r = getRightOf(index);
+        Node L = getNode(l);
+        Node R = getNode(r);
+        if (L == null) {
+            return;
+        } else if (L.priority() < p && R == null) {
+            swap(index, l);
+        } else if (L.priority() >= p && R.priority() >= p){
+            return;
+        } else {
+            int n = L.priority() <= R.priority() ? l : r;
+            swap(index, n);
+            bubbleDown(n);
+        }
     }
 
     /** Inserts an item with the given priority value. Assume that item is

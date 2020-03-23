@@ -11,14 +11,14 @@ import java.util.List;
 public class ECHashStringSetTest  {
     @Test
     public void testEmpty() {
-        BSTStringSet t = new BSTStringSet();
+        ECHashStringSet t = new ECHashStringSet();
         t.put("");
         assertTrue(t.contains(""));
     }
 
     @Test
     public void testBasic() {
-        BSTStringSet t = new BSTStringSet();
+        ECHashStringSet t = new ECHashStringSet();
         String[] word1 = {"f", "c", "a", "d", "e", "b"};
         for (String i : word1) {
             t.put(i);
@@ -27,7 +27,7 @@ public class ECHashStringSetTest  {
 
     @Test
     public void testAsList() {
-        BSTStringSet t = new BSTStringSet();
+        ECHashStringSet t = new ECHashStringSet();
         String[] word1 = {"f", "c", "a", "d", "e", "b"};
         for (String i : word1) {
             t.put(i);
@@ -35,58 +35,58 @@ public class ECHashStringSetTest  {
         String[] word1S = {"a", "b", "c", "d", "e", "f"};
         List<String> aL = t.asList();
         for (int i = 0; i < word1.length; i += 1) {
-            assertEquals(word1S[i], aL.get(i));
+            System.out.println(word1S[i]);
+            System.out.println(aL.get(i));
         }
     }
 
-    @Test
-    public void testIterator() {
-        BSTStringSet t = new BSTStringSet();
-        String[] word1 = {"f", "c", "a", "d", "e", "b"};
-        for (String i : word1) {
-            t.put(i);
-        }
-        for (Iterator<String> i = t.iterator("b", "e");
-             i.hasNext();) {
-            System.out.println(i.next());
-        }
-    }
-    @Test
-    public void testIterator2() {
-        BSTStringSet t = new BSTStringSet();
-        String[] word1 = {"f", "c", "a", "d", "e", "b"};
-        for (String i : word1) {
-            t.put(i);
-        }
-        for (Iterator<String> i = t.iterator("a", "e");
-             i.hasNext();) {
-            System.out.println(i.next());
-        }
-    }
-    @Test
-    public void testIterator3() {
-        BSTStringSet t = new BSTStringSet();
-        String[] word1 = {"acasdcs", "ccsadcsd", "asdfasdf", "safdsadfd",
-                "asdfsfe", "basfsdfa"};
-        for (String i : word1) {
-            t.put(i);
-        }
-        for (Iterator<String> i = t.iterator("a", "z");
-             i.hasNext();) {
-            System.out.println(i.next());
-        }
-    }
-    @Test
-    public void testIterator4() {
-        BSTStringSet t = new BSTStringSet();
-        String[] word1 = {"a", "f", "b", "d", "c", "e"};
-        for (String i : word1) {
-            t.put(i);
-        }
-        for (Iterator<String> i = t.iterator("b", "e");
-             i.hasNext();) {
-            System.out.println(i.next());
-        }
-    }
-}
+//    @Test
+//    public void testIterator() {
+//        ECHashStringSet t = new ECHashStringSet();
+//        String[] word1 = {"f", "c", "a", "d", "e", "b"};
+//        for (String i : word1) {
+//            t.put(i);
+//        }
+//        for (Iterator<String> i = t.iterator("b", "e");
+//             i.hasNext();) {
+//            System.out.println(i.next());
+//        }
+//    }
+//    @Test
+//    public void testIterator2() {
+//        ECHashStringSet t = new ECHashStringSet();
+//        String[] word1 = {"f", "c", "a", "d", "e", "b"};
+//        for (String i : word1) {
+//            t.put(i);
+//        }
+//        for (Iterator<String> i = t.iterator("a", "e");
+//             i.hasNext();) {
+//            System.out.println(i.next());
+//        }
+//    }
+//    @Test
+//    public void testIterator3() {
+//        ECHashStringSet t = new ECHashStringSet();
+//        String[] word1 = {"acasdcs", "ccsadcsd", "asdfasdf", "safdsadfd",
+//                "asdfsfe", "basfsdfa"};
+//        for (String i : word1) {
+//            t.put(i);
+//        }
+//        for (Iterator<String> i = t.iterator("a", "z");
+//             i.hasNext();) {
+//            System.out.println(i.next());
+//        }
+//    }
+//    @Test
+//    public void testIterator4() {
+//        ECHashStringSet t = new ECHashStringSet();
+//        String[] word1 = {"a", "f", "b", "d", "c", "e"};
+//        for (String i : word1) {
+//            t.put(i);
+//        }
+//        for (Iterator<String> i = t.iterator("b", "e");
+//             i.hasNext();) {
+//            System.out.println(i.next());
+//        }
+//    }
 }

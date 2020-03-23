@@ -13,45 +13,17 @@ public class BSTStringSet implements StringSet, SortedStringSet,
     /** Creates a new empty set. */
     public BSTStringSet() {
         _root = null;
-//        _val = new ArrayList<>();
     }
 
     @Override
     public void put(String s) {
         if (_root == null) {
             _root = new Node(s);
-//            _val.add(s);
         }
         else if (!contains(s)) {
             _root = putHelper(_root, s);
-//            _val.add(s);
         }
     }
-//    private Node putHelper(Node node, String s) {
-//        if (node == null) {
-//            node = new Node(s);
-//        }
-//        if (node.compare(s) > 0) {
-//            putHelper(node.getLeft(node), s);
-//        }
-//        else if (node.compare(s) < 0) {
-//            putHelper(node.getRight(node), s);
-//        }
-//        return node;
-//    }
-
-//    private Node putHelper(Node node, String s) {
-//        if (node == null) {
-//            return new Node(s);
-//        }
-//        if (node.compare(s) > 0) {
-//            node.setLeft(putHelper(node.getLeft(node), s));
-//        }
-//        else {
-//            node.setRight(putHelper(node.getRight(node), s));
-//        }
-//        return node;
-//    }
     private Node putHelper(Node node, String s) {
         Node prevNode = node;
         Node currNode = node;
@@ -76,13 +48,6 @@ public class BSTStringSet implements StringSet, SortedStringSet,
 
     @Override
     public boolean contains(String s) {
-//        return _val.contains(s);
-//            BSTIterator I = new BSTIterator(_root);
-//            while(I.hasNext()) {
-//                if (s.compareTo(I.next()) == 0) {
-//                    return true;
-//                }
-//            }
         Node curr = _root;
         while (curr != null) {
             if (curr.compare(s) == 0) {
@@ -250,26 +215,6 @@ public class BSTStringSet implements StringSet, SortedStringSet,
                 }
             }
         }
-        private void searchRight(Node node) {
-            while (node!= null) {
-                if (node.compare(_low) >= 0) {
-                    addTree(node);
-                    break;
-                }
-                node = node.right;
-            }
-            addTree(node);
-        }
-        private void searchLeft(Node node) {
-            while (node!= null) {
-                if (node.compare(_high) < 0) {
-                    addTree(node);
-                    break;
-                }
-                node = node.left;
-            }
-            addTree(node);
-        }
     }
 
 //    private void addTree(Node node) {
@@ -324,6 +269,4 @@ public class BSTStringSet implements StringSet, SortedStringSet,
 
     /** Root node of the tree. */
     private Node _root;
-
-//    private ArrayList<String> _val;
 }

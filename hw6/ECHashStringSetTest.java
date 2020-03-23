@@ -1,9 +1,6 @@
 import org.junit.Test;
 import static org.junit.Assert.*;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -67,54 +64,4 @@ public class ECHashStringSetTest  {
             System.out.println(aL.get(i));
         }
     }
-
-//    @Test
-//    public void testIterator() {
-//        ECHashStringSet t = new ECHashStringSet();
-//        String[] word1 = {"f", "c", "a", "d", "e", "b"};
-//        for (String i : word1) {
-//            t.put(i);
-//        }
-//        for (Iterator<String> i = t.iterator("b", "e");
-//             i.hasNext();) {
-//            System.out.println(i.next());
-//        }
-//    }
-//    @Test
-//    public void testIterator2() {
-//        ECHashStringSet t = new ECHashStringSet();
-//        String[] word1 = {"f", "c", "a", "d", "e", "b"};
-//        for (String i : word1) {
-//            t.put(i);
-//        }
-//        for (Iterator<String> i = t.iterator("a", "e");
-//             i.hasNext();) {
-//            System.out.println(i.next());
-//        }
-//    }
-//    @Test
-//    public void testIterator3() {
-//        ECHashStringSet t = new ECHashStringSet();
-//        String[] word1 = {"acasdcs", "ccsadcsd", "asdfasdf", "safdsadfd",
-//                "asdfsfe", "basfsdfa"};
-//        for (String i : word1) {
-//            t.put(i);
-//        }
-//        for (Iterator<String> i = t.iterator("a", "z");
-//             i.hasNext();) {
-//            System.out.println(i.next());
-//        }
-//    }
-//    @Test
-//    public void testIterator4() {
-//        ECHashStringSet t = new ECHashStringSet();
-//        String[] word1 = {"a", "f", "b", "d", "c", "e"};
-//        for (String i : word1) {
-//            t.put(i);
-//        }
-//        for (Iterator<String> i = t.iterator("b", "e");
-//             i.hasNext();) {
-//            System.out.println(i.next());
-//        }
-//    }
 }

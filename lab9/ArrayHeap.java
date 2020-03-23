@@ -128,6 +128,9 @@ public class ArrayHeap<T> {
     /** Returns the index of the node that is the parent of the
      *  node at i. */
     private int getParentOf(int i) {
+        if (i == 1) {
+             return 1;
+        }
         return i/2;
     }
 
@@ -140,7 +143,7 @@ public class ArrayHeap<T> {
         } else if (getNode(index2) == null) {
             return index1;
         } else {
-            return getNode(index1).priority() > getNode(index2).priority()
+            return getNode(index1).priority() >= getNode(index2).priority()
                     ? index2 : index1;
         }
     }
@@ -177,23 +180,31 @@ public class ArrayHeap<T> {
         int r = getRightOf(index);
         Node L = getNode(l);
         Node R = getNode(r);
-        if (L == null) {
-            return;
-        } else if (L.priority() < p && R == null) {
-            swap(index, l);
-        } else if (L.priority() >= p && R.priority() >= p){
-            return;
-        } else {
-            int n = L.priority() <= R.priority() ? l : r;
-            swap(index, n);
-            bubbleDown(n);
+        if (L != null || R != null) {
+            int n = min(l,r);
+            if (min(index, n) == n) {
+                swap(index, n);
+                bubbleDown(n);
+            }
         }
+//        if (L == null) {
+//            return;
+//        } else if (L.priority() < p && R == null) {
+//            swap(index, l);
+//        } else if (L.priority() >= p && R.priority() >= p){
+//            return;
+//        } else {
+//            int n = L.priority() <= R.priority() ? l : r;
+//            swap(index, n);
+//            bubbleDown(n);
+//        }
     }
 
     /** Inserts an item with the given priority value. Assume that item is
      * not already in the heap. Same as enqueue, or offer. */
     public void insert(T item, double priority) {
-        // TODO
+        setNode(size() + 1, new Node(item, priority));
+        bubbleUp(size());
     }
 
     /** Returns the element with the smallest priority value, and removes
@@ -201,8 +212,16 @@ public class ArrayHeap<T> {
      * removes any of them. Returns null if the heap is empty. Same as
      * dequeue, or poll. */
     public T removeMin() {
-        // TODO
-        return null;
+        if (size() == 0) {
+            return null;
+        } else {
+            swap(size(), 1);
+            T item = removeNode(size()).item();
+            if (size() != 0) {
+                bubbleDown(1);
+            }
+            return item;
+        }
     }
 
     /** Changes the node in this heap with the given item to have the given

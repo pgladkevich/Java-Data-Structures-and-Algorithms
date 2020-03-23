@@ -11,14 +11,36 @@ class ECHashStringSet implements StringSet {
     /** Creates a new ArrayList size 5 of empty ArrayLists. */
     public ECHashStringSet() {
         threshold = 5;
-        bucketcount = 5;
         buckets = new ArrayList<>(5);
+        while(buckets.size() < 5) buckets.add(new ArrayList<>());
+        bucketcount = 5;
         elements = 0;
     }
 
     @Override
     public void put(String s) {
-        // FIXME
+        if (!contains(s)) {
+            elements += 1;
+            factor = elements/bucketcount;
+            int h = hashcodeHELPER(s);
+            if (factor <= 5) {
+                buckets.get(h).add(s);
+            } else {
+                bucketcount *= 2;
+                ArrayList<ArrayList<String>> newbuckets =
+                        new ArrayList<>(bucketcount);
+                while(newbuckets.size() < bucketcount)
+                    newbuckets.add(new ArrayList<>());
+                for (ArrayList<String> a : buckets) {
+                    for (String b : a) {
+                        int c = hashcodeHELPER(b);
+                        newbuckets.get(c).add(b);
+                    }
+                }
+                newbuckets.get(h).add(s);
+                buckets = newbuckets;
+            }
+        }
     }
 
     /** Creates a new ArrayList size 5 of empty ArrayLists. */
@@ -42,7 +64,11 @@ class ECHashStringSet implements StringSet {
 
     @Override
     public List<String> asList() {
-        return null; // FIXME
+        ArrayList<String> aL = new ArrayList<>();
+        for (ArrayList<String> a : buckets) {
+            aL.addAll(a);
+        }
+        return aL;
     }
 
     /** ArrayList storing the strings in ArrayLists sorted by hashcode. */

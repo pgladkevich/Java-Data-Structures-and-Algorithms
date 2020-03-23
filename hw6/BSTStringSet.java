@@ -39,8 +39,7 @@ public class BSTStringSet implements StringSet, SortedStringSet,
         }
         if (prevNode.compare(s) > 0) {
             prevNode.setLeft(new Node(s));
-        }
-        else {
+        } else {
             prevNode.setRight(new Node(s));
         }
         return node;

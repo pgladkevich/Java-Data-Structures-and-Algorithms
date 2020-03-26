@@ -95,8 +95,10 @@ class Board {
         _moveLimit = 2 * limit;
     }
 
-    /** Assuming isLegal(MOVE), make MOVE. Assumes MOVE.isCapture()
-     *  is false. */
+    /** Assuming isLegal(MOVE), make MOVE. This function assumes that
+     *  MOVE.isCapture() will return false.  If it saves the move for
+     *  later retraction, makeMove itself uses MOVE.captureMove() to produce
+     *  the capturing move. */
     void makeMove(Move move) {
         assert isLegal(move);
         // FIXME

@@ -332,6 +332,8 @@ class Prog:
                 if prev_win:
                     if prev_win != curr_win:
                         self._error_exit("received conflicting win")
+                    if print_win:
+                        print(rmsg.rstrip(), file=self._output_dest)
                     return
                 else:
                     prev_win = curr_win
@@ -346,6 +348,8 @@ class Prog:
                 if prev_win:
                     if prev_win != curr_win:
                         self._error_exit("received conflicting win")
+                    if print_win:
+                        print(msg.rstrip(), file=self._output_dest)
                     return
                 else:
                     prev_win = curr_win

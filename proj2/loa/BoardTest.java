@@ -98,7 +98,7 @@ public class BoardTest {
         assertTrue("Board 2 game over", b2.gameOver());
         Board b3 = new Board(BOARD3, BP);
         assertTrue("Board 3 white contiguous?", b3.piecesContiguous(WP));
-        assertTrue("Board 3 black contiguous?", b3.piecesContiguous(WP));
+        assertTrue("Board 3 black contiguous?", b3.piecesContiguous(BP));
         assertTrue("Board 3 game over", b3.gameOver());
     }
 

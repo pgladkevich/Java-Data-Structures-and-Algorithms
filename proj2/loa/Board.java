@@ -71,7 +71,20 @@ class Board {
         if (board == this) {
             return;
         }
-        // FIXME
+        for (int r = 0; r < BOARD_SIZE; r += 1) {
+            for (int c = 0; c < BOARD_SIZE; c += 1) {
+                _board[sq(c,r).index()] = board._board[sq(c,r).index()];
+            }
+        }
+        _moves.clear();
+        ArrayList<Move> moves = board.getMOVES();
+        while (moves.)
+        _turn = board.getTURN();
+        _moveLimit = board.getLIMIT();
+        _winnerKnown = board.getWINNERKNOWN();
+        _winner = board.getWINNER();
+        _subsetsInitialized = board.getSUBSETSINITIALIZED();
+
     }
 
     /** Return the contents of the square at SQ. */
@@ -231,6 +244,42 @@ class Board {
     }
 
     // FIXME: Other methods, variables?
+
+    /** Return the _turn variable from the board that calls this method. */
+    public Piece getTURN(){
+        return _turn;
+    }
+    /** Return the _moveLimit variable from the board that calls this method. */
+    public int getLIMIT(){
+        return _moveLimit;
+    }
+    /** Return the _winnerKnown variable from the board that calls this method.
+     * */
+    public boolean getWINNERKNOWN(){
+        return _winnerKnown;
+    }
+    /** Return the _winner variable from the board that calls this method. */
+    public Piece getWINNER(){
+        return _winner;
+    }
+    /** Return the _subsetsInitialized variable from the board that calls this method. */
+    public boolean getSUBSETSINITIALIZED(){
+        return _subsetsInitialized;
+    }
+    /** Return the _moves variable from the board that calls this method. */
+    public ArrayList<Move> getMOVES(){
+        return _moves;
+    }
+    /** Return the _whiteRegionSizes variable from the board that
+     * calls this method. */
+    public ArrayList<Move> getWHITE(){
+        return _moves;
+    }
+    /** Return the _blackRegionSizes variable from the board that
+     * calls this method. */
+    public ArrayList<Move> getBLACK(){
+        return _moves;
+    }
 
     /** The standard initial configuration for Lines of Action (bottom row
      *  first). */

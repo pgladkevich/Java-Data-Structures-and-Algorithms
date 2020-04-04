@@ -23,7 +23,7 @@ public class BoardTest {
         { WP,  EMP,  WP,  WP, EMP,  WP, EMP, EMP  },
         { WP,  EMP, EMP, EMP,  BP, EMP, EMP, WP  },
         { EMP, EMP, EMP, EMP, EMP, EMP, EMP, EMP  },
-        { EMP, BP,  BP,  BP,  EMP,  BP,  BP, EMP }
+        { EMP, BP,  BP,  BP,  EMP,  BP,  BP, EMP },
     };
 
     /** A position in which black, but not white, pieces are contiguous. */

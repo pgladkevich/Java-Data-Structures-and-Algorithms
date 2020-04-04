@@ -51,7 +51,12 @@ class Board {
 
     /** Set my state to CONTENTS with SIDE to move. */
     void initialize(Piece[][] contents, Piece side) {
-        // FIXME
+        for (int r = 0; r < BOARD_SIZE; r += 1) {
+            for (int c = 0; c < BOARD_SIZE; c += 1) {
+                _board[sq(c,r).index()] = contents[r][c];
+            }
+        }
+        _winner = null;
         _turn = side;
         _moveLimit = DEFAULT_MOVE_LIMIT;
     }

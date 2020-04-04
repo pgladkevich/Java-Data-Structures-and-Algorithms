@@ -2,6 +2,7 @@
  * University of California.  All rights reserved. */
 package loa;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -78,13 +79,17 @@ class Board {
         }
         _moves.clear();
         ArrayList<Move> moves = board.getMOVES();
-        while (moves.)
+        _moves.addAll(moves);
         _turn = board.getTURN();
         _moveLimit = board.getLIMIT();
         _winnerKnown = board.getWINNERKNOWN();
         _winner = board.getWINNER();
         _subsetsInitialized = board.getSUBSETSINITIALIZED();
-
+        _whiteRegionSizes.clear();
+        _blackRegionSizes.clear();
+        ArrayList<Integer> white = board.getWHITE(), black = board.getBLACK();
+        _whiteRegionSizes.addAll(white);
+        _blackRegionSizes.addAll(black);
     }
 
     /** Return the contents of the square at SQ. */
@@ -96,6 +101,10 @@ class Board {
      *  to NEXT, if NEXT is not null. */
     void set(Square sq, Piece v, Piece next) {
         // FIXME
+        _board[sq.index()] = v;
+        if (next != null) {
+            _turn = next;
+        }
     }
 
     /** Set the square at SQ to V, without modifying the side that
@@ -137,7 +146,17 @@ class Board {
     /** Return true iff FROM - TO is a legal move for the player currently on
      *  move. */
     boolean isLegal(Square from, Square to) {
-        return true;   // FIXME
+        if (!from.isValidMove(to)) {
+            return false;
+        } else {
+            // if the direction we're moving torward has a different colored piece
+            // in between us then return false
+            if () {
+
+            }
+            return true;   // FIXME
+        }
+
     }
 
     /** Return true iff MOVE is legal for the player currently on move.
@@ -272,13 +291,13 @@ class Board {
     }
     /** Return the _whiteRegionSizes variable from the board that
      * calls this method. */
-    public ArrayList<Move> getWHITE(){
-        return _moves;
+    public ArrayList<Integer> getWHITE(){
+        return _whiteRegionSizes;
     }
     /** Return the _blackRegionSizes variable from the board that
      * calls this method. */
-    public ArrayList<Move> getBLACK(){
-        return _moves;
+    public ArrayList<Integer> getBLACK(){
+        return _blackRegionSizes;
     }
 
     /** The standard initial configuration for Lines of Action (bottom row

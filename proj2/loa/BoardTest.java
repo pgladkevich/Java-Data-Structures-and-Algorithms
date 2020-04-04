@@ -125,4 +125,12 @@ public class BoardTest {
                      0, b1.movesMade());
     }
 
+    @Test
+    public void testCopyFrom() {
+        Board b1 = new Board(BOARD1, BP);
+        Board b2 = new Board(BOARD2, BP);
+        b2.copyFrom(b1);
+        assertEquals(BOARD1_STRING, b2.toString());
+    }
+
 }

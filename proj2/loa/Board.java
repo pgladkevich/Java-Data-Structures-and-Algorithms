@@ -100,7 +100,6 @@ class Board {
     /** Set the square at SQ to V and set the side that is to move next
      *  to NEXT, if NEXT is not null. */
     void set(Square sq, Piece v, Piece next) {
-        // FIXME
         _board[sq.index()] = v;
         if (next != null) {
             _turn = next;
@@ -146,17 +145,44 @@ class Board {
     /** Return true iff FROM - TO is a legal move for the player currently on
      *  move. */
     boolean isLegal(Square from, Square to) {
-        if (!from.isValidMove(to)) {
+        // if the direction we're moving torward has a different colored piece
+        // in between us then return false
+        // use blocked (Square from, Square to) to check if the above condition and
+        // also if the square to has a piece of the same color as the square from
+
+        // Need to also check for the right number of steps. If not the right number
+        // then return false. Valid number of steps is determined by the number
+        // of black or white pieces in the line of action
+        if (!from.isValidMove(to) || !isRightSteps(from, to)
+                || blocked(from,to)) {
             return false;
-        } else {
-            // if the direction we're moving torward has a different colored piece
-            // in between us then return false
-            if () {
-
-            }
-            return true;   // FIXME
         }
+        return true;
+    }
 
+    /** Return true iff FROM - TO has the right number of steps for the current
+     * amount of pieces on the line of action. */
+    boolean isRightSteps(Square from, Square to) {
+        int dir1 = from.direction(to);
+        int dir2 = to.direction(from);
+        int count = 1;
+        Square curr = from.moveDest(dir1,1);
+        while (curr != null) {
+            Piece currP = _board[curr.index()];
+            if (currP.abbrev().compareTo("-") != 0) {
+                count += 1;
+            }
+            curr = curr.moveDest(dir1,1);
+        }
+        curr = from.moveDest(dir2, 1);
+        while (curr != null) {
+            Piece currP = _board[curr.index()];
+            if (currP.abbrev().compareTo("-") != 0) {
+                count += 1;
+            }
+            curr = curr.moveDest(dir2,1);
+        }
+        return count == from.distance(to);
     }
 
     /** Return true iff MOVE is legal for the player currently on move.
@@ -227,6 +253,20 @@ class Board {
     /** Return true if a move from FROM to TO is blocked by an opposing
      *  piece or by a friendly piece on the target square. */
     private boolean blocked(Square from, Square to) {
+        Piece f = _board[from.index()];
+        Piece t = _board[to.index()];
+        if(f.abbrev().compareTo(t.abbrev()) == 0) {
+            return true;
+        }
+        int dir = from.direction(to);
+        int distance = from.distance(to);
+        for (int steps = 1; steps < distance; steps += 1) {
+            Square currSQ = from.moveDest(dir,steps);
+            Piece currP = _board[currSQ.index()];
+            if (f.opposite().abbrev().compareTo(currP.abbrev()) == 0) {
+                return true;
+            }
+        }
         return false; // FIXME
     }
 

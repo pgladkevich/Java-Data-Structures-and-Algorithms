@@ -143,9 +143,9 @@ class Board {
         assert movesMade() > 0;
         Move move = _moves.remove(_moves.size() - 1);
         Square f = move.getFrom(), t = move.getTo();
-        Piece from = get(f);
+        Piece from = get(t);
         if (move.isCapture()) {
-            set(t, get(f).opposite());
+            set(t, get(t).opposite());
         } else {
             set(t, EMP);
         }

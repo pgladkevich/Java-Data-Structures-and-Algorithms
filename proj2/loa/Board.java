@@ -74,7 +74,7 @@ class Board {
         }
         for (int r = 0; r < BOARD_SIZE; r += 1) {
             for (int c = 0; c < BOARD_SIZE; c += 1) {
-                _board[sq(c,r).index()] = board._board[sq(c,r).index()];
+                _board[sq(c,r).index()] = board.get(sq(c,r));
             }
         }
         _moves.clear();
@@ -127,14 +127,32 @@ class Board {
      *  the capturing move. */
     void makeMove(Move move) {
         assert isLegal(move);
-        // FIXME
+        Square from = move.getFrom(), to = move.getTo();
+        if (get(to).opposite() == null) {
+            _moves.add(move);
+        } else {
+            _moves.add(move.captureMove());
+        }
+        set(to, get(from), _turn.opposite());
+        set(from, EMP);
     }
 
     /** Retract (unmake) one move, returning to the state immediately before
      *  that move.  Requires that movesMade () > 0. */
     void retract() {
         assert movesMade() > 0;
-        // FIXME
+        Move move = _moves.remove(_moves.size() - 1);
+        Square f = move.getFrom(), t = move.getTo();
+        Piece from = get(f);
+        if (move.isCapture()) {
+            set(t, get(f).opposite());
+        } else {
+            set(t, EMP);
+        }
+        set(f, from);
+        _turn = _turn.opposite();
+        _winnerKnown = false;
+        _winner = null;
     }
 
     /** Return the Piece representing who is next to move. */
@@ -267,7 +285,7 @@ class Board {
                 return true;
             }
         }
-        return false; // FIXME
+        return false;
     }
 
     /** Return the size of the as-yet unvisited cluster of squares

@@ -60,6 +60,7 @@ class Board {
         _winner = null;
         _turn = side;
         _moveLimit = DEFAULT_MOVE_LIMIT;
+        _winnerKnown = false;
     }
 
     /** Set me to the initial configuration. */
@@ -135,6 +136,8 @@ class Board {
         }
         set(to, get(from), _turn.opposite());
         set(from, EMP);
+        _subsetsInitialized = false;
+        computeRegions();
     }
 
     /** Retract (unmake) one move, returning to the state immediately before
@@ -153,6 +156,8 @@ class Board {
         _turn = _turn.opposite();
         _winnerKnown = false;
         _winner = null;
+        _subsetsInitialized = false;
+        computeRegions();
     }
 
     /** Return the Piece representing who is next to move. */
@@ -161,18 +166,29 @@ class Board {
     }
 
     /** Return true iff FROM - TO is a legal move for the player currently on
-     *  move. */
+     *  move.
+     * if the direction we're moving torward has a different colored piece
+     * in between us then return false
+     * se blocked (Square from, Square to) to check if the above condition and
+     * also if the square to has a piece of the same color as the square from
+     *
+     * Need to also check for the right number of steps. If not the right number
+     * then return false. Valid number of steps is determined by the number
+     * of black or white pieces in the line of action*/
     boolean isLegal(Square from, Square to) {
-        // if the direction we're moving torward has a different colored piece
-        // in between us then return false
-        // use blocked (Square from, Square to) to check if the above condition and
-        // also if the square to has a piece of the same color as the square from
 
-        // Need to also check for the right number of steps. If not the right number
-        // then return false. Valid number of steps is determined by the number
-        // of black or white pieces in the line of action
         if (!from.isValidMove(to) || !isRightSteps(from, to)
                 || blocked(from,to)) {
+            return false;
+        }
+        return true;
+    }
+    /** Return true iff FROM - TO is a legal move for the player currently on
+     *  move.
+     *
+     * The same as above but without step check */
+    boolean isLegalWithoutSteps(Square from, Square to) {
+        if (!from.isValidMove(to) || blocked(from,to)) {
             return false;
         }
         return true;
@@ -181,26 +197,50 @@ class Board {
     /** Return true iff FROM - TO has the right number of steps for the current
      * amount of pieces on the line of action. */
     boolean isRightSteps(Square from, Square to) {
-        int dir1 = from.direction(to);
-        int dir2 = to.direction(from);
+        int dir1 = from.direction(to), dir2 = to.direction(from);
         int count = 1;
         Square curr = from.moveDest(dir1,1);
         while (curr != null) {
-            Piece currP = _board[curr.index()];
-            if (currP.abbrev().compareTo("-") != 0) {
+            Piece currP = get(curr);
+            if (currP != EMP) {
                 count += 1;
             }
             curr = curr.moveDest(dir1,1);
         }
         curr = from.moveDest(dir2, 1);
         while (curr != null) {
-            Piece currP = _board[curr.index()];
-            if (currP.abbrev().compareTo("-") != 0) {
+            Piece currP = get(curr);
+            if (currP != EMP) {
                 count += 1;
             }
             curr = curr.moveDest(dir2,1);
         }
         return count == from.distance(to);
+    }
+
+    /** Return the number of steps for a line of action based off of a square
+     * and a direction */
+    int Steps(Square from, int dir) {
+        int dir1 = dir;
+        int dir2 = (dir1 + 4) % 8;
+        int count = 1;
+        Square curr = from.moveDest(dir1,1);
+        while (curr != null) {
+            Piece currP = get(curr);
+            if (currP != EMP) {
+                count += 1;
+            }
+            curr = curr.moveDest(dir1,1);
+        }
+        curr = from.moveDest(dir2, 1);
+        while (curr != null) {
+            Piece currP = get(curr);
+            if (currP.abbrev().compareTo("-") != 0) {
+                count += 1;
+            }
+            curr = curr.moveDest(dir2,1);
+        }
+        return count;
     }
 
     /** Return true iff MOVE is legal for the player currently on move.
@@ -211,7 +251,32 @@ class Board {
 
     /** Return a sequence of all legal moves from this position. */
     List<Move> legalMoves() {
-        return null;  // FIXME
+        ArrayList<Move> all = new ArrayList<>();
+        for (Square s : ALL_SQUARES) {
+            if (get(s).equals(_turn)) {
+                for(int dir = 0; dir < 4; dir +=1) {
+                    int opppositeDIR = dir + 4;
+                    int steps = Steps(s, dir);
+                    Square pot1 = s.moveDest(dir, steps);
+                    Square pot2 = s.moveDest(opppositeDIR, steps);
+                    if (isLegalWithoutSteps(s,pot1)) {
+                        if (get(pot1) == _turn.opposite()) {
+                            legalMoves().add(Move.mv(s, pot1, true));
+                        } else {
+                            legalMoves().add(Move.mv(s, pot1));
+                        }
+                    }
+                    if (isLegalWithoutSteps(s,pot2)) {
+                        if (get(pot2) == _turn.opposite()) {
+                            legalMoves().add(Move.mv(s, pot2, true));
+                        } else {
+                            legalMoves().add(Move.mv(s, pot2));
+                        }
+                    }
+                }
+            }
+        }
+        return all;
     }
 
     /** Return true iff the game is over (either player has all his
@@ -271,17 +336,18 @@ class Board {
     /** Return true if a move from FROM to TO is blocked by an opposing
      *  piece or by a friendly piece on the target square. */
     private boolean blocked(Square from, Square to) {
-        Piece f = _board[from.index()];
-        Piece t = _board[to.index()];
-        if(f.abbrev().compareTo(t.abbrev()) == 0) {
+        Piece f = get(from);
+        Piece t = get(to);
+        if(f == t) {
             return true;
         }
         int dir = from.direction(to);
         int distance = from.distance(to);
         for (int steps = 1; steps < distance; steps += 1) {
             Square currSQ = from.moveDest(dir,steps);
-            Piece currP = _board[currSQ.index()];
-            if (f.opposite().abbrev().compareTo(currP.abbrev()) == 0) {
+            Piece currP = get(currSQ);
+            //f.opposite().abbrev().compareTo(currP.abbrev()) == 0
+            if (f.opposite() == currP) {
                 return true;
             }
         }
@@ -293,7 +359,16 @@ class Board {
      *  have already been processed or are in different clusters.  Update
      *  VISITED to reflect squares counted. */
     private int numContig(Square sq, boolean[][] visited, Piece p) {
-        return 0;  // FIXME
+        int col = sq.col(), row = sq.row();
+        if (p == EMP || get(sq) != p || visited[col][row]) {
+            return 0;
+        }
+        visited[col][row] = true;
+        int count = 1;
+        for (Square s : sq.adjacent()) {
+            count += numContig(s, visited, p);
+        }
+        return count;
     }
 
     /** Set the values of _whiteRegionSizes and _blackRegionSizes. */
@@ -303,7 +378,22 @@ class Board {
         }
         _whiteRegionSizes.clear();
         _blackRegionSizes.clear();
-        // FIXME
+        boolean[][] visitedW = new boolean[BOARD_SIZE][BOARD_SIZE],
+                visitedB = new boolean[BOARD_SIZE][BOARD_SIZE];
+        for (int col = 0; col < BOARD_SIZE; col += 1) {
+            for (int row = 0; row < BOARD_SIZE; row += 1) {
+                if (!visitedW[col][row]) {
+                    visitedW[col][row] = true;
+                    int countW = numContig(sq(col, row), visitedW, WP);
+                    _whiteRegionSizes.add(countW);
+                }
+                if (!visitedB[col][row]) {
+                    visitedB[col][row] = true;
+                    int countB = numContig(sq(col, row), visitedB, BP);
+                    _blackRegionSizes.add(countB);
+                }
+            }
+        }
         Collections.sort(_whiteRegionSizes, Collections.reverseOrder());
         Collections.sort(_blackRegionSizes, Collections.reverseOrder());
         _subsetsInitialized = true;

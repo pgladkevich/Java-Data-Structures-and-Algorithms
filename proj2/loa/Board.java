@@ -194,7 +194,7 @@ class Board {
      *
      * The same as above but without step check */
     boolean isLegalWithoutSteps(Square from, Square to) {
-        if (!from.isValidMove(to) || blocked(from,to)) {
+        if (to == null || !from.isValidMove(to) || blocked(from,to)) {
             return false;
         }
         return true;
@@ -257,7 +257,6 @@ class Board {
 
     /** Return a sequence of all legal moves from this position. */
     List<Move> legalMoves() {
-        ArrayList<Move> all = new ArrayList<>();
         for (Square s : ALL_SQUARES) {
             if (get(s).equals(_turn)) {
                 for(int dir = 0; dir < 4; dir +=1) {
@@ -267,22 +266,22 @@ class Board {
                     Square pot2 = s.moveDest(opppositeDIR, steps);
                     if (isLegalWithoutSteps(s,pot1)) {
                         if (get(pot1) == _turn.opposite()) {
-                            legalMoves().add(Move.mv(s, pot1, true));
+                            ALL_MOVES.add(Move.mv(s, pot1, true));
                         } else {
-                            legalMoves().add(Move.mv(s, pot1));
+                            ALL_MOVES.add(Move.mv(s, pot1));
                         }
                     }
                     if (isLegalWithoutSteps(s,pot2)) {
                         if (get(pot2) == _turn.opposite()) {
-                            legalMoves().add(Move.mv(s, pot2, true));
+                            ALL_MOVES.add(Move.mv(s, pot2, true));
                         } else {
-                            legalMoves().add(Move.mv(s, pot2));
+                            ALL_MOVES.add(Move.mv(s, pot2));
                         }
                     }
                 }
             }
         }
-        return all;
+        return ALL_MOVES;
     }
 
     /** Return true iff the game is over (either player has all his
@@ -425,8 +424,6 @@ class Board {
         }
     }
 
-    // FIXME: Other methods, variables?
-
     /** Return the _turn variable from the board that calls this method. */
     public Piece getTURN(){
         return _turn;
@@ -498,4 +495,7 @@ class Board {
     private final ArrayList<Integer>
         _whiteRegionSizes = new ArrayList<>(),
         _blackRegionSizes = new ArrayList<>();
+
+    /** List of the possible moves for this player. */
+    private final ArrayList<Move> ALL_MOVES = new ArrayList<>();
 }

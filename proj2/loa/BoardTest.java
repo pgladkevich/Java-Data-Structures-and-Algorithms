@@ -133,4 +133,10 @@ public class BoardTest {
         assertEquals(BOARD1_STRING, b2.toString());
     }
 
+    @Test
+    public void testLegalMoves() {
+        Board b1 = new Board(BOARD1, BP);
+        b1.legalMoves();
+    }
+
 }

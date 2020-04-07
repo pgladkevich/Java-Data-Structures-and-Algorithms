@@ -5,7 +5,7 @@ package loa;
 import static loa.Piece.*;
 
 /** An automated Player.
- *  @author
+ *  @author Pavel Gladkevich
  */
 class MachinePlayer extends Player {
 
@@ -71,9 +71,17 @@ class MachinePlayer extends Player {
      *  on BOARD, does not set _foundMove. */
     private int findMove(Board board, int depth, boolean saveMove,
                          int sense, int alpha, int beta) {
+        if (depth == 0) {
+            Piece side = side();
+            _foundMove = board.legalMoves().get(getGame().randInt(64)
+                    % board.legalMoves().size());
+            // getGame().randInt(64)
+            return 0;
+        }
         // FIXME
         if (saveMove) {
-            _foundMove = null; // FIXME
+            _foundMove = board.legalMoves().get(getGame().randInt(64)
+                    % board.legalMoves().size()); //null; // FIXME
         }
         return 0; // FIXME
     }
@@ -83,7 +91,9 @@ class MachinePlayer extends Player {
         return 1;  // FIXME
     }
 
-    // FIXME: Other methods, variables here.
+    private int heuristic() {
+        return 0;
+    }
 
     /** Used to convey moves discovered by findMove. */
     private Move _foundMove;

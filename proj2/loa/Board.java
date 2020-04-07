@@ -82,7 +82,7 @@ class Board {
         ArrayList<Move> moves = board.getMOVES();
         _moves.addAll(moves);
         _turn = board.getTURN();
-        _moveLimit = board.getLIMIT();
+        setMoveLimit(board.getLIMIT());
         _winnerKnown = board.getWINNERKNOWN();
         _winner = board.getWINNER();
         _subsetsInitialized = board.getSUBSETSINITIALIZED();
@@ -128,16 +128,22 @@ class Board {
      *  the capturing move. */
     void makeMove(Move move) {
         assert isLegal(move);
+        boolean capture = false;
         Square from = move.getFrom(), to = move.getTo();
         if (get(to).opposite() == null) {
             _moves.add(move);
         } else {
             _moves.add(move.captureMove());
         }
-        set(to, get(from), _turn.opposite());
+        set(to, get(from));
         set(from, EMP);
         _subsetsInitialized = false;
         computeRegions();
+        _subsetsInitialized = true;
+        if (piecesContiguous(_turn) || movesMade() == getLIMIT()) {
+            _winner = winner();
+        }
+        _turn = _turn.opposite();
     }
 
     /** Retract (unmake) one move, returning to the state immediately before
@@ -294,8 +300,16 @@ class Board {
      *  null.  If the game has ended in a tie, returns EMP. */
     Piece winner() {
         if (!_winnerKnown) {
-            // FIXME
             _winnerKnown = true;
+            if (piecesContiguous(_turn)) {
+                return _turn;
+            } else if (movesMade() == getLIMIT()){
+                return EMP;
+            }
+            else {
+                _winnerKnown = false;
+                return null;
+            }
         }
         return _winner;
     }
@@ -346,7 +360,6 @@ class Board {
         for (int steps = 1; steps < distance; steps += 1) {
             Square currSQ = from.moveDest(dir,steps);
             Piece currP = get(currSQ);
-            //f.opposite().abbrev().compareTo(currP.abbrev()) == 0
             if (f.opposite() == currP) {
                 return true;
             }
@@ -378,19 +391,21 @@ class Board {
         }
         _whiteRegionSizes.clear();
         _blackRegionSizes.clear();
-        boolean[][] visitedW = new boolean[BOARD_SIZE][BOARD_SIZE],
-                visitedB = new boolean[BOARD_SIZE][BOARD_SIZE];
+        boolean[][] visited = new boolean[BOARD_SIZE][BOARD_SIZE];
         for (int col = 0; col < BOARD_SIZE; col += 1) {
             for (int row = 0; row < BOARD_SIZE; row += 1) {
-                if (!visitedW[col][row]) {
-                    visitedW[col][row] = true;
-                    int countW = numContig(sq(col, row), visitedW, WP);
-                    _whiteRegionSizes.add(countW);
-                }
-                if (!visitedB[col][row]) {
-                    visitedB[col][row] = true;
-                    int countB = numContig(sq(col, row), visitedB, BP);
-                    _blackRegionSizes.add(countB);
+                if (!visited[col][row]) {
+                    Piece p = get(sq(col, row));
+                    if (p != EMP) {
+                        //visited[col][row] = true;
+                        if (p == WP) {
+                            int countW = numContig(sq(col, row), visited, WP);
+                            _whiteRegionSizes.add(countW);
+                        } else {
+                            int countB = numContig(sq(col, row), visited, BP);
+                            _blackRegionSizes.add(countB);
+                        }
+                    }
                 }
             }
         }

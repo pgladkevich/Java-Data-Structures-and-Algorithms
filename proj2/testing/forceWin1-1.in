@@ -1,5 +1,5 @@
 #*java -ea loa.Main
-# Set up a winnable position from two moves away and see if AI can win.
+# Set up a winnable position for the White player and see if the correct AI can win.
 seed 3781433
 manual White
 a6-c8

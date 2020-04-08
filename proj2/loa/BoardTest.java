@@ -139,4 +139,9 @@ public class BoardTest {
         b1.legalMoves();
     }
 
+    @Test
+    public void testSingleMove() {
+        Board b1 = new Board(BOARD1, BP);
+        b1.makeMove(mv("g8-h7"));
+    }
 }

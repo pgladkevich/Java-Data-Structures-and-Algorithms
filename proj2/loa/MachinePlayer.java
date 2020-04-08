@@ -2,6 +2,7 @@
  * University of California.  All rights reserved. */
 package loa;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -77,36 +78,26 @@ class MachinePlayer extends Player {
                          int sense, int alpha, int beta) {
         Piece side = side();
         if (depth == 0 || board.gameOver()) {
-//            _foundMove = board.legalMoves().get(getGame().randInt(64)
-//                    % board.legalMoves().size());
-            // getGame().randInt(64)
             return heuristic(board);
         }
-        // FIXME
-        int bestScore = 0;
-        Move bestMove = null;
-//        ArrayList<Move> moves = new ArrayList<>();
-//        moves = (ArrayList<Move>) board.legalMoves();
-//        Iterator<Move> moves = board.legalMoves().iterator();
-        //moves.hasNext()
         Move[] moves = board.legalMoves().toArray(new Move[0]);
+        int bestScore = -INFTY * sense;
+        if (saveMove == true) {
+            _index = 0;
+        }
 
-        for (Move move : moves) {
-//            ArrayList<Move> movesL = new ArrayList<>();
-////            movesL.clear();
-//            movesL = (ArrayList<Move>) board.legalMoves();
-//            Move move;
-//            move = moves.get(i);
-           //move = board.legalMoves().iterator().next();
+        for (int i =0; i < moves.length; i += 1) {
+            Move move = moves[i];
             board.makeMove(move);
-            //moves = null;
-//            board = board;
             int score = findMove(board,depth-1,false,
                     sense * -1, alpha, beta);
             if (score > bestScore) {
                 bestScore = score;
-                bestMove = move;
+                if(saveMove == true) {
+                    _index = i;
+                }
             }
+            //sense == -1 && side == BP
             if (sense == 1 && side == WP || sense == -1 && side == BP) {
                 alpha = Math.max(score, alpha);
             } else {
@@ -114,13 +105,13 @@ class MachinePlayer extends Player {
             }
             if (alpha >= beta) {
                 board.retract();
-                return bestScore;
+//                return bestScore;
+                break;
             }
             board.retract();
         }
         if (saveMove) {
-            //System.out.println("Hi");
-            _foundMove = bestMove; //board.legalMoves().get(getGame().randInt(64)
+            _foundMove = board.legalMoves().get(_index); //board.legalMoves().get(getGame().randInt(64)
                     // % board.legalMoves().size()); //null; // FIXME
         }
 
@@ -129,10 +120,11 @@ class MachinePlayer extends Player {
 
     /** Return a search depth for the current position. */
     private int chooseDepth() {
-        return 3;  // FIXME
+        return 1;  // FIXME
     }
 
     private int heuristic(Board board) {
+        int score = 0;
         if (board.getWINNERKNOWN()) {
             Piece winner = board.winner();
             if (winner == WP) {
@@ -144,13 +136,21 @@ class MachinePlayer extends Player {
                 return 0;
             }
         }
-        board.getRegionSizes(WP);
-        board.getRegionSizes(BP);
+        ArrayList<Integer> wR = (ArrayList<Integer>) board.getRegionSizes(WP);
+        ArrayList<Integer> bR = (ArrayList<Integer>) board.getRegionSizes(BP);
+//        int difference = Math.abs(board.getbNUM() - board.getwNUM());
+//        score -= (Math.pow(wR.get(0), difference));
+//        score += (Math.pow(bR.get(0), difference));
+        score = wR.get(0) - bR.get(0);
 
-        //return getGame().randInt(64) % board.legalMoves().size();
-        return 0;
+//        return score;
+        //System.out.println(getGame().randInt(63) % board.legalMoves().size());
+//        return getGame().randInt(63) % board.legalMoves().size();
+        return score;
     }
 
     /** Used to convey moves discovered by findMove. */
     private Move _foundMove;
+
+    private int _index;
 }

@@ -61,6 +61,8 @@ class Board {
         _turn = side;
         _moveLimit = DEFAULT_MOVE_LIMIT;
         _winnerKnown = false;
+        _bNUM = (BOARD_SIZE -2) * 2;
+        _wNUM = _bNUM;
     }
 
     /** Set me to the initial configuration. */
@@ -91,6 +93,8 @@ class Board {
         ArrayList<Integer> white = board.getWHITE(), black = board.getBLACK();
         _whiteRegionSizes.addAll(white);
         _blackRegionSizes.addAll(black);
+        _bNUM = board._bNUM;
+        _wNUM = board._wNUM;
     }
 
     /** Return the contents of the square at SQ. */
@@ -134,6 +138,11 @@ class Board {
             _moves.add(move);
         } else {
             _moves.add(move.captureMove());
+            if (_turn == WP) {
+                _bNUM -= 1;
+            } else {
+                _wNUM -= 1;
+            }
         }
         set(to, get(from));
         set(from, EMP);
@@ -156,6 +165,11 @@ class Board {
         Piece from = get(t);
         if (move.isCapture()) {
             set(t, get(t).opposite());
+            if (_turn == WP) {
+                _wNUM += 1;
+            } else {
+                _bNUM += 1;
+            }
         } else {
             set(t, EMP);
         }
@@ -185,7 +199,7 @@ class Board {
     boolean isLegal(Square from, Square to) {
 
         if (!from.isValidMove(to) || !isRightSteps(from, to)
-                || blocked(from,to)) {
+                || blocked(from,to) || get(from) != _turn) {
             return false;
         }
         return true;
@@ -463,6 +477,17 @@ class Board {
     public ArrayList<Integer> getBLACK(){
         return _blackRegionSizes;
     }
+    /** Return the _bNUM variable from the board that
+     * calls this method. */
+    public int getbNUM(){
+        return _bNUM;
+    }
+    /** Return the _wNUM variable from the board that
+     * calls this method. */
+    public int getwNUM(){
+        return _wNUM;
+    }
+
 
     /** The standard initial configuration for Lines of Action (bottom row
      *  first). */
@@ -502,4 +527,10 @@ class Board {
 
     /** List of the possible moves for this player. */
     private final ArrayList<Move> ALL_MOVES = new ArrayList<>();
+
+    /** The number of WP. */
+    private int _wNUM;
+
+    /** The number of BP. */
+    private int _bNUM;
 }

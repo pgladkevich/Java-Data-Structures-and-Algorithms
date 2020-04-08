@@ -140,7 +140,8 @@ class Board {
         _subsetsInitialized = false;
         computeRegions();
         _subsetsInitialized = true;
-        if (piecesContiguous(_turn) || movesMade() == getLIMIT()) {
+        if (piecesContiguous(_turn) || piecesContiguous(_turn.opposite()) ||
+                movesMade() == getLIMIT()) {
             _winner = winner();
         }
         _turn = _turn.opposite();
@@ -302,6 +303,8 @@ class Board {
             _winnerKnown = true;
             if (piecesContiguous(_turn)) {
                 return _turn;
+            } else if (piecesContiguous(_turn.opposite())) {
+                return _turn.opposite();
             } else if (movesMade() == getLIMIT()){
                 return EMP;
             }

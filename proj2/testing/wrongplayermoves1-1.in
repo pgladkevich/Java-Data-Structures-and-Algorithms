@@ -2,9 +2,9 @@
 # Check that you can not control white pieces when it is black's turn.  The AI is never started.
 manual White
 dump
-b1-d3
+d1-d3
 dump
-a3-d3
+a4-c4
 dump
 a2-c2
 dump

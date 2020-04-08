@@ -15,7 +15,7 @@ import static loa.Piece.*;
 import static loa.Square.sq;
 
 /** A widget that displays a Loa game.
- *  @author
+ *  @author Pavel Gladkevich
  */
 class BoardWidget extends Pad {
 
@@ -86,14 +86,16 @@ class BoardWidget extends Pad {
                    BOARD_SIDE - 2 * MARGIN - BORDER_WIDTH);
 
     }
-
+    /** for (Square sq : Square.ALL_SQUARES) {
+     drawPiece(g, sq);
+     }
+     // More? FIXME */
     @Override
     public synchronized void paintComponent(Graphics2D g) {
         drawGrid(g);
         for (Square sq : Square.ALL_SQUARES) {
             drawPiece(g, sq);
         }
-        // More? FIXME
     }
 
     /** Draw the contents of S on G. */
@@ -119,15 +121,17 @@ class BoardWidget extends Pad {
                    PIECE_SIZE, PIECE_SIZE);
     }
 
-    /** Handle a mouse-button push on S. */
+    /** Handle a mouse-button push on S.
+     * // FIXME
+     *         repaint(); */
     private void mousePressed(Square s) {
-        // FIXME
         repaint();
     }
 
-    /** Handle a mouse-button release on S. */
+    /** Handle a mouse-button release on S.
+     * // FIXME
+     *         repaint(); */
     private void mouseReleased(Square s) {
-        // FIXME
         repaint();
     }
 
@@ -152,19 +156,21 @@ class BoardWidget extends Pad {
         }
     }
 
-    /** Revise the displayed board according to BOARD. */
+    /** Revise the displayed board according to BOARD.
+     * // FIXME?
+     *         repaint(); */
     synchronized void update(Board board) {
         _board.copyFrom(board);
-        // FIXME?
         repaint();
     }
 
     /** Turn on move collection iff COLLECTING, and clear any current
      *  partial selection.  When move collection is off, ignore clicks on
-     *  the board. */
+     *  the board.
+     *  // FIXME?
+     *         repaint(); */
     void setMoveCollection(boolean collecting) {
         _acceptingMoves = collecting;
-        // FIXME?
         repaint();
     }
 

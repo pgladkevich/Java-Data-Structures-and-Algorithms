@@ -1,11 +1,7 @@
 /* Skeleton Copyright (C) 2015, 2020 Paul N. Hilfinger and the Regents of the
  * University of California.  All rights reserved. */
 package loa;
-
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Iterator;
-
 import static loa.Piece.*;
 
 /** An automated Player.
@@ -82,18 +78,18 @@ class MachinePlayer extends Player {
         }
         Move[] moves = board.legalMoves().toArray(new Move[0]);
         int bestScore = -INFTY * sense;
-        if (saveMove == true) {
+        if (saveMove) {
             _index = 0;
         }
 
-        for (int i =0; i < moves.length; i += 1) {
+        for (int i = 0; i < moves.length; i += 1) {
             Move move = moves[i];
             board.makeMove(move);
-            int score = findMove(board,depth-1,false,
+            int score = findMove(board, depth - 1, false,
                     sense * -1, alpha, beta);
             if (score > bestScore) {
                 bestScore = score;
-                if(saveMove == true) {
+                if (saveMove) {
                     _index = i;
                 }
             }
@@ -121,8 +117,11 @@ class MachinePlayer extends Player {
         return 1;
     }
 
+    /** Method to return a numerical value for the current BOARD, that will
+     * be positive for a good board for WP and negative for a good board for BP,
+     * independently of who's turn it is or who the maximizer/minimizer is. */
     private int heuristic(Board board) {
-        int score = 0;
+        int score;
         if (board.getWINNERKNOWN()) {
             Piece winner = board.winner();
             if (winner == WP) {
@@ -136,19 +135,13 @@ class MachinePlayer extends Player {
         }
         ArrayList<Integer> wR = (ArrayList<Integer>) board.getRegionSizes(WP);
         ArrayList<Integer> bR = (ArrayList<Integer>) board.getRegionSizes(BP);
-//        int difference = Math.abs(board.getbNUM() - board.getwNUM());
-//        score -= (Math.pow(wR.get(0), difference));
-//        score += (Math.pow(bR.get(0), difference));
         score = wR.get(0) - bR.get(0);
-
-//        return score;
-        //System.out.println(getGame().randInt(63) % board.legalMoves().size());
-//        return getGame().randInt(63) % board.legalMoves().size();
         return score;
     }
 
     /** Used to convey moves discovered by findMove. */
     private Move _foundMove;
 
+    /** Used to store the index of the best move in LegalMoves(). */
     private int _index;
 }

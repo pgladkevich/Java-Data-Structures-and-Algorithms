@@ -258,6 +258,7 @@ class Board {
 
     /** Return a sequence of all legal moves from this position. */
     List<Move> legalMoves() {
+        ALL_MOVES.clear();
         for (Square s : ALL_SQUARES) {
             if (get(s).equals(_turn)) {
                 for(int dir = 0; dir < 4; dir +=1) {

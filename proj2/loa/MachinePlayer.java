@@ -80,11 +80,11 @@ class MachinePlayer extends Player {
 //            _foundMove = board.legalMoves().get(getGame().randInt(64)
 //                    % board.legalMoves().size());
             // getGame().randInt(64)
-            return heuristic(board, sense);
+            return heuristic(board);
         }
         // FIXME
         int bestScore = 0;
-        int bestMove = 0;
+        Move bestMove = null;
 //        ArrayList<Move> moves = new ArrayList<>();
 //        moves = (ArrayList<Move>) board.legalMoves();
 //        Iterator<Move> moves = board.legalMoves().iterator();
@@ -99,12 +99,13 @@ class MachinePlayer extends Player {
 //            move = moves.get(i);
            //move = board.legalMoves().iterator().next();
             board.makeMove(move);
+            //moves = null;
 //            board = board;
             int score = findMove(board,depth-1,false,
                     sense * -1, alpha, beta);
             if (score > bestScore) {
                 bestScore = score;
-                bestMove = board.legalMoves().indexOf(move);
+                bestMove = move;
             }
             if (sense == 1 && side == WP || sense == -1 && side == BP) {
                 alpha = Math.max(score, alpha);
@@ -118,8 +119,8 @@ class MachinePlayer extends Player {
             board.retract();
         }
         if (saveMove) {
-            System.out.println("Hi");
-            _foundMove = board.legalMoves().get(bestMove); //board.legalMoves().get(getGame().randInt(64)
+            //System.out.println("Hi");
+            _foundMove = bestMove; //board.legalMoves().get(getGame().randInt(64)
                     // % board.legalMoves().size()); //null; // FIXME
         }
 
@@ -128,24 +129,26 @@ class MachinePlayer extends Player {
 
     /** Return a search depth for the current position. */
     private int chooseDepth() {
-        return 2;  // FIXME
+        return 3;  // FIXME
     }
 
-    private int heuristic(Board board, int sense) {
+    private int heuristic(Board board) {
         if (board.getWINNERKNOWN()) {
             Piece winner = board.winner();
             if (winner == WP) {
                 return WINNING_VALUE;
             } else if (winner == BP) {
-                return -1*WINNING_VALUE;
+                return -1 * WINNING_VALUE;
             } else {
                 assert (winner == EMP);
                 return 0;
             }
-
         }
-        return getGame().randInt(64) % board.legalMoves().size();
-        //return 0;
+        board.getRegionSizes(WP);
+        board.getRegionSizes(BP);
+
+        //return getGame().randInt(64) % board.legalMoves().size();
+        return 0;
     }
 
     /** Used to convey moves discovered by findMove. */

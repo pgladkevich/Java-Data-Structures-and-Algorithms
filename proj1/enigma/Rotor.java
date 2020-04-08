@@ -12,6 +12,7 @@ class Rotor {
         _name = name;
         _permutation = perm;
         _sposn = 0;
+        _pring = 0;
     }
 
     /** Return my name. */
@@ -54,6 +55,12 @@ class Rotor {
         _sposn = posn;
     }
 
+    /** Set position of Ring to PRING.  */
+    void setRING(char pring) {
+        Alphabet a = this.alphabet();
+        _pring = a.toInt(pring);
+    }
+
     /** Set setting() to character CPOSN. */
     void set(char cposn) {
         Alphabet a = this.alphabet();
@@ -64,17 +71,15 @@ class Rotor {
      *  according to my permutation. */
     int convertForward(int p) {
         return _permutation.wrap(
-                _permutation.permute((p + _sposn) % this.size())
-                        - _sposn);
+                _permutation.permute((p + _sposn - _pring) % this.size())
+                        + _pring - _sposn);
     }
-//    _permutation.invert((e - _sposn) % this.size())
-//            - _sposn
     /** Return the conversion of E (an integer in the range 0..size()-1)
      *  according to the inverse of my permutation. */
     int convertBackward(int e) {
         return _permutation.wrap(
-                _permutation.invert((e + _sposn) % this.size())
-                        - _sposn);
+                _permutation.invert((e + _sposn - _pring) % this.size())
+                       + _pring - _sposn);
     }
 
     /** Returns true iff I am positioned to allow the rotor to my left
@@ -101,4 +106,6 @@ class Rotor {
     /** The position that the rotor is currently set to. Starts at 0 */
     private int _sposn;
 
+    /** The ring position that the rotor is currently set to. Default 0. */
+    private int _pring;
 }

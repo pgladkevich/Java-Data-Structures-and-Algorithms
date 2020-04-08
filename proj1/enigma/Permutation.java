@@ -19,20 +19,20 @@ class Permutation {
     Permutation(String cycles, Alphabet alphabet) {
         _alphabet = alphabet;
         cycles = cycles.replace(")(", ") (").replace(
-                "(","").replace(")",
+                "(", "").replace(")",
                 "").trim().replaceAll(" +", " ");
         _cycles = cycles.split(" ");
-        _pHM = new HashMap<Integer,Integer>();
+        _pHM = new HashMap<Integer, Integer>();
         for (String e : _cycles) {
             for (int i = 0; i < e.length(); i += 1) {
                 if (!alphabet.contains(e.charAt(i))) {
-                    throw error("Character in cycle not found" +
-                            "in  the alphabet.");
+                    throw error("Character in cycle not found"
+                            + "in  the alphabet.");
                 }
             }
             addCycle(e);
         }
-        for(Map.Entry entry : alphabet._hm.entrySet()) {
+        for (Map.Entry entry : alphabet.returnHM().entrySet()) {
             if (!_pHM.containsKey(entry.getKey())) {
                 _pHM.put((int) entry.getKey(), (int) entry.getKey());
             }
@@ -42,14 +42,13 @@ class Permutation {
     /** Add the cycle c0->c1->...->cm->c0 to the permutation, where CYCLE is
      *  c0c1...cm. */
     private void addCycle(String cycle) {
-        for (int i = 0; i < cycle.length(); i+=1) {
+        for (int i = 0; i < cycle.length(); i += 1) {
             int k = this._alphabet.toInt(cycle.charAt(i));
             if (i == cycle.length() - 1) {
                 int v = this._alphabet.toInt(cycle.charAt(0));
                 _pHM.put(k, v);
-            }
-            else {
-                _pHM.put(k, this._alphabet.toInt(cycle.charAt(i+1)));
+            } else {
+                _pHM.put(k, this._alphabet.toInt(cycle.charAt(i + 1)));
             }
         }
     }
@@ -120,6 +119,8 @@ class Permutation {
 
     /** Alphabet of this permutation. */
     private Alphabet _alphabet;
-    private HashMap<Integer,Integer> _pHM;
+    /** Mapping of every letter to its converted letter. */
+    private HashMap<Integer, Integer> _pHM;
+    /** Cycles that are input as a part of the permutation. */
     private String[] _cycles;
 }

@@ -1,0 +1,32 @@
+Q: Is one GrowList implementation always better than the others?
+A: No. It depends on the size of the array passed into the algorithms and the number of elements at which an algorithm spikes.
+
+Q: Why is the runtime for N insertions into a geometrically resizing list a Theta(N) operation?
+A: Because a geometrically resizing list will have an amortized time that evens out its doubling operation that expands
+the size of the list. So even though it will spike at the elements where it needs to double the size of the list, the
+other elements all have a Theta(1) insertion time since the list is already expanded. This results in an amortized time
+of Theta(N) for N insertions.
+
+Q: Why is the runtime for N insertions into a arithmetically resizing list a Theta(N^2) operation?
+A: Because an arithmetically resizing list has to not only create a new list every time, but copy over the old elements
+into the new list. The combination of these two actions results in a Theta(N^2) operation.
+
+Q: How does the runtime per operation for the ArithGrowList compare to that of GeomGrowList and JavaGrowList? Specifically look at the non-accumulated plots and desribe the trends for how long each operation takes as a function of how many elements have already been inserted in the list.
+A: GeomGrowList and JavaGrowList spike at regular intervals that relates to how they expand the arrays. On the other
+handIt seems to spike at irregular intervals which I do not know the reason for. There must be a higher cost associated
+with some ArrayCopy parameters compared to others.
+
+Q: When are there spikes in the per operation runtime graphs for each of the implementations? Do these make sense to you? Hint: some of these should and others might not. Empirical runtime can be quite messy and depends on machine specifics which will be revealed in other subsequent classes like CS61C.
+A: Again, as in the previous question the GeomGrowList and JavaGrowList are expanding their size by two in the case
+of the former and by a different constant (that might change?) in the case of the latter. This results in spikes that
+are more consistent. The ArithGrowList spikes don't make sense.
+
+Q: Optional: Try changing the code for GeomGrowList to resize by a different factor. How does this effect the theoretical asymptotic runtime? How does this effect the plotted runtime?
+A: This change would not affect the theoretical asymptotic runtime as it is simply multiplying by a different constant
+factor and is in the same class of big Theta notation. The plotted runtime is vastly improved.
+
+Q: Optional: Try changing the code for ArithGrowList to resize by adding a different fixed number of spots in the array. How does this effect the theoretical asymptotic runtime? How does this effect the plotted runtime?
+A: Adding more additional spots in the array does not affect the theoretical asymptotic run time since it is still
+n operations to copy the existing list and n+1 operations to add them to the new one for a total big theta of n^2.
+This increases the plotted runtime for the arrays of size equal to or less than the fixed array size. This is because
+there are leftover elements that are filled with 0 that are getting copied over each time uselessly.

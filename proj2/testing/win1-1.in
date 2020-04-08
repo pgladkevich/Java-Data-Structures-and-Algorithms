@@ -1,0 +1,28 @@
+# Test for single-piece winning.
+#* java -ea loa.Main
+manual white
+f1-h3
+h2-f4
+c1-f4
+h4-f6
+d8-f6
+h5-f3
+d1-f3
+a6-b5
+b8-b5
+a5-c3
+e1-c3
+a2-b2
+b5-b2
+a3-a6
+c8-a6
+h7-f5
+f8-h6
+a7-b7
+a6-a4
+b7-d5
+dump
+h3-f5
+#*win+
+dump
+quit

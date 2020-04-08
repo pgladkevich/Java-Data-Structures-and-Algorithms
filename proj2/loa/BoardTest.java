@@ -10,7 +10,7 @@ import static loa.Square.sq;
 import static loa.Move.mv;
 
 /** Tests of the Board class API.
- *  @author
+ *  @author Pavel Gladkevich
  */
 public class BoardTest {
 
@@ -23,7 +23,7 @@ public class BoardTest {
         { WP,  EMP,  WP,  WP, EMP,  WP, EMP, EMP  },
         { WP,  EMP, EMP, EMP,  BP, EMP, EMP, WP  },
         { EMP, EMP, EMP, EMP, EMP, EMP, EMP, EMP  },
-        { EMP, BP,  BP,  BP,  EMP,  BP,  BP, EMP }
+        { EMP, BP,  BP,  BP,  EMP,  BP,  BP, EMP },
     };
 
     /** A position in which black, but not white, pieces are contiguous. */
@@ -125,4 +125,23 @@ public class BoardTest {
                      0, b1.movesMade());
     }
 
+    @Test
+    public void testCopyFrom() {
+        Board b1 = new Board(BOARD1, BP);
+        Board b2 = new Board(BOARD2, BP);
+        b2.copyFrom(b1);
+        assertEquals(BOARD1_STRING, b2.toString());
+    }
+
+    @Test
+    public void testLegalMoves() {
+        Board b1 = new Board(BOARD1, BP);
+        b1.legalMoves();
+    }
+
+    @Test
+    public void testSingleMove() {
+        Board b1 = new Board(BOARD1, BP);
+        b1.makeMove(mv("g8-h7"));
+    }
 }

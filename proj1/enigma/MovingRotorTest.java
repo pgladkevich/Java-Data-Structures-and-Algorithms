@@ -54,7 +54,8 @@ public class MovingRotorTest {
         rotor = new Rotor(name, new Permutation(rotors.get(name), UPPER));
     }
     /** Set a reflector rotor with the given NAME entry in ROTORS */
-    private void setReflectorRotor(String name, HashMap<String, String> rotors) {
+    private void setReflectorRotor(String name,
+                                   HashMap<String, String> rotors) {
         rotor = new Reflector(name, new Permutation(rotors.get(name), UPPER));
     }
     /** Set a Fixed rotor with the given NAME entry in ROTORS */
@@ -74,7 +75,7 @@ public class MovingRotorTest {
         rotor.set(1);
         assertEquals(1, rotor.setting());
         assertEquals('J', a.toChar(rotor.convertForward(0)));
-        assertEquals( 'T', a.toChar(rotor.convertBackward(25)));
+        assertEquals('T', a.toChar(rotor.convertBackward(25)));
 
         rotor.set('C');
         assertEquals(2, rotor.setting());
@@ -90,7 +91,7 @@ public class MovingRotorTest {
     @Test
     public void checkReflector() {
         setReflectorRotor("B", NAVALA);
-        assertEquals(4,rotor.convertForward(0));
+        assertEquals(4, rotor.convertForward(0));
     }
 
     @Test(expected = EnigmaException.class)
@@ -101,10 +102,9 @@ public class MovingRotorTest {
 
     @Test(expected = EnigmaException.class)
     public void checkReflectorSuper() {
-        rotor = new Reflector("R", new Permutation("(AE) (BN) " +
-                    "(CK) (DQ) (FU) (GY) (HW) (IJ) (LO) "
-                    + "(MP) (RX) (SZ) (TV) (x)", new Alphabet("AEBNC" +
-                "KDQFUGYHWIJLOMPRXSZTVX")));
+        rotor = new Reflector("R", new Permutation("(AE) (BN) "
+                + "(CK) (DQ) (FU) (GY) (HW) (IJ) (LO) (MP) (RX) (SZ) (TV) (x)",
+                new Alphabet("AEBNCKDQFUGYHWIJLOMPRXSZTVX")));
     }
 
     @Test
@@ -139,49 +139,17 @@ public class MovingRotorTest {
         rotor.set(25);
         checkRotor("Rotor I set", UPPER_STRING, NAVALZ_MAP.get("I"));
     }
-//    @Test(expected = IllegalArgumentException.class)
-//    public void testNoAlphabet() {
-//        Permutation p = getNewPermutation("",
-//                getNewAlphabet(""));
-//        if (p.size()==0) {
-//            throw new IllegalArgumentException("No alphabet.");
-//        }
-//
-//    }
-//    @Test(expected = EnigmaException.class)
-//    public void testNotInAlphabet() {
-//        Permutation p = getNewPermutation("(ABCD)",
-//                getNewAlphabet("ABC"));
-//
-//    }
-//
-//    @Test(expected = EnigmaException.class)
-//    public void testInAlphabetTwice() {
-//        Permutation p = getNewPermutation("(ABD)",
-//                getNewAlphabet("ABBD"));
-//
-//    }
-//    @Test(expected = EnigmaException.class)
-//    public void testInCyclesTwice() {
-//        Permutation p = getNewPermutation("(ABBD)",
-//                getNewAlphabet("ABD"));
-//
-//    }
-//    @Test(expected = IllegalArgumentException.class)
-//    public void testInvalidLetter() {
-//        Alphabet a = getNewAlphabet("A*");
-//        Alphabet a1 = getNewAlphabet("A(");
-//        Alphabet a2 = getNewAlphabet("A)");
-//        if (a.contains('*') || a1.contains('(') || a2.contains(')')) {
-//            throw new IllegalArgumentException("Alphabet can't contain *, (, " +
-//                    "or ) characters");
-//        }
-//    }
-//    @Test(expected = EnigmaException.class)
-//    public void testInvalidCycleForm() {
-//        Permutation p = getNewPermutation("((A))",
-//                getNewAlphabet("AB"));
-//    }
 
+    @Test
+    public void checkMovingRing() {
+        setRotor("III", NAVALA, "");
+        rotor.set('A');
+        assertEquals(19, rotor.convertForward(9));
+        assertEquals(9, rotor.convertBackward(19));
+        rotor.setRING('B');
+        rotor.set('B');
+        assertEquals(19, rotor.convertForward(9));
+        assertEquals(9, rotor.convertBackward(19));
 
+    }
 }

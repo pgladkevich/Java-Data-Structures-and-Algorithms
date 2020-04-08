@@ -97,7 +97,7 @@ class MachinePlayer extends Player {
 //            movesL = (ArrayList<Move>) board.legalMoves();
 //            Move move;
 //            move = moves.get(i);
-            move = board.legalMoves().iterator().next();
+           //move = board.legalMoves().iterator().next();
             board.makeMove(move);
 //            board = board;
             int score = findMove(board,depth-1,false,
@@ -128,7 +128,7 @@ class MachinePlayer extends Player {
 
     /** Return a search depth for the current position. */
     private int chooseDepth() {
-        return 1;  // FIXME
+        return 2;  // FIXME
     }
 
     private int heuristic(Board board, int sense) {

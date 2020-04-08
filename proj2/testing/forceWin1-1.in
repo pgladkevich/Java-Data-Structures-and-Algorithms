@@ -1,0 +1,27 @@
+#*java -ea loa.Main
+# Set up a winnable position from two moves away and see if AI can win.
+seed 3781433
+manual White
+a6-c8
+f1-h3
+a2-c4
+f8-h6
+c4-b5
+b8-b5
+h2-g3
+d1-h1
+g3-g6
+e1-e3
+a4-a8
+b1-e4
+h4-f6
+a5-b6
+f6-b6
+h5-f5
+g8-c8
+f5-f6
+e3-a7
+f6-f7
+auto Black
+auto White
+#*move/win+

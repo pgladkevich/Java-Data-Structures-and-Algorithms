@@ -97,7 +97,7 @@ class MachinePlayer extends Player {
                     _index = i;
                 }
             }
-            //sense == -1 && side == BP
+
             if (sense == 1 && side == WP || sense == -1 && side == BP) {
                 alpha = Math.max(score, alpha);
             } else {
@@ -105,22 +105,20 @@ class MachinePlayer extends Player {
             }
             if (alpha >= beta) {
                 board.retract();
-//                return bestScore;
                 break;
             }
             board.retract();
         }
         if (saveMove) {
-            _foundMove = board.legalMoves().get(_index); //board.legalMoves().get(getGame().randInt(64)
-                    // % board.legalMoves().size()); //null; // FIXME
+            _foundMove = board.legalMoves().get(_index);
         }
 
-        return bestScore; // FIXME
+        return bestScore;
     }
 
     /** Return a search depth for the current position. */
     private int chooseDepth() {
-        return 1;  // FIXME
+        return 1;
     }
 
     private int heuristic(Board board) {

@@ -1,0 +1,11 @@
+#*java -ea loa.Main
+# Check that you can not control white pieces when it is black's turn.  The AI is never started.
+manual White
+dump
+b1-d3
+dump
+a3-d3
+dump
+a2-c2
+dump
+quit

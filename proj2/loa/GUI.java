@@ -40,16 +40,18 @@ class GUI extends TopLevel implements View, Reporter {
         super(title, true);
         addMenuButton("Game->New", this::newGame);
         addMenuButton("Game->Quit", this::quit);
+        addMenuButton("Game->Undo", this::undo);
         addSeparator("Game");
-        addMenuButton("Undo", this::undo);
-//        addMenuButton("Set-Up Mode", this::);
+        addMenuButton("Settings->Manual Black", this::manualblack);
+        addMenuButton("Settings->Auto Black", this::autoblack);
+        addMenuButton("Settings->Manual White", this::manualwhite);
+        addMenuButton("Settings->Auto White", this::autowhite);
         addSeparator("Settings");
         addMenuButton("Help->About", (s) -> displayText("About",
                 ABOUT_TEXT));
         addMenuButton("Help->LOA", (s) -> displayText("Help",
                 HELP_TEXT));
         addSeparator("Help");
-        // FIXME: Other controls?
 
         _widget = new BoardWidget(_pendingCommands);
         add(_widget,
@@ -60,7 +62,6 @@ class GUI extends TopLevel implements View, Reporter {
                  new LayoutSpec("x", 0, "y", 0,
                                 "height", 1,
                                 "width", 3));
-        // FIXME: Other components?
     }
 
     /** Response to "Quit" button click. */
@@ -75,9 +76,31 @@ class GUI extends TopLevel implements View, Reporter {
 
     /** Response to "Undo" button click. */
     private void undo(String dummy) {
-        _game.getBoard().retract();
-        _game.getBoard().retract();
-        _pendingCommands.offer("update");
+        if (_game.getBoard().getMOVES().size() >= 2) {
+            _game.getBoard().retract();
+            _game.getBoard().retract();
+            update(_game);
+        }
+    }
+
+    /** Response to "White Auto" button click. */
+    private void autowhite(String dummy) {
+        _pendingCommands.offer("auto white");
+    }
+
+    /** Response to "Black Auto" button click. */
+    private void autoblack(String dummy) {
+        _pendingCommands.offer("auto black");
+    }
+
+    /** Response to "Black Manual" button click. */
+    private void manualblack(String dummy) {
+        _pendingCommands.offer("manual black");
+    }
+
+    /** Response to "White Manual" button click. */
+    private void manualwhite(String dummy) {
+        _pendingCommands.offer("manual white");
     }
 
     /** Return the next command from our widget, waiting for it as necessary.
@@ -109,9 +132,8 @@ class GUI extends TopLevel implements View, Reporter {
                      String.format("To move: %s", board.turn().fullName()));
         }
 
-        boolean manualWhite = controller.manualWhite(),
-            manualBlack = controller.manualBlack();
-        // FIXME: More?
+        boolean _manualwhite = controller.manualWhite(),
+            _manualblack = controller.manualBlack();
         _game = controller;
     }
 

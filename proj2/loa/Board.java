@@ -60,6 +60,12 @@ class Board {
         _turn = side;
         _moveLimit = DEFAULT_MOVE_LIMIT;
         _winnerKnown = false;
+        _moves.clear();
+        _whiteRegionSizes.clear();
+        _blackRegionSizes.clear();
+        _subsetsInitialized = false;
+        computeRegions();
+        _subsetsInitialized = true;
     }
 
     /** Set me to the initial configuration. */

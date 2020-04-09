@@ -121,7 +121,6 @@ class BoardWidget extends Pad {
 
     /** Handle a mouse-button push on S. */
     private void mousePressed(Square s) {
-        // FIXME
         if (_board.getTURN() == _board.get(s)) {
             _from = s;
         } else {
@@ -134,7 +133,6 @@ class BoardWidget extends Pad {
      *
      *         repaint(); */
     private void mouseReleased(Square s) {
-        // FIXME
         if (_from != null && _board.isLegal(_from, s)) {
             _board.makeMove(Move.mv(_from, s));
             _commands.add(

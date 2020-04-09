@@ -41,7 +41,7 @@ class GUI extends TopLevel implements View, Reporter {
         addMenuButton("Game->New", this::newGame);
         addMenuButton("Game->Quit", this::quit);
         addSeparator("Game");
-//        addMenuButton("Undo", this::);
+        addMenuButton("Undo", this::undo);
 //        addMenuButton("Set-Up Mode", this::);
         addSeparator("Settings");
         addMenuButton("Help->About", (s) -> displayText("About",
@@ -71,6 +71,13 @@ class GUI extends TopLevel implements View, Reporter {
     /** Response to "New Game" button click. */
     private void newGame(String dummy) {
         _pendingCommands.offer("new");
+    }
+
+    /** Response to "Undo" button click. */
+    private void undo(String dummy) {
+        _game.getBoard().retract();
+        _game.getBoard().retract();
+        _pendingCommands.offer("update");
     }
 
     /** Return the next command from our widget, waiting for it as necessary.
@@ -105,6 +112,7 @@ class GUI extends TopLevel implements View, Reporter {
         boolean manualWhite = controller.manualWhite(),
             manualBlack = controller.manualBlack();
         // FIXME: More?
+        _game = controller;
     }
 
     /** Display text in resource named TEXTRESOURCE in a new window titled
@@ -168,4 +176,7 @@ class GUI extends TopLevel implements View, Reporter {
     private ArrayBlockingQueue<String> _pendingCommands =
         new ArrayBlockingQueue<>(5);
 
+    /** Game instance variable that stores the current game so that we can
+     * implement the undo function and retract two moves. */
+    private Game _game;
 }

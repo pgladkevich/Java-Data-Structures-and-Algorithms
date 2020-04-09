@@ -35,18 +35,14 @@ class GUI extends TopLevel implements View, Reporter {
     /** Resource name of Loa help text. */
     static final String HELP_TEXT = "loa/Help.html";
 
-    /** A new window with given TITLE providing a view of a Loa board.
-     * addMenuButton("Game->Quit", this::quit);
-     *         // FIXME: Other controls?
-     *         addLabel("To move: White", "CurrentTurn",
-     *                  new LayoutSpec("x", 0, "y", 0,
-     *                                 "height", 1,
-     *                                 "width", 3));
-     *         // FIXME: Other components? */
+    /** A new window with given TITLE providing a view of a Loa board. */
     GUI(String title) {
         super(title, true);
         addMenuButton("Game->New", this::newGame);
         addMenuButton("Game->Quit", this::quit);
+//        addMenuButton("Undo", this::);
+//        addMenuButton("Set-Up Mode", this::);
+        // FIXME: Other controls?
 
         _widget = new BoardWidget(_pendingCommands);
         add(_widget,
@@ -57,6 +53,7 @@ class GUI extends TopLevel implements View, Reporter {
                  new LayoutSpec("x", 0, "y", 0,
                                 "height", 1,
                                 "width", 3));
+        // FIXME: Other components?
     }
 
     /** Response to "Quit" button click. */
@@ -84,9 +81,6 @@ class GUI extends TopLevel implements View, Reporter {
         }
     }
 
-    /** boolean manualWhite = controller.manualWhite(),
-     manualBlack = controller.manualBlack();
-     // FIXME: More? */
     @Override
     public void update(Game controller) {
         Board board = controller.getBoard();
@@ -103,6 +97,7 @@ class GUI extends TopLevel implements View, Reporter {
 
         boolean manualWhite = controller.manualWhite(),
             manualBlack = controller.manualBlack();
+        // FIXME: More?
     }
 
     /** Display text in resource named TEXTRESOURCE in a new window titled
@@ -148,7 +143,8 @@ class GUI extends TopLevel implements View, Reporter {
 
     @Override
     public void reportNote(String fmt, Object... args) {
-        showMessage(String.format(fmt, args), "Loa Message", "information");
+        showMessage(String.format(fmt, args), "Loa Message",
+                "information");
     }
 
     @Override

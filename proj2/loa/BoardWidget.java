@@ -86,16 +86,14 @@ class BoardWidget extends Pad {
                    BOARD_SIDE - 2 * MARGIN - BORDER_WIDTH);
 
     }
-    /** for (Square sq : Square.ALL_SQUARES) {
-     drawPiece(g, sq);
-     }
-     // More? FIXME */
+
     @Override
     public synchronized void paintComponent(Graphics2D g) {
         drawGrid(g);
         for (Square sq : Square.ALL_SQUARES) {
             drawPiece(g, sq);
         }
+        // More? FIXME
     }
 
     /** Draw the contents of S on G. */
@@ -121,17 +119,30 @@ class BoardWidget extends Pad {
                    PIECE_SIZE, PIECE_SIZE);
     }
 
-    /** Handle a mouse-button push on S.
-     * // FIXME
-     *         repaint(); */
+    /** Handle a mouse-button push on S. */
     private void mousePressed(Square s) {
+        // FIXME
+        if (_board.getTURN() == _board.get(s)) {
+            _from = s;
+        } else {
+            _from = null;
+        }
         repaint();
     }
 
     /** Handle a mouse-button release on S.
-     * // FIXME
+     *
      *         repaint(); */
     private void mouseReleased(Square s) {
+        // FIXME
+        if (_from != null && _board.isLegal(_from, s)) {
+            _board.makeMove(Move.mv(_from, s));
+            _commands.add(
+                    _board.getMOVES().get(
+                            _board.getMOVES().size() - 1).toString());
+        } else {
+            return;
+        }
         repaint();
     }
 
@@ -156,21 +167,19 @@ class BoardWidget extends Pad {
         }
     }
 
-    /** Revise the displayed board according to BOARD.
-     * // FIXME?
-     *         repaint(); */
+    /** Revise the displayed board according to BOARD. */
     synchronized void update(Board board) {
         _board.copyFrom(board);
+        // FIXME?
         repaint();
     }
 
     /** Turn on move collection iff COLLECTING, and clear any current
      *  partial selection.  When move collection is off, ignore clicks on
-     *  the board.
-     *  // FIXME?
-     *         repaint(); */
+     *  the board. */
     void setMoveCollection(boolean collecting) {
         _acceptingMoves = collecting;
+        // FIXME?
         repaint();
     }
 
@@ -205,5 +214,9 @@ class BoardWidget extends Pad {
 
     /** True iff accepting moves from user. */
     private boolean _acceptingMoves;
+
+    /** Instance variable to save the square that was passed into mousePressed
+     * if the turn is of the right player. */
+    private Square _from;
 
 }

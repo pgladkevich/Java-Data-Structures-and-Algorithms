@@ -1,4 +1,7 @@
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Note that every sorting algorithm takes in an argument k. The sorting 
@@ -42,7 +45,13 @@ public class MySortingAlgorithms {
     public static class InsertionSort implements SortingAlgorithm {
         @Override
         public void sort(int[] array, int k) {
-            // FIXME
+            for (int i = 0; i < k; i += 1) {
+                int j = i;
+                while (j > 0 && array[j] < array [j-1]) {
+                    swap(array, j-1, j);
+                    j = j-1;
+                }
+            }
         }
 
         @Override
@@ -60,7 +69,17 @@ public class MySortingAlgorithms {
     public static class SelectionSort implements SortingAlgorithm {
         @Override
         public void sort(int[] array, int k) {
-            // FIXME
+            for (int i = 0; i < k - 1; i += 1) {
+                int min = i;
+                for (int j = i + 1; j < k; j += 1) {
+                    if (array[j] < array[min]) {
+                        min = j;
+                    }
+                }
+                if (min != i) {
+                    swap(array, i, min);
+                }
+            }
         }
 
         @Override
@@ -77,10 +96,38 @@ public class MySortingAlgorithms {
     public static class MergeSort implements SortingAlgorithm {
         @Override
         public void sort(int[] array, int k) {
-            // FIXME
+            if (array.length <= 1) {
+                return;
+            }
+            int[] a = new int[k / 2];
+            int[] b = new int[k - a.length];
+            System.arraycopy(array, 0, a, 0 , a.length);
+            System.arraycopy(array, a.length, b, 0, b.length);
+
+            sort(a, a.length);
+            sort(b, b.length);
+
+            int[] c = merge(a, b);
+            System.arraycopy(c,0, array, 0, c.length);
         }
 
-        // may want to add additional methods
+        public int[] merge(int[] a, int[] b) {
+            int[] c = new int[a.length + b.length];
+            int aI = 0, bI = 0, cI = 0;
+            while(aI < a.length && bI < b.length) {
+                if (a[aI] < b[bI]) {
+                    c[cI] = a[aI];
+                    aI += 1;
+                } else {
+                    c[cI] = b[bI];
+                    bI += 1;
+                }
+                cI += 1;
+            }
+            System.arraycopy(a, aI, c, cI, a.length - aI);
+            System.arraycopy(b, bI, c, cI, b.length - bI);
+            return c;
+        }
 
         @Override
         public String toString() {
@@ -148,7 +195,34 @@ public class MySortingAlgorithms {
     public static class LSDSort implements SortingAlgorithm {
         @Override
         public void sort(int[] a, int k) {
-            // FIXME
+            int[] array = new int[k];
+            System.arraycopy(a,0, array,0, k);
+            List<Integer>[] bins = new ArrayList[10];
+            for (int i = 0; i < bins.length; i++) {
+                bins[i] = new ArrayList<>();
+            }
+            boolean done = false;
+            int tmp = 0, divisor = 1;
+            while (!done) {
+                done = true;
+                for (int i : array) {
+                    tmp = i / divisor;
+                    bins[tmp % 10].add(i);
+                    if (done && tmp > 0) {
+                        done = false;
+                    }
+                }
+                int aI = 0;
+                for (int b = 0; b < 10; b++) {
+                    for (Integer i : bins[b]) {
+                        array[aI++] = i;
+                    }
+                    bins[b].clear();
+                }
+                divisor *= 10;
+            }
+            System.arraycopy(array,0, a, 0, k);
+
         }
 
         @Override

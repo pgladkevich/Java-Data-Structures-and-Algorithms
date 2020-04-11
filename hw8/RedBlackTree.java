@@ -144,6 +144,11 @@ public class RedBlackTree<T extends Comparable<T>> {
         return node;
     }
 
+    /** Public accesser method for the root of the tree.*/
+    public RBTreeNode<T> graderRoot() {
+        return root;
+    }
+
 
     /**
      * RedBlack tree node.

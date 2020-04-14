@@ -213,8 +213,8 @@ public class MySortingAlgorithms {
                     }
                 }
                 int aI = 0;
-                for (int b = 0; b < 10; b++) {
-                    for (Integer i : bins[b]) {
+                for (int b = 0; b < 10; b += 1) {
+                    for (int i : bins[b]) {
                         array[aI++] = i;
                     }
                     bins[b].clear();

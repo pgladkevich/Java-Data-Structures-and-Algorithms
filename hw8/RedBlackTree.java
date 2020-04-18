@@ -157,7 +157,6 @@ public class RedBlackTree<T extends Comparable<T>> {
         if (isRed(node.left) && isRed(node.right)) {
             flipColors(node);
         }
-        graderRoot().isBlack = true;
         return node;
     }
 

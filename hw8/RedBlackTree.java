@@ -53,6 +53,8 @@ public class RedBlackTree<T extends Comparable<T>> {
             RBTreeNode<T> y = node.left;
             node.left = y.right;
             y.right = node;
+            y.isBlack = node.isBlack;
+            node.isBlack = false;
             return y;
         }
     }
@@ -74,6 +76,8 @@ public class RedBlackTree<T extends Comparable<T>> {
             RBTreeNode<T> y = node.right;
             node.right = y.left;
             y.left = node;
+            y.isBlack = node.isBlack;
+            node.isBlack = false;
             return y;
         }
     }

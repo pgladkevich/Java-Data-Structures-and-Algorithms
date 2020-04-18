@@ -124,9 +124,6 @@ public class RedBlackTree<T extends Comparable<T>> {
 
         // Insert (return) new red leaf node.
         if (node == null) {
-            if (graderRoot() == null) {
-                node = new RBTreeNode<>(true, item, null, null);
-            }
             node = new RBTreeNode<>(false, item,
                     null, null);
         }

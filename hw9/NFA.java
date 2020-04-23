@@ -26,7 +26,7 @@ import java.util.HashSet;
  * expression implementations, it's just something we've chosen to add. '\d' is,
  * however, standard and that should work as you've learned from lecture.
  *
- * @author
+ * @author Pavel Gladkevich
  *
  *
  * */

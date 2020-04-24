@@ -96,34 +96,6 @@ public class NFA {
          *
          * If this State has no outgoing edges with label C, then
          * return an empty Set. */
-//        public Set<State> successors(char c) {
-//            int eps = Character.compare(c, EPSILON);
-//            if (eps != 0 && _edges.containsKey(c)) {
-//                return  _edges.get(c);
-//            } else if (eps == 0 && _edges.containsKey(EPSILON)) {
-//                Set<State> result = new HashSet<>();
-//                Stack<State> fringe = new Stack<>();
-//                fringe.push(this);
-//
-//                while (!fringe.empty()) {
-//                    State s = fringe.pop();
-//                    Set<State> newS = s._edges.get(c);
-//                    if (newS != null) {
-//                        for (State nS : newS) {
-//                            if (!result.contains(nS)) {
-//                                fringe.push(nS);
-//                            }
-//                        }
-//                    }
-//                    if (!result.contains(s)) {
-//                        result.add(s);
-//                    }
-//                }
-//                return result;
-//            } else {
-//                return Collections.emptySet();
-//            }
-//        }
         public Set<State> successors(char c) {
             int eps = Character.compare(c, EPSILON);
             if (!_edges.containsKey(c)) {
@@ -406,23 +378,43 @@ public class NFA {
     /**
      * @param s the query String
      * @return whether or not the string S is accepted by this NFA. */
+//    public boolean matches(String s) {
+//        Set<State> S = new HashSet<>();
+//        S.add(_startState);
+//        S.addAll(_startState.successors(EPSILON));
+//        for (int i = 0; i < s.length(); i += 1) {
+//            Set<State> SNEW = new HashSet<>();
+//            for (State q : S) {
+//                if(!q.successors(s.charAt(i)).isEmpty()) {
+//                    SNEW = q.successors(s.charAt(i));
+//                }
+//                S = SNEW;
+//                SNEW = new HashSet<>();
+//                for (State qNEW : S) {
+//                    SNEW = qNEW.successors(EPSILON);
+//                    S.addAll(SNEW);
+//                }
+//            }
+//        }
+//        return S.contains(this._acceptState);
+//    }
     public boolean matches(String s) {
         Set<State> S = new HashSet<>();
         S.add(_startState);
         S.addAll(_startState.successors(EPSILON));
         for (int i = 0; i < s.length(); i += 1) {
-            Set<State> SNEW = Collections.emptySet();
+            Set<State> SNEW = new HashSet<>();
             for (State q : S) {
-                if(!q.successors(s.charAt(i)).isEmpty()) {
-                    SNEW = q.successors(s.charAt(i));
-                }
-                S = SNEW;
-                SNEW = Collections.emptySet();
-                for (State qNEW : S) {
-                    SNEW = qNEW.successors(EPSILON);
-                    S.addAll(SNEW);
+                if (!q.successors(s.charAt(i)).isEmpty()) {
+                    SNEW.addAll(q.successors(s.charAt(i)));
                 }
             }
+            S = SNEW;
+            SNEW = new HashSet<>();
+            for (State qNEW : S) {
+                SNEW.addAll(qNEW.successors(EPSILON));
+            }
+            S.addAll(SNEW);
         }
         return S.contains(this._acceptState);
     }

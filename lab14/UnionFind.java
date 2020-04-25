@@ -22,7 +22,11 @@ public class UnionFind {
     /** Return the representative of the set currently containing V.
      *  Assumes V is contained in one of the sets.  */
     public int find(int v) {
-        return _parents[v];
+        if(_parents[v] == v) {
+            return _parents[v];
+        } else {
+            return find(_parents[v]);
+        }
     }
 
     /** Return true iff U and V are in the same set. */
@@ -39,25 +43,27 @@ public class UnionFind {
         int s1 = _sizes[p1], s2 = _sizes[p2];
         if (s1 > s2) {
             _sizes[p1] += s2;
-            int i = 1;
-            while (s2 > 0) {
-                if (_parents[i] == p2) {
-                    _parents[i] = p1;
-                    s2 -= 1;
-                }
-                i += 1;
-            }
+//            int i = 1;
+//            while (s2 > 0) {
+//                if (_parents[i] == p2) {
+//                    _parents[i] = p1;
+//                    s2 -= 1;
+//                }
+//                i += 1;
+//            }
+            _parents[p2] = p1;
             return s1;
         } else {
             _sizes[p2] += s1;
-            int j = 1;
-            while (s1 > 0) {
-                if (_parents[j] == p1) {
-                    _parents[j] = p2;
-                    s1 -= 1;
-                }
-                j += 1;
-            }
+//            int j = 1;
+//            while (s1 > 0) {
+//                if (_parents[j] == p1) {
+//                    _parents[j] = p2;
+//                    s1 -= 1;
+//                }
+//                j += 1;
+//            }
+            _parents[p1] = p2;
             return s2;
         }
     }

@@ -378,26 +378,6 @@ public class NFA {
     /**
      * @param s the query String
      * @return whether or not the string S is accepted by this NFA. */
-//    public boolean matches(String s) {
-//        Set<State> S = new HashSet<>();
-//        S.add(_startState);
-//        S.addAll(_startState.successors(EPSILON));
-//        for (int i = 0; i < s.length(); i += 1) {
-//            Set<State> SNEW = new HashSet<>();
-//            for (State q : S) {
-//                if(!q.successors(s.charAt(i)).isEmpty()) {
-//                    SNEW = q.successors(s.charAt(i));
-//                }
-//                S = SNEW;
-//                SNEW = new HashSet<>();
-//                for (State qNEW : S) {
-//                    SNEW = qNEW.successors(EPSILON);
-//                    S.addAll(SNEW);
-//                }
-//            }
-//        }
-//        return S.contains(this._acceptState);
-//    }
     public boolean matches(String s) {
         Set<State> S = new HashSet<>();
         S.add(_startState);

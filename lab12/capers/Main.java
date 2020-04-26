@@ -132,7 +132,6 @@ public class Main {
         Dog dog = Dog.fromFile(args[1]);
         dog.haveBirthday();
         dog.saveDog();
-        //System.out.println(dog.toString());
     }
 
     /**

@@ -15,6 +15,8 @@ public class Main {
     /** Main metadata folder. */
     static final File CAPERS_FOLDER = Utils.join(CWD,".capers");
 
+    /** Story File. */
+    static final File STORY = Utils.join(CAPERS_FOLDER,"story.txt");
     /**
      * Runs one of three commands:
      * story [text] -- Appends "text" + a newline to a story file in the
@@ -88,7 +90,7 @@ public class Main {
     public static void writeStory(String[] args) {
         validateNumArgs("story", args, 2);
         String old = "";
-        File STORY = Utils.join(CAPERS_FOLDER,"story.txt");
+
         try {
             old = Utils.readContentsAsString(STORY);
         } catch (IllegalArgumentException i) {
@@ -115,7 +117,6 @@ public class Main {
         validateNumArgs("dog", args, 4);
         Dog dog = new Dog (args[1], args[2], Integer.parseInt(args[3]));
         dog.saveDog();
-        System.out.println(dog.toString());
     }
 
     /**
@@ -126,12 +127,10 @@ public class Main {
      */
     public static void celebrateBirthday(String[] args) {
         validateNumArgs("birthday", args, 2);
-        // FIXME
         File f = Utils.join(DOG_FOLDER, args[1]);
         Dog dog = Utils. readObject(f, Dog.class);
         dog.haveBirthday();
         dog.saveDog();
-        System.out.println(dog.toString());
     }
 
     /**

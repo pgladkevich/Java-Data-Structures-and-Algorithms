@@ -105,6 +105,7 @@ public class Main {
         } else {
             Utils.writeContents(STORY, args[1]);
         }
+        System.out.println(Utils.readContentsAsString(STORY));
     }
 
     /**

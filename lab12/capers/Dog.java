@@ -32,7 +32,6 @@ public class Dog implements Serializable {
      * @return Dog read from file
      */
     public static Dog fromFile(String name) {
-        // FIXME
         File f = Utils.join(DOG_FOLDER, name);
         Dog dogLoaded = Utils.readObject(f, Dog.class);
         return dogLoaded;

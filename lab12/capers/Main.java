@@ -128,10 +128,10 @@ public class Main {
      */
     public static void celebrateBirthday(String[] args) {
         validateNumArgs("birthday", args, 2);
-        File f = Utils.join(DOG_FOLDER, args[1]);
-        Dog dog = Utils. readObject(f, Dog.class);
+        Dog dog = Dog.fromFile(args[1]);
         dog.haveBirthday();
         dog.saveDog();
+        System.out.println(dog.toString());
     }
 
     /**

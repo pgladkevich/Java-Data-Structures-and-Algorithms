@@ -118,6 +118,7 @@ public class Main {
         validateNumArgs("dog", args, 4);
         Dog dog = new Dog (args[1], args[2], Integer.parseInt(args[3]));
         dog.saveDog();
+        System.out.println(dog.toString());
     }
 
     /**
@@ -131,7 +132,7 @@ public class Main {
         Dog dog = Dog.fromFile(args[1]);
         dog.haveBirthday();
         dog.saveDog();
-        System.out.println(dog.toString());
+        //System.out.println(dog.toString());
     }
 
     /**

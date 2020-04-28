@@ -16,7 +16,8 @@
 
 ## Algorithms
    1. init: If there is already a .gitlet directory present, abort. Otherwise, create a new .gitlet directory, the initial commit, HEAD file with branch “master” pointing to initial commit. Also create empty Objects directory, branches directory that contains SHA-1 ID of the initial commit from the master branch. 
-   2. add: If file currently exists, add a copy of it to “index” (a subdirectory in .gitlet). If the file is already in the staging area, override the old file with the new contents. If the file is in the staging area and the contents of the new and old file are the same, remove it from staging area.
+   
+   2. add: If file does not exist in the current working directory, abort. Otherwise, add a copy of it to the addition subdirectory of staging. If the file is already in the staging area, override the old file with the new contents. If the file is in the staging area and the contents of the file are the same as the version from the last commit, remove it from the staging area. If the file was staged for removal it will be removed from the removal subdirectory.
    3. commit: Create a new commit whose contents are the same as the current  commit. Add any files in the staging area not in the current commit. Compare hash values of files in new and current commit, adding any files whose hash value is not in the current commit. Clear the staging area and add new commit to commit tree.
    4. rm: Search staging area for file’s hash. If present, remove it. If it is part of the current commit, add it to the removal directory and delete it from working directory.
    5. log: For each commit in the tree starting from head, print the commit’s information (toString), and follow the commit’s FIRST parent pointer.

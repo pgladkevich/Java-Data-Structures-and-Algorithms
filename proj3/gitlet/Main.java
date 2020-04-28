@@ -1,15 +1,9 @@
 package gitlet;
 
-import com.sun.tools.corba.se.idl.Util;
-import sun.applet.resources.MsgAppletViewer_zh_HK;
-
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.HashMap;
-import java.util.Map;
-
-import static java.util.Map.entry;
 
 /** Driver class for Gitlet, the tiny stupid version-control system.
  *  @author Pavel Gladkevich
@@ -45,7 +39,7 @@ public class Main {
         _cwd = new File(System.getProperty("user.dir"));
         _gitlet = Utils.join(_cwd, ".gitlet");
         _exists = _gitlet.exists() && _gitlet.isDirectory();
-        _HEADF = Utils.join(_gitlet, "HEAD");
+        _HEAD = Utils.join(_gitlet, "HEAD");
         _objects = Utils.join(_gitlet, "objects");
         _branches = Utils.join(_gitlet, "branches");
         _staging = Utils.join(_gitlet, "staging");
@@ -67,16 +61,14 @@ public class Main {
         }
     }
 
-    /** init: If there is already a .gitlet directory present, abort. Otherwise,
-     *  create a new .gitlet directory, the initial commit, HEAD file with
-     *  branch “master” pointing to initial commit. Also create empty Objects
-     *  directory, branches directory that contains SHA-1 ID of the initial
-     *  commit from the master branch.
-     *
-     *  Additionally if ARGS contains anything other than just the init command,
-     *  exit. If a Gitlet version control system already exists in the current
-     *  working directory, print the error message "A Gitlet version-control
-     *  system already exists in the current directory." */
+    /** init: If a Gitlet version control system already exists in the current
+     *  directory or args>1, abort. Otherwise, create a new .gitlet directory,
+     *  the initial commit, HEAD file with branch “master” pointing to initial
+     *  commit. Also create empty Objects directory, branches directory that
+     *  contains SHA-1 ID of the initial commit from the master branch, _staging
+     *  directory and _addition & _removal subdirectories, as well as, _commits
+     *  directory. This concludes the setup of the .gitlet persistence
+     *  architecture. */
     private void init(String[] args) {
         if (args.length > 1) {
             throw Utils.error("Incorrect operands.", args[0]);
@@ -94,28 +86,109 @@ public class Main {
             Commit initial = new Commit("initial commit", null);
             byte[] serialized = initial.serialize();
             String sha1 = Utils.sha1(serialized);
-            String masterPATH = _branches.toPath() + "master";
-            Utils.writeContents(_HEADF, masterPATH);
-            Utils.writeContents(Utils.join(_branches, "master"), sha1);
-            Utils.writeContents(Utils.join(_commits,sha1), serialized);
+            updateHEAD("master");
+            updateBRANCH("master", sha1);
+            updateCOMMIT(sha1, serialized);
             _exists = true;
         }
     }
 
+
+    /** If file does not exist in the current working directory, abort.
+     * Otherwise, add a copy of it to the addition subdirectory of staging. If
+     * the file is already in the addition area, and the contents of the
+     * file are the same as the version from the last commit, remove it from
+     * addition subdirectory. If the file was staged for removal, remove it
+     * from the removal subdirectory. If the file is already in the staging
+     * area, but its contents are not the same as the version in the previous
+     * commit (or that commit did not contain this file), override the old file
+     * with the new contents. */
     private void add(String[] args) {
+        checkGITLET(args);
+        if (args.length != 2 || (args[1] == null)) {
+            throw Utils.error("Incorrect operands.", args[0]);
+        }
+        _nameFILE = args[1];
+        File source = Utils.join(_cwd, _nameFILE);
+        if (!source.exists()) {
+            throw Utils.error("File does not exist.", args[0]);
+        }
+        setCURRENT();
+        setBLOBS();
+        boolean inaddition = Utils.plainFilenamesIn(_addition)
+                .contains(_nameFILE);
+        boolean inremoval = Utils.plainFilenamesIn(_removal)
+                .contains(_nameFILE);
+        File dest = Utils.join(_addition, _nameFILE);
+        if (!inaddition) {
+            try {
+                Files.copy(source.toPath(), dest.toPath());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            byte[] contents = Utils.serialize(source);
+            String SHA1 = Utils.sha1(contents);
+            Utils.restrictedDelete(dest);
+            if (_blobs.containsKey(_nameFILE) &&
+                    _blobs.get(_nameFILE).compareTo(SHA1) != 0) {
+                try {
+                    Files.copy(source.toPath(), dest.toPath());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        if (inremoval) {
+            File remove = Utils.join(_removal, _nameFILE);
+            Utils.restrictedDelete(remove);
+        }
+
     }
 
+    /** Helper method for updating the HEAD file. */
+    public void updateHEAD(String activeBRANCH) {
+        String PATH = _branches.toPath() + activeBRANCH;
+        Utils.writeContents(_HEAD, PATH);
+    }
+    /** Helper method for updating the branches/branch file. */
+    public void updateBRANCH(String branch, String commitSHA1) {
+        Utils.writeContents(Utils.join(_branches, branch), commitSHA1);
+    }
+    /** Helper method for updating the commits/commitSHA1 file. */
+    public void updateCOMMIT(String commitSHA1, byte[] serializedCOMMIT) {
+        Utils.writeContents(Utils.join(_commits,commitSHA1), serializedCOMMIT);
+    }
+    /** Helper method for setting the _current Commit. */
+    public void setCURRENT() {
+        String path = Utils.readContentsAsString(_HEAD);
+        File file = new File(path);
+        String SHA1 = Utils.readContentsAsString(file);
+        File commit = Utils.join(_commits, SHA1);
+        _current = Utils.readObject(commit, Commit.class);
+    }
+    /** Helper method for setting the _blobs of the current Commit. */
+    public void setBLOBS() {
+        _blobs = _current.get_blobs();
+    }
+
+    /** Helper method for checking the .gitlet directory existence. */
+    public void checkGITLET(String[] args) {
+        if (!_exists) {
+            throw Utils.error("Not in an initialized Gitlet directory.",
+                    args[0]);
+        }
+    }
 
 
     /** File object representing the current working directory ~. */
     private static File _cwd;
     /** File object representing the ~/.gitlet hidden directory. */
     private static File _gitlet;
-    /** File object representing the ~/.gitlet/HEAD file location. */
-    private static File _HEADF;
-    /** HEAD stores filepath to the head of the active branch.
-     * branches/</active branch> eg. ~/.gitlet/branches/master */
-    private String _HEAD;
+    /** File object representing the ~/.gitlet/HEAD file location. HEAD stores
+     * filepath to the head of the active branch. branches/</active branch>
+     * eg. ~/.gitlet/branches/master */
+    private static File _HEAD;
     /** File object representing the ~/.gitlet/objects directory. Objects
      * stores every blob that has ever been committed. Blob SHA-1 code is blob
      * file name & contents are serialized. */
@@ -132,8 +205,13 @@ public class Main {
     private static File _removal;
     /** File object representing the ~/.gitlet/commits directory. */
     private static File _commits;
-
     /** Boolean representing if the .gitlet directory is present in _cwd. */
     private boolean _exists;
+    /** The latest Commit object that was committed, the head. */
+    private Commit _current;
+    /** The latest Commit's blobs HashMap. */
+    private HashMap<String, String> _blobs;
+    /** The named of the file to potentially be used. */
+    private String _nameFILE;
 
 }

@@ -231,8 +231,9 @@ public class Main {
             setBLOBS();
             String sha = _blobs.get(args[2]);
             File source = Utils.join(_objects, sha);
-            Utils.writeContents(dest, source);
-        } else if (args.length == 2) {
+            String input = Utils.readContentsAsString(source);
+            Utils.writeContents(dest, input);
+        } else if (args.length == 4) {
             return;
         }
     }

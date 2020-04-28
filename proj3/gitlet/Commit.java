@@ -17,15 +17,17 @@ public class Commit implements Serializable {
      * SimpleDateFormat formatter = new SimpleDateFormat(pattern);
      * formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
      * Thursday, January 1st, 1970, 00:00:00            */
-    public Commit(String msg, String prnt) {
+    public Commit(String msg) {
+        _message = msg;
+        _parent = null;
+        _millitime = 0;
+    }
+    public Commit(String msg, String prnt, Commit current) {
         _message = msg;
         _parent = prnt;
-
-        if (_parent == null) {
-            _millitime = 0;
-        } else {
-            _millitime = System.currentTimeMillis();
-        }
+        _millitime = System.currentTimeMillis();
+        _blobs = current.get_blobs();
+        // use the staging area to modify
     }
     /** Serialize the contents of the commit and return a byte[] representing
      * the contents of this array. */
@@ -44,6 +46,23 @@ public class Commit implements Serializable {
     /** Getter method for _timestamp */
     public long get_millitime() {
         return _millitime;
+    }
+    /** Remove method for _blobs */
+    public void removeblob(String name) {
+        _blobs.remove(name);
+    }
+    /** Add method for _blobs */
+    public void addblob(String name, String SHA) {
+        _blobs.put(name, SHA);
+    }
+    /** Check if the SHA provided matches the SHA corresponding to the name
+     * provided. If it matches return true, otherwise false.  */
+    public boolean checkMATCHES(String name, String SHA) {
+        if (_blobs.get(name).compareTo(SHA) == 0) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /** HashMap<String,String> of file names mapped to SHA1 blob hash values */

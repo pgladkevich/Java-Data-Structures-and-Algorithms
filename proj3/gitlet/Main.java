@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.HashMap;
+import java.util.List;
 
 /** Driver class for Gitlet, the tiny stupid version-control system.
  *  @author Pavel Gladkevich
@@ -54,6 +55,9 @@ public class Main {
             case "add":
                 add(args);
                 break;
+            case "commit":
+                commit(args);
+                break;
 
             default:
                 throw Utils.error("No command with that name exists.",
@@ -83,7 +87,7 @@ public class Main {
             _addition.mkdir();
             _removal.mkdir();
             _commits.mkdir();
-            Commit initial = new Commit("initial commit", null);
+            Commit initial = new Commit("initial commit");
             byte[] serialized = initial.serialize();
             String sha1 = Utils.sha1(serialized);
             updateHEAD("master");
@@ -146,6 +150,57 @@ public class Main {
 
     }
 
+    /** If staging area is empty or message is empty, abort.
+     * Create a new commit whose contents are by default the same as the
+     * current commit. Add any files in the staging area that are not in the
+     * current commit. For files in the addition subdirectory that are
+     * contained in the current commit, compare hash values of files in new and
+     * current commit, adding any files whose hash value is not in the current
+     * commit. For files in the removal subdirectory remove the files from
+     * being tracked in the next commit. Clear the staging area and add new
+     * commit to branch, updating the HEAD. */
+    private void commit(String[] args) {
+        checkGITLET(args);
+        if (args.length != 2) {
+            throw Utils.error("Incorrect operands.", args[0]);
+        } else if (args[1] == null) {
+            throw Utils.error("Please enter a commit message.", args[0]);
+        } else if (Utils.plainFilenamesIn(_staging).isEmpty()) {
+            throw Utils.error("No changes added to the commit.", args[0]);
+        }
+        setCURRENT();
+        Commit commit = new Commit(args[1], _currSHA, _current);
+        updateCURRENT(commit);
+        List<String> remove = Utils.plainFilenamesIn(_removal);
+        List<String> addition = Utils.plainFilenamesIn(_addition);
+        if (remove != null) {
+            for(String name : remove) {
+                _current.removeblob(name);
+                File rfile = Utils.join(_removal, name);
+                Utils.restrictedDelete(rfile);
+            }
+        }
+        setBLOBS();
+        if (addition != null) {
+            for (String name : addition) {
+                File pot = Utils.join(_addition, name);
+                byte[] blob = Utils.readContents(pot);
+                String sha = Utils.sha1(blob);
+                if (!_blobs.containsKey(name) ||
+                        _blobs.containsKey(name)
+                                && !_current.checkMATCHES(name, sha)) {
+                    _current.addblob(name, sha);
+                    updateOBJECTS(sha, blob);
+                }
+                Utils.restrictedDelete(pot);
+            }
+        }
+        byte[] serialized = _current.serialize();
+        String sha1 = Utils.sha1(serialized);
+        updateBRANCH("master", sha1);
+        updateCOMMIT(sha1, serialized);
+    }
+
     /** Helper method for updating the HEAD file. */
     public void updateHEAD(String activeBRANCH) {
         String PATH = _branches.toPath().toString() + File.separator +
@@ -164,13 +219,24 @@ public class Main {
     public void setCURRENT() {
         String path = Utils.readContentsAsString(_HEAD);
         File file = new File(path);
-        String SHA1 = Utils.readContentsAsString(file);
-        File commit = Utils.join(_commits, SHA1);
+        _currSHA = Utils.readContentsAsString(file);
+        File commit = Utils.join(_commits, _currSHA);
         _current = Utils.readObject(commit, Commit.class);
+    }
+    /** Helper method for updating the _current Commit. */
+    public void updateCURRENT(Commit newCURR) {
+        _current = newCURR;
     }
     /** Helper method for setting the _blobs of the current Commit. */
     public void setBLOBS() {
         _blobs = _current.get_blobs();
+    }
+    /** Helper method for updating the _objects with a potentially new blob. */
+    public void updateOBJECTS(String sha, byte[] blob) {
+        File name = Utils.join(_objects, sha);
+        if (!name.exists()) {
+            Utils.writeContents(name, blob);
+        }
     }
 
     /** Helper method for checking the .gitlet directory existence. */
@@ -210,6 +276,8 @@ public class Main {
     private boolean _exists;
     /** The latest Commit object that was committed, the head. */
     private Commit _current;
+    /** The current Commit object's SHA1 ID. */
+    private String _currSHA;
     /** The latest Commit's blobs HashMap. */
     private HashMap<String, String> _blobs;
     /** The named of the file to potentially be used. */

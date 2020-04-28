@@ -148,7 +148,8 @@ public class Main {
 
     /** Helper method for updating the HEAD file. */
     public void updateHEAD(String activeBRANCH) {
-        String PATH = _branches.toPath() + activeBRANCH;
+        String PATH = _branches.toPath().toString() + File.separator +
+        activeBRANCH;
         Utils.writeContents(_HEAD, PATH);
     }
     /** Helper method for updating the branches/branch file. */

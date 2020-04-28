@@ -274,8 +274,6 @@ public class Main {
         System.out.println("Date: " + date);
         System.out.println(_current.get_message());
         System.out.println();
-        System.out.println("===");
-
     }
     /** Helper method for getting the timestamp of the current Commit. */
     public String timestamp(long millitime) {

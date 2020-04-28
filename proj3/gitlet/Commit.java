@@ -48,6 +48,10 @@ public class Commit implements Serializable {
     public long get_millitime() {
         return _millitime;
     }
+    /** Getter method for _parent */
+    public String get_parent() {
+        return _parent;
+    }
     /** Remove method for _blobs */
     public void removeblob(String name) {
         _blobs.remove(name);

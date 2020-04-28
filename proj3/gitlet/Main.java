@@ -3,8 +3,11 @@ package gitlet;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 /** Driver class for Gitlet, the tiny stupid version-control system.
  *  @author Pavel Gladkevich
@@ -57,6 +60,9 @@ public class Main {
                 break;
             case "commit":
                 commit(args);
+                break;
+            case "log":
+                log(args);
                 break;
 
             default:
@@ -177,7 +183,7 @@ public class Main {
             for(String name : remove) {
                 _current.removeblob(name);
                 File rfile = Utils.join(_removal, name);
-                Utils.restrictedDelete(rfile);
+                rfile.delete();
             }
         }
         setBLOBS();
@@ -201,6 +207,20 @@ public class Main {
         updateCOMMIT(sha1, serialized);
     }
 
+    private void log(String[] args) {
+        checkGITLET(args);
+        if (args.length != 1) {
+            throw Utils.error("Incorrect operands.", args[0]);
+        }
+        setCURRENT();
+        printLOG();
+        while(_parent != null) {
+            setparentCURRENT(_currSHA);
+            printLOG();
+        }
+        printLOG();
+    }
+
     /** Helper method for updating the HEAD file. */
     public void updateHEAD(String activeBRANCH) {
         String PATH = _branches.toPath().toString() + File.separator +
@@ -222,7 +242,16 @@ public class Main {
         _currSHA = Utils.readContentsAsString(file);
         File commit = Utils.join(_commits, _currSHA);
         _current = Utils.readObject(commit, Commit.class);
+        _parent = _current.get_parent();
     }
+    /** Helper method for setting the _current Commit to provided ID. */
+    public void setparentCURRENT(String SHA) {
+        File commit = Utils.join(_commits, SHA);
+        _currSHA = SHA;
+        _current = Utils.readObject(commit, Commit.class);
+        _parent = _current.get_parent();
+    }
+
     /** Helper method for updating the _current Commit. */
     public void updateCURRENT(Commit newCURR) {
         _current = newCURR;
@@ -238,7 +267,28 @@ public class Main {
             Utils.writeContents(name, blob);
         }
     }
+    /** Helper method for printing the log of the current Commit. */
+    public void printLOG() {
+        System.out.println("===");
+        System.out.println("commit " + _currSHA);
+        String date = timestamp(_current.get_millitime());
+        System.out.println("Date: " + date);
+        System.out.println(_current.get_message());
+        System.out.println();
+        System.out.println("===");
 
+    }
+    /** Helper method for getting the timestamp of the current Commit. */
+    public String timestamp(long millitime) {
+        String pattern = "E MMM d HH:mm:ss yyyy Z";
+        Date date = new Date(millitime);
+        Locale currentLocale = Locale.getDefault();
+        SimpleDateFormat formatter = new SimpleDateFormat(pattern,
+                currentLocale);
+        String formatted = formatter.format(date);
+        return formatted;
+        // Thu Nov 9 20:00:05 2017 -0800
+    }
     /** Helper method for checking the .gitlet directory existence. */
     public void checkGITLET(String[] args) {
         if (!_exists) {
@@ -278,6 +328,8 @@ public class Main {
     private Commit _current;
     /** The current Commit object's SHA1 ID. */
     private String _currSHA;
+    /** The current Commit object's parent SHA. */
+    private String _parent;
     /** The latest Commit's blobs HashMap. */
     private HashMap<String, String> _blobs;
     /** The named of the file to potentially be used. */

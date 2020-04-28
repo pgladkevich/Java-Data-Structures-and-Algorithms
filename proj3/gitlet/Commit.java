@@ -21,6 +21,7 @@ public class Commit implements Serializable {
         _message = msg;
         _parent = null;
         _millitime = 0;
+        _blobs = new HashMap<>();
     }
     public Commit(String msg, String prnt, Commit current) {
         _message = msg;

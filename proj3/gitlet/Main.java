@@ -161,18 +161,18 @@ public class Main {
      * commit to branch, updating the HEAD. */
     private void commit(String[] args) {
         checkGITLET(args);
+        List<String> remove = Utils.plainFilenamesIn(_removal);
+        List<String> addition = Utils.plainFilenamesIn(_addition);
         if (args.length != 2) {
             throw Utils.error("Incorrect operands.", args[0]);
         } else if (args[1] == null) {
             throw Utils.error("Please enter a commit message.", args[0]);
-        } else if (Utils.plainFilenamesIn(_staging).isEmpty()) {
+        } else if (remove == null && addition == null) {
             throw Utils.error("No changes added to the commit.", args[0]);
         }
         setCURRENT();
         Commit commit = new Commit(args[1], _currSHA, _current);
         updateCURRENT(commit);
-        List<String> remove = Utils.plainFilenamesIn(_removal);
-        List<String> addition = Utils.plainFilenamesIn(_addition);
         if (remove != null) {
             for(String name : remove) {
                 _current.removeblob(name);
@@ -186,13 +186,13 @@ public class Main {
                 File pot = Utils.join(_addition, name);
                 byte[] blob = Utils.readContents(pot);
                 String sha = Utils.sha1(blob);
-                if (!_blobs.containsKey(name) ||
+                if (_blobs == null || !_blobs.containsKey(name) ||
                         _blobs.containsKey(name)
                                 && !_current.checkMATCHES(name, sha)) {
                     _current.addblob(name, sha);
                     updateOBJECTS(sha, blob);
                 }
-                Utils.restrictedDelete(pot);
+                pot.delete();
             }
         }
         byte[] serialized = _current.serialize();

@@ -234,7 +234,7 @@ public class Main {
             String input = Utils.readContentsAsString(source);
             Utils.writeContents(dest, input);
         } else if (args.length == 4) {
-            String sha = args[2];
+            String sha = args[1];
             File com = Utils.join(_commits, sha);
             Commit commit = Utils.readObject(com, Commit.class);
             File dest = Utils.join(_cwd, args[3]);

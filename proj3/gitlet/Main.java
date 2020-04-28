@@ -64,6 +64,9 @@ public class Main {
             case "log":
                 log(args);
                 break;
+            case "checkout":
+                checkout(args);
+                break;
 
             default:
                 throw Utils.error("No command with that name exists.",
@@ -217,6 +220,20 @@ public class Main {
         while(_parent != null) {
             setparentCURRENT(_parent);
             printLOG();
+        }
+    }
+
+    private void checkout(String[] args) {
+        checkGITLET(args);
+        if (args.length == 3) {
+            File dest = Utils.join(_cwd, args[2]);
+            setCURRENT();
+            setBLOBS();
+            String sha = _blobs.get(args[2]);
+            File source = Utils.join(_objects, sha);
+            Utils.writeContents(dest, source);
+        } else if (args.length == 2) {
+            return;
         }
     }
 

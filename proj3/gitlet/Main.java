@@ -218,7 +218,6 @@ public class Main {
             setparentCURRENT(_parent);
             printLOG();
         }
-        printLOG();
     }
 
     /** Helper method for updating the HEAD file. */

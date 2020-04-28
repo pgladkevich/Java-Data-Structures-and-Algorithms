@@ -215,7 +215,7 @@ public class Main {
         setCURRENT();
         printLOG();
         while(_parent != null) {
-            setparentCURRENT(_currSHA);
+            setparentCURRENT(_parent);
             printLOG();
         }
         printLOG();

@@ -49,8 +49,8 @@ public class Main {
         _objects = Utils.join(_gitlet, "objects");
         _branches = Utils.join(_gitlet, "branches");
         _staging = Utils.join(_gitlet, "staging");
-        _addition = Utils.join(_addition, "addition");
-        _removal = Utils.join(_removal, "removal");
+        _addition = Utils.join(_staging, "addition");
+        _removal = Utils.join(_staging, "removal");
         _commits = Utils.join(_gitlet, "commits");
 
         switch (args[0]) {
@@ -94,8 +94,8 @@ public class Main {
             Commit initial = new Commit("initial commit", null);
             byte[] serialized = initial.serialize();
             String sha1 = Utils.sha1(serialized);
-            Utils.writeContents(_HEADF,
-                    Utils.join(_branches, "master"));
+            String masterPATH = _branches.toPath() + "master";
+            Utils.writeContents(_HEADF, masterPATH);
             Utils.writeContents(Utils.join(_branches, "master"), sha1);
             Utils.writeContents(Utils.join(_commits,sha1), serialized);
             _exists = true;

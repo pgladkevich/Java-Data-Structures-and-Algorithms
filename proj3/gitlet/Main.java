@@ -234,7 +234,14 @@ public class Main {
             String input = Utils.readContentsAsString(source);
             Utils.writeContents(dest, input);
         } else if (args.length == 4) {
-            return;
+            String sha = args[2];
+            File com = Utils.join(_commits, sha);
+            Commit commit = Utils.readObject(com, Commit.class);
+            File dest = Utils.join(_cwd, args[3]);
+            String shaf = commit.get_blobs().get(args[3]);
+            File source = Utils.join(_objects, shaf);
+            String input = Utils.readContentsAsString(source);
+            Utils.writeContents(dest, input);
         }
     }
 

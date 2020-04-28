@@ -268,7 +268,7 @@ public class Main {
     }
     /** Helper method for printing the log of the current Commit. */
     public void printLOG() {
-        System.out.println("===");
+        System.out.print("===");
         System.out.println("commit " + _currSHA);
         String date = timestamp(_current.get_millitime());
         System.out.println("Date: " + date);

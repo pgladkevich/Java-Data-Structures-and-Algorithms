@@ -24,14 +24,12 @@ public class Main {
      *  print the message "Incorrect operands." and exit.
      *  */
     public static void main(String... args) {
-        // FILL THIS IN
         try {
             new Main(args);
         } catch (GitletException excp) {
             System.err.printf("%s%n", excp.getMessage());
             System.exit(0);
         }
-
     }
 
     /** Check ARGS and perform the necessary commands (see comment on main). */
@@ -156,7 +154,6 @@ public class Main {
             File remove = Utils.join(_removal, _nameFILE);
             Utils.restrictedDelete(remove);
         }
-
     }
 
     /** If staging area is empty or message is empty, abort.
@@ -164,8 +161,8 @@ public class Main {
      * current commit. Add any files in the staging area that are not in the
      * current commit. For files in the addition subdirectory that are
      * contained in the current commit, compare hash values of files in new and
-     * current commit, adding any files whose hash value is not in the current
-     * commit. For files in the removal subdirectory remove the files from
+     * current commit, adding any files whose hash value is novel. For
+     * files in the removal subdirectory, remove the files from
      * being tracked in the next commit. Clear the staging area and add new
      * commit to branch, updating the HEAD. */
     private void commit(String[] args) {
@@ -176,14 +173,14 @@ public class Main {
             throw Utils.error("Incorrect operands.", args[0]);
         } else if (args[1] == null) {
             throw Utils.error("Please enter a commit message.", args[0]);
-        } else if (remove == null && addition == null) {
+        } else if (remove.isEmpty() && addition.isEmpty()) {
             throw Utils.error("No changes added to the commit.", args[0]);
         }
         setCURRENT();
         Commit commit = new Commit(args[1], _currSHA, _current);
         updateCURRENT(commit);
-        if (remove != null) {
-            for(String name : remove) {
+        if (!remove.isEmpty()) {
+            for (String name : remove) {
                 _current.removeblob(name);
                 File rfile = Utils.join(_removal, name);
                 rfile.delete();
@@ -209,7 +206,12 @@ public class Main {
         updateBRANCH("master", sha1);
         updateCOMMIT(sha1, serialized);
     }
-
+    /** Log command that
+     * String pattern = "EEEEE, MMMMM dd, yyyy, HH:mm:ss Z";
+     * String initTIME = "Thursday, January 01, 1970, 00:00:00";
+     * SimpleDateFormat formatter = new SimpleDateFormat(pattern);
+     * formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+     * Thursday, January 1st, 1970, 00:00:00 */
     private void log(String[] args) {
         checkGITLET(args);
         if (args.length != 1) {
@@ -217,7 +219,7 @@ public class Main {
         }
         setCURRENT();
         printLOG();
-        while(_parent != null) {
+        while (_parent != null) {
             setparentCURRENT(_parent);
             printLOG();
         }
@@ -348,9 +350,9 @@ public class Main {
     private boolean _exists;
     /** The latest Commit object that was committed, the head. */
     private Commit _current;
-    /** The current Commit object's SHA1 ID. */
+    /** The current Commit object's SHA-1 UID. */
     private String _currSHA;
-    /** The current Commit object's parent SHA. */
+    /** The current Commit object's parent SHA-1 UID. */
     private String _parent;
     /** The latest Commit's blobs HashMap. */
     private HashMap<String, String> _blobs;

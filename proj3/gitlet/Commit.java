@@ -10,13 +10,7 @@ public class Commit implements Serializable {
      * UNIX epoch time (0 if Commit is the initial). This long will be the
      * positive difference of the current locale's time in milliseconds at the
      * moment the constructor is called. The value of _millitime is parsed and
-     * formatted as needed.
-     *
-     * String pattern = "EEEEE, MMMMM dd, yyyy, HH:mm:ss Z";
-     * String initTIME = "Thursday, January 01, 1970, 00:00:00";
-     * SimpleDateFormat formatter = new SimpleDateFormat(pattern);
-     * formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-     * Thursday, January 1st, 1970, 00:00:00            */
+     * formatted as needed. */
     public Commit(String msg) {
         _message = msg;
         _parent = null;

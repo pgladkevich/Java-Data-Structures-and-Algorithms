@@ -22,7 +22,6 @@ public class Commit implements Serializable {
         _parent = prnt;
         _millitime = System.currentTimeMillis();
         _blobs = current.get_blobs();
-        // use the staging area to modify
     }
     /** Serialize the contents of the commit and return a byte[] representing
      * the contents of this array. */

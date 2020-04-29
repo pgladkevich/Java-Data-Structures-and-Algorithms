@@ -104,7 +104,6 @@ public class Main {
         }
     }
 
-
     /** If file does not exist in the current working directory, abort.
      * Otherwise, add a copy of it to the addition subdirectory of staging. If
      * the file is already in the addition area, and the contents of the
@@ -124,7 +123,7 @@ public class Main {
         if (!source.exists()) {
             throw Utils.error("File does not exist.", args[0]);
         }
-        setCURRENT();
+        setcurrent();
         setBLOBS();
         boolean inaddition = Utils.plainFilenamesIn(_addition)
                 .contains(_nameFILE);
@@ -140,7 +139,7 @@ public class Main {
         } else {
             byte[] contents = Utils.serialize(source);
             String SHA1 = Utils.sha1(contents);
-            Utils.restrictedDelete(dest);
+            dest.delete();
             if (_blobs.containsKey(_nameFILE) &&
                     _blobs.get(_nameFILE).compareTo(SHA1) != 0) {
                 try {
@@ -152,7 +151,7 @@ public class Main {
         }
         if (inremoval) {
             File remove = Utils.join(_removal, _nameFILE);
-            Utils.restrictedDelete(remove);
+            remove.delete();
         }
     }
 
@@ -176,7 +175,7 @@ public class Main {
         } else if (remove.isEmpty() && addition.isEmpty()) {
             throw Utils.error("No changes added to the commit.", args[0]);
         }
-        setCURRENT();
+        setcurrent();
         Commit commit = new Commit(args[1], _currSHA, _current);
         updateCURRENT(commit);
         if (!remove.isEmpty()) {
@@ -206,21 +205,18 @@ public class Main {
         updateBRANCH("master", sha1);
         updateCOMMIT(sha1, serialized);
     }
+
     /** Log command that
-     * String pattern = "EEEEE, MMMMM dd, yyyy, HH:mm:ss Z";
-     * String initTIME = "Thursday, January 01, 1970, 00:00:00";
-     * SimpleDateFormat formatter = new SimpleDateFormat(pattern);
-     * formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-     * Thursday, January 1st, 1970, 00:00:00 */
+     */
     private void log(String[] args) {
         checkGITLET(args);
         if (args.length != 1) {
             throw Utils.error("Incorrect operands.", args[0]);
         }
-        setCURRENT();
+        setcurrent();
         printLOG();
         while (_parent != null) {
-            setparentCURRENT(_parent);
+            setcurrentTOID(_parent);
             printLOG();
         }
     }
@@ -229,7 +225,7 @@ public class Main {
         checkGITLET(args);
         if (args.length == 3) {
             File dest = Utils.join(_cwd, args[2]);
-            setCURRENT();
+            setcurrent();
             setBLOBS();
             String sha = _blobs.get(args[2]);
             File source = Utils.join(_objects, sha);
@@ -262,7 +258,7 @@ public class Main {
         Utils.writeContents(Utils.join(_commits,commitSHA1), serializedCOMMIT);
     }
     /** Helper method for setting the _current Commit. */
-    public void setCURRENT() {
+    public void setcurrent() {
         String path = Utils.readContentsAsString(_HEAD);
         File file = new File(path);
         _currSHA = Utils.readContentsAsString(file);
@@ -271,7 +267,7 @@ public class Main {
         _parent = _current.get_parent();
     }
     /** Helper method for setting the _current Commit to provided ID. */
-    public void setparentCURRENT(String SHA) {
+    public void setcurrentTOID(String SHA) {
         File commit = Utils.join(_commits, SHA);
         _currSHA = SHA;
         _current = Utils.readObject(commit, Commit.class);
@@ -286,14 +282,22 @@ public class Main {
     public void setBLOBS() {
         _blobs = _current.get_blobs();
     }
-    /** Helper method for updating the _objects with a potentially new blob. */
+    /** Helper method for updating the _objects with a potentially new blob.
+     * If the BLOB already exists, then the SHA string will be representing its
+     * file name and there will be a match, so it is not re-created. This way
+     * every blob is unique. */
     public void updateOBJECTS(String sha, byte[] blob) {
         File name = Utils.join(_objects, sha);
         if (!name.exists()) {
             Utils.writeContents(name, blob);
         }
     }
-    /** Helper method for printing the log of the current Commit. */
+    /** Helper method for printing the log of the current Commit. This will be
+     * called by the log command once the proper objects for _current and
+     * _currSHA have been set. The command will print out the commit's metadata
+     * by calling the timestamp helper function to format it properly.
+     * As an example the UNIX epoch time would be printed as a string:
+     * "Thu Jan 1 00:00:00 1970 0000" if the system's local was UTC; */
     public void printLOG() {
         System.out.println("===");
         System.out.println("commit " + _currSHA);

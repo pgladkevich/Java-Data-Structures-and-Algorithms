@@ -286,9 +286,6 @@ public class Main {
      * Output will be unordered. */
     private void globallog(String[] args) {
         checkGITLET(args);
-        if (args.length != 2) {
-            throw Utils.error("Incorrect operands.", args[0]);
-        }
         List<String> commits = Utils.plainFilenamesIn(_commits);
         if (!commits.isEmpty()) {
             for (String name : commits) {

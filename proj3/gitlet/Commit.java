@@ -34,7 +34,6 @@ public class Commit implements Serializable {
     public byte[] serialize() {
         return Utils.serialize(this);
     }
-
     /** Getter method for _blobs */
     public HashMap<String, String> get_blobs() {
         return _blobs;

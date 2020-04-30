@@ -60,10 +60,13 @@ public class Main {
                 commit(args);
                 break;
             case "rm":
-                checkout(args);
+                rm(args);
                 break;
             case "log":
                 log(args);
+                break;
+            case "global-log":
+                globallog(args);
                 break;
             case "checkout":
                 checkout(args);
@@ -248,7 +251,7 @@ public class Main {
             File blob = Utils.join(_objects, sha);
             Utils.writeContents(removalFILE, Utils.readContents(blob));
         } else {
-            Utils.writeContents(removalFILE, Utils.readContents(additionFILE);
+            Utils.writeContents(removalFILE, Utils.readContents(additionFILE));
             additionFILE.delete();
             Utils.restrictedDelete(cwdFILE);
         }
@@ -272,6 +275,21 @@ public class Main {
         while (_parent != null) {
             setcurrentTOID(_parent);
             printLOG();
+        }
+    }
+    /** For each commit ever made, print the commit’s information.
+     * Output will be unordered. */
+    private void globallog(String[] args) {
+        checkGITLET(args);
+        if (args.length != 2) {
+            throw Utils.error("Incorrect operands.", args[0]);
+        }
+        List<String> commits = Utils.plainFilenamesIn(_objects);
+        if (!commits.isEmpty()) {
+            for (String name : commits) {
+                setcurrentTOID(name);
+                printLOG();
+            }
         }
     }
 
@@ -372,7 +390,6 @@ public class Main {
                 currentLocale);
         String formatted = formatter.format(date);
         return formatted;
-        // Thu Nov 9 20:00:05 2017 -0800
     }
     /** Helper method for checking the .gitlet directory existence. */
     public void checkGITLET(String[] args) {

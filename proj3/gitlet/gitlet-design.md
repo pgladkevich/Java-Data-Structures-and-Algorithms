@@ -42,13 +42,12 @@
       * Failure Cases: If the file is neither staged nor tracked by the head commit, print the error message "No reason 
       to remove the file."
    
-   5. log: For each commit in the tree starting from head, print the commit’s information (toString), and follow the 
+   5. log: For each commit in the tree starting from head, print the commit’s information, and follow the 
    commit’s FIRST parent pointer. In the case of merge commits the second parent is ignored. For merge commits 
    (those that have two parent commits) add a line just below the first where the two hexadecimal numerals following 
    "Merge:" consist of the first seven digits of the first and second parents' commit ids, respectively.
    
-   6. global-log: For each commit in the tree starting from head, print the commit’s information (toString), 
-   recursively call on the first parent, then on the second parent.
+   6. global-log: For each commit ever made, print the commit’s information. Output will be unordered.
    
    7. find: For each commit in the tree, if the message passed in matches the message for the current commit, print the
     id of the commit on a new line.

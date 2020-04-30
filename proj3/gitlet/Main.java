@@ -32,7 +32,7 @@ public class Main {
         }
     }
 
-    /** Check ARGS and perform the necessary commands (see comment on main). */
+    /** Check ARGS and perform the requested command if valid. */
     Main(String[] args) {
         if (args.length == 0) {
             throw Utils.error("Please enter a command.");
@@ -206,13 +206,19 @@ public class Main {
         updateCOMMIT(sha1, serialized);
     }
 
-    /** Log command that
-     */
+    /** For each commit in the tree starting from head, print the commit’s
+     * information (toString), and follow the commit’s FIRST parent pointer.
+     * In the case of merge commits the second parent is ignored.
+     * For merge commits (those that have two parent commits) add a line just
+     * below the first where the two hexadecimal numerals following "Merge:"
+     * consist of the first seven digits of the first and second parents'
+     * commit ids, respectively. */
     private void log(String[] args) {
         checkGITLET(args);
         if (args.length != 1) {
             throw Utils.error("Incorrect operands.", args[0]);
         }
+        //TODO Will need to revist log after I finish merge
         setcurrent();
         printLOG();
         while (_parent != null) {
@@ -221,6 +227,7 @@ public class Main {
         }
     }
 
+    /**  */
     private void checkout(String[] args) {
         checkGITLET(args);
         if (args.length == 3) {
@@ -306,7 +313,9 @@ public class Main {
         System.out.println(_current.get_message());
         System.out.println();
     }
-    /** Helper method for getting the timestamp of the current Commit. */
+    /** Helper method for getting the timestamp of the current Commit.
+     * Converts the input MILLITIME into a formatted string.
+     * Format: (Day in Week) Month Day# Hour:Min:Sec Year Locale */
     public String timestamp(long millitime) {
         String pattern = "E MMM d HH:mm:ss yyyy Z";
         Date date = new Date(millitime);

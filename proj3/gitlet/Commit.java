@@ -17,6 +17,12 @@ public class Commit implements Serializable {
         _millitime = 0;
         _blobs = new HashMap<>();
     }
+    /** Create a new commit that contains a _message MSG, a _parent PRNT,
+     * and _millitime that is a long representing the time in milliseconds since
+     * UNIX epoch time (0 if Commit is the initial). This long will be the
+     * positive difference of the current locale's time in milliseconds at the
+     * moment the constructor is called. The value of _millitime is parsed and
+     * formatted as needed. */
     public Commit(String msg, String prnt, Commit current) {
         _message = msg;
         _parent = prnt;

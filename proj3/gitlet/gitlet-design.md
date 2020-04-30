@@ -53,12 +53,20 @@
     id of the commit on a new line.
         * Failure cases: If no such commit exists, prints the error message "Found no commit with that message."
    
-   8. status: Print out names of each branch. If the head of the commit tree matches the head of a branch, put an 
-   asterisk next to it when printing. Print names of files in the addition directory, and then the files in the removal 
-   directory. Print names of files which are modified but not staged by: checking if the contents of the file in the 
-   working directory and current commit differ AND file is not in staging area, if it is in the commit but not in the 
-   working directory, or if it is not in the removal directory or working directory but it is in the current commit. 
-   Print untracked files by: checking all files in the working directory but not in the staging area or commit.
+   8. status: Print out names of each branch, and mark the current branch with an asterisk. Print names of files in 
+   the addition directory, and then the files in the removal directory. Print names of files which are modified but not
+   staged by checking for the following: 
+       1. If the file IS in cwd, IS tracked, and NOT staged. Meaning, the contents of the file in the working directory 
+       and current commit differ AND the file is not in staging area.
+       2. If the file IS in cwd and IS staged. Meaning, the contents staged for addition differ from those in the 
+       working directory. 
+       3. If the file is NOT in cwd and IS staged. Meaning, the file was deleted in the working directory but is staged
+        for addition.  
+       4. If the file is NOT in cwd, IS tracked, and is NOT staged. Meaning, the file is not staged for removal, is 
+       deleted from the working directory, but it is IN the current commit.
+   Lastly, print un-tracked files by: checking all files that are IN the working directory, but are not in the staging 
+   area or commit. This includes files that have been staged for removal, but then re-created without Gitlet's 
+   knowledge. Ignore any subdirectories that may have been introduced, since Gitlet does not deal with them.
    
    9. checkout: 
             1. Search for file in list of files in head commit, and copy/overwrite the file in the working directory.

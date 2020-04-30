@@ -1,13 +1,12 @@
 package gitlet;
 
+import edu.neu.ccs.util.FileUtilities;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 /** Driver class for Gitlet, the tiny stupid version-control system.
  *  @author Pavel Gladkevich
@@ -37,7 +36,6 @@ public class Main {
         if (args.length == 0) {
             throw Utils.error("Please enter a command.");
         }
-
         _cwd = new File(System.getProperty("user.dir"));
         _gitlet = Utils.join(_cwd, ".gitlet");
         _exists = _gitlet.exists() && _gitlet.isDirectory();
@@ -70,6 +68,9 @@ public class Main {
                 break;
             case "find":
                 find(args);
+                break;
+            case "status":
+                status(args);
                 break;
             case "checkout":
                 checkout(args);
@@ -322,6 +323,107 @@ public class Main {
                     args[0]);
         }
     }
+    /** status: All of the following printouts are in lexicographic order.
+     * Print out names of each branch, and mark the current branch
+     * with an asterisk. Print names of files in the addition directory, and
+     * then the files in the removal directory. Print names of files which are
+     * modified but not staged by checking for the following:
+     * 1. If the file IS in cwd, IS tracked, and NOT staged. Meaning, the
+     *    contents of the file in the working directory and current commit
+     *    differ AND the file is not in staging area.
+     * 2. If the file IS in cwd and IS staged. Meaning, the contents staged for
+     * addition differ from those in the working directory.
+     * 3. If the file is NOT in cwd and IS staged. Meaning, the file was
+     * deleted in the working directory but is staged for addition.
+     * 4. If the file is NOT in cwd, IS tracked, and is NOT staged. Meaning, the
+     *    file is NOT staged for removal, is deleted from the working directory,
+     *    but it is IN the current commit.
+     * Lastly, print un-tracked files by: checking all files that are IN the
+     * working directory, but are not in the staging area or commit. This
+     * includes files that have been staged for removal, but then re-created
+     * without Gitlet's knowledge. Ignore any subdirectories that may have been
+     * introduced, since Gitlet does not deal with them. */
+    private void status(String[] args) {
+        checkGITLET(args);
+        if (args.length != 1) {
+            throw Utils.error("Incorrect operands.", args[0]);
+        }
+        List<String> cwd = Utils.plainFilenamesIn(_cwd);
+        List<String> branches = Utils.plainFilenamesIn(_branches);
+        List<String> removal = Utils.plainFilenamesIn(_removal);
+        List<String> addition = Utils.plainFilenamesIn(_addition);
+        Collections.sort(cwd);
+        Collections.sort(branches);
+        Collections.sort(removal);
+        Collections.sort(addition);
+        setcurrent();
+        setBLOBS();
+        String path = Utils.readContentsAsString(_HEAD);
+        File file = new File(path);
+        String current = file.getName();
+
+        System.out.println("=== Branches ===");
+        for (String branch : branches) {
+            if (branch.compareTo(current) == 0) {
+                System.out.println("*" + branch);
+            } else {
+                System.out.println(branch);
+            }
+        }
+        System.out.println();
+        System.out.println("=== Staged Files ===");
+        for (String name : addition) {
+            System.out.println(name);
+        }
+        System.out.println();
+        System.out.println("=== Removed Files ===");
+        for (String name : removal) {
+            System.out.println(name);
+        }
+        System.out.println();
+        System.out.println("=== Modifications Not Staged For Commit ===");
+        // 1. If the file IS in cwd, IS tracked, and NOT staged. Meaning, the
+        //     *    contents of the file in the working directory and current commit
+        //     *    differ AND the file is not in staging area.
+        //     * 2. If the file IS in cwd and IS staged. Meaning, the contents staged for
+        //     * addition differ from those in the working directory.
+//        for (String name : cwd) {
+//            if (_blobs.containsKey(name) && !addition.contains(name)) {
+//                String shaSTORED = _blobs.get(name);
+//                File pot = Utils.join(_cwd, name);
+//                String sha = toSHA(pot);
+//                if (shaSTORED != sha) {
+//                    System.out.println(name + " (modified)");
+//                }
+//            }
+//            if (addition.contains(name)) {
+//                File cwdF = Utils.join(_cwd, name);
+//                File addF = Utils.join(_addition, name);
+//                if (toSHA(cwdF).compareTo(toSHA(addF)) != 0) {
+//                    System.out.println(name + " (modified)");
+//                }
+//            }
+//        }
+        //3. If the file is NOT in cwd and IS staged. Meaning, the file was
+        //     * deleted in the working directory but is staged for addition.
+        //     * 4. If the file is NOT in cwd, IS tracked, and is NOT staged. Meaning, the
+        //     *    file is not staged for removal, is deleted from the working directory,
+        //     *    but it is IN the current commit.
+//        for (String name : addition) {
+//            if (!cwd.contains(name)) {
+//                System.out.println(name + " (modified)");
+//            }
+//        }
+
+        System.out.println();
+        System.out.println("=== Untracked Files ===");
+        // Lastly, print un-tracked files by: checking all files that are IN the
+        //     * working directory, but are not in the staging area or commit. This
+        //     * includes files that have been staged for removal, but then re-created
+        //     * without Gitlet's knowledge. Ignore any subdirectories that may have been
+        //     * introduced, since Gitlet does not deal with them.
+
+    }
 
     /**  */
     private void checkout(String[] args) {
@@ -421,6 +523,13 @@ public class Main {
         String formatted = formatter.format(date);
         return formatted;
     }
+    /** Helper method for converting a file to its SHA-1 ID string. */
+    public String toSHA(File file) {
+        byte[] contents = Utils.serialize(file);
+        String SHA1 = Utils.sha1(contents);
+        return SHA1;
+    }
+
     /** Helper method for checking the .gitlet directory existence. */
     public void checkGITLET(String[] args) {
         if (!_exists) {

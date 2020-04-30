@@ -49,8 +49,9 @@
    
    6. global-log: For each commit ever made, print the commit’s information. Output will be unordered.
    
-   7. find: For each commit in the tree, if the message passed in matches the message for the current commit, print the
+   7. find: For each commit that exists, if the message passed in matches the message for the current commit, print the
     id of the commit on a new line.
+        * Failure cases: If no such commit exists, prints the error message "Found no commit with that message."
    
    8. status: Print out names of each branch. If the head of the commit tree matches the head of a branch, put an 
    asterisk next to it when printing. Print names of files in the addition directory, and then the files in the removal 

@@ -68,6 +68,9 @@ public class Main {
             case "global-log":
                 globallog(args);
                 break;
+            case "find":
+                find(args);
+                break;
             case "checkout":
                 checkout(args);
                 break;
@@ -120,6 +123,8 @@ public class Main {
      * commit (or that commit did not contain this file), override the old file
      * with the new contents. */
     private void add(String[] args) {
+        // TODO adding a tracked, unchanged file should have no effect.
+        // TODO adding nonexistent file gets correct error
         checkGITLET(args);
         if (args.length != 2 || (args[1] == null)) {
             throw Utils.error("Incorrect operands.", args[0]);
@@ -284,12 +289,40 @@ public class Main {
         if (args.length != 2) {
             throw Utils.error("Incorrect operands.", args[0]);
         }
-        List<String> commits = Utils.plainFilenamesIn(_objects);
+        List<String> commits = Utils.plainFilenamesIn(_commits);
         if (!commits.isEmpty()) {
             for (String name : commits) {
                 setcurrentTOID(name);
                 printLOG();
             }
+        }
+    }
+    /** For each commit that exists, if the message passed in matches the
+     *  message for the current commit, print the id of the commit on a new
+     *  line.
+     *
+     * Failure cases: If no such commit exists, prints the error message
+     * "Found no commit with that message." */
+    private void find(String[] args) {
+        checkGITLET(args);
+        if (args.length != 2) {
+            throw Utils.error("Incorrect operands.", args[0]);
+        }
+        boolean atleastone = false;
+        String message = args[1];
+        List<String> commits = Utils.plainFilenamesIn(_commits);
+        if (!commits.isEmpty()) {
+            for (String sha : commits) {
+                setcurrentTOID(sha);
+                if (_current.get_message().compareTo(message) == 0) {
+                    atleastone = true;
+                    System.out.println(sha);
+                }
+            }
+        }
+        if (!atleastone) {
+            throw Utils.error("Found no commit with that message.",
+                    args[0]);
         }
     }
 

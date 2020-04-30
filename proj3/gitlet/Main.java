@@ -59,6 +59,9 @@ public class Main {
             case "commit":
                 commit(args);
                 break;
+            case "rm":
+                checkout(args);
+                break;
             case "log":
                 log(args);
                 break;
@@ -170,7 +173,7 @@ public class Main {
         List<String> addition = Utils.plainFilenamesIn(_addition);
         if (args.length != 2) {
             throw Utils.error("Incorrect operands.", args[0]);
-        } else if (args[1] == null) {
+        } else if (args[1] == null || args[1].compareTo("") == 0) {
             throw Utils.error("Please enter a commit message.", args[0]);
         } else if (remove.isEmpty() && addition.isEmpty()) {
             throw Utils.error("No changes added to the commit.", args[0]);
@@ -186,7 +189,7 @@ public class Main {
             }
         }
         setBLOBS();
-        if (addition != null) {
+        if (!addition.isEmpty()) {
             for (String name : addition) {
                 File pot = Utils.join(_addition, name);
                 byte[] blob = Utils.readContents(pot);
@@ -205,6 +208,51 @@ public class Main {
         updateBRANCH("master", sha1);
         updateCOMMIT(sha1, serialized);
     }
+    /** rm: Search addition for the file from ARGS. If it is present, remove it,
+     * unstaging the file for addition. If it is being tracked by the current
+     * commit, stage it for removal by adding it to the removal directory and
+     * delete it from current working directory if the user has not already
+     * done so (do not remove it unless it is tracked in the current commit).
+     *
+     * Failure Cases: If the file is neither staged nor tracked by the head
+     * commit, print the error message "No reason to remove the file." */
+    private void rm(String[] args) {
+        checkGITLET(args);
+        if (args.length != 2) {
+            throw Utils.error("Incorrect operands.", args[0]);
+        }
+        _nameFILE = args[1];
+        File cwdFILE = Utils.join(_cwd, _nameFILE);
+        File additionFILE = Utils.join(_addition, _nameFILE);
+        File removalFILE = Utils.join(_removal, _nameFILE);
+        boolean incwd = cwdFILE.exists(), inaddition = additionFILE.exists();
+        setcurrent();
+        setBLOBS();
+        boolean tracked = _blobs.containsKey(_nameFILE);
+        // If it is not in the addition directory and it is not tracked
+        if (!inaddition && !tracked) {
+            throw Utils.error("No reason to remove the file.", args[0]);
+        } else if (inaddition && !tracked) {
+          // then just remove from addition and don't remove it from cwd
+            additionFILE.delete();
+        } else if (!inaddition && tracked && incwd) {
+            // remove it from being tracked by adding it to removal
+            try {
+                Files.copy(cwdFILE.toPath(), removalFILE.toPath());
+                Utils.restrictedDelete(cwdFILE);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else if (!inaddition && tracked && !incwd) {
+            String sha = _blobs.get(_nameFILE);
+            File blob = Utils.join(_objects, sha);
+            Utils.writeContents(removalFILE, Utils.readContents(blob));
+        } else {
+            Utils.writeContents(removalFILE, Utils.readContents(additionFILE);
+            additionFILE.delete();
+            Utils.restrictedDelete(cwdFILE);
+        }
+    }
 
     /** For each commit in the tree starting from head, print the commit’s
      * information (toString), and follow the commit’s FIRST parent pointer.
@@ -218,7 +266,7 @@ public class Main {
         if (args.length != 1) {
             throw Utils.error("Incorrect operands.", args[0]);
         }
-        //TODO Will need to revist log after I finish merge
+        //TODO Will need to revisit log after I finish merge
         setcurrent();
         printLOG();
         while (_parent != null) {
@@ -281,7 +329,7 @@ public class Main {
         _parent = _current.get_parent();
     }
 
-    /** Helper method for updating the _current Commit. */
+    /** Helper method for updating the _current Commit to NEWCURR. */
     public void updateCURRENT(Commit newCURR) {
         _current = newCURR;
     }

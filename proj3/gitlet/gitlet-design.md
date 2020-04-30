@@ -35,8 +35,12 @@
     the files from being tracked in the next commit. Clear the staging area and add new commit to branch, updating 
     the HEAD.
    
-   4. rm: Search staging area for file’s hash. If present, remove it. If it is part of the current commit, add it to 
-   the removal directory and delete it from working directory.
+   4. rm: Search addition area for the file. If it is present, remove it, thus unstaging the file for addition. 
+   If it is being tracked by the current commit, stage it for removal by adding it to the removal directory and 
+   delete it from current working directory if the user has not already done so (do not remove it unless it is 
+   tracked in the current commit).
+      * Failure Cases: If the file is neither staged nor tracked by the head commit, print the error message "No reason 
+      to remove the file."
    
    5. log: For each commit in the tree starting from head, print the commit’s information (toString), and follow the 
    commit’s FIRST parent pointer. In the case of merge commits the second parent is ignored. For merge commits 

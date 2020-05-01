@@ -92,9 +92,15 @@
        * Failure cases: If a branch with the given name already exists, print the error message "A branch with that 
        name already exists."
    
-   11. rm-branch: Remove specified branch from list of branches.
+   11. rm-branch: Remove specified branch from list of branches. Deletes the branch with the given name. Deleting only 
+   the pointer associated with the branch; not any commits created under the branch, or anything like that.
+       * Failure Cases: If a branch with the given name does not exist, aborts. Print the error message 
+       "A branch with that name does not exist." If you try to remove the branch you're currently on, aborts, printing 
+       the error message "Cannot remove the current branch."
    
-   12. reset: For each file in the given commit, call checkout [fileName] on it. Set the branch which is pointing to head to the given commit.
+   12. reset: For each file in the given commit, call checkout [file name] on it. Set the head of the current branch 
+   to the given commit.
+       * Failure Cases: The same as for checkout [file name]
    
    13. merge: ***Needs to be revisited*** Set up two Commit pointers for the current branch and the given branch. While these two do not point to the same commit, follow the current commit’s first parent pointer. Once they are equal, set that commit to split point. For each file in the current branch, if it is equal to the file in the split point but not in the current branch, check the file out from the given branch. For every file in the given branch commit, if it was not present at the split point or in the current branch, check the file out and add it to staging addition area. For every file in the split point and the current branch commit but not in the given branch commit, remove the file and add it to the removal directory. For all files in the current branch, if the file is different in the given branch, print the differences for both branches. 
 

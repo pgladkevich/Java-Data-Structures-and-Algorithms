@@ -79,6 +79,9 @@ public class Main {
             case "branch":
                 branch(args);
                 break;
+            case "rm-branch":
+                rmbranch(args);
+                break;
 
             default:
                 throw Utils.error("No command with that name exists.",
@@ -463,6 +466,9 @@ public class Main {
     private void checkout(String[] args) {
         checkGITLET(args);
         if (args.length == 3) {
+            if (args[1].compareTo("--") != 0) {
+                throw Utils.error("Incorrect operands.", args[0]);
+            }
             _nameFILE = args[2];
             File dest = Utils.join(_cwd, _nameFILE);
             setcurrent();
@@ -476,6 +482,9 @@ public class Main {
             String input = Utils.readContentsAsString(source);
             Utils.writeContents(dest, input);
         } else if (args.length == 4) {
+            if (args[2].compareTo("--") != 0) {
+                throw Utils.error("Incorrect operands.", args[0]);
+            }
             String sha = args[1];
             _nameFILE = args[3];
             File com = Utils.join(_commits, sha);
@@ -511,17 +520,23 @@ public class Main {
             setcurrentTOID(SHA);
             setBLOBS();
             List<String> cwd = Utils.plainFilenamesIn(_cwd);
-            for (String name : cwd) {
-                if (!_blobs.containsKey(name)) {
-                    throw Utils.error("There is an untracked file in the " +
-                            "way; delete it, or add and commit it first.");
-                }
-            }
+//            for (String name : cwd) {
+//                if (_blobs.containsKey(name) && !oldblobs.containsKey(name)) {
+//                    throw Utils.error("There is an untracked file in the "
+//                            + "way; delete it, or add and commit it first.");
+//                }
+//            }
+
             // For each file in the head commit of the given branch, copy/overwrite
             //     * the file in the working directory.
             for (Map.Entry mapElement : _blobs.entrySet()) {
                 String n = (String) mapElement.getKey();
                 String s = (String) mapElement.getValue();
+                if (!oldblobs.containsKey(n) && cwd.contains(n)
+                        && _blobs.containsKey(n)) {
+                    throw Utils.error("There is an untracked file in the "
+                            + "way; delete it, or add and commit it first.");
+                }
                 writeblobTOCWD(n, s);
             }
             // If a file is in the commit of the current branch but not in the
@@ -561,6 +576,41 @@ public class Main {
         setcurrent();
         Utils.writeContents(branch, _currSHA);
     }
+
+    /** Remove specified branch from list of branches. Deletes the branch with
+     * the given name. Deleting only the pointer associated with the branch;
+     * not any commits created under the branch, or anything like that.
+     *
+     * Failure Cases: If a branch with the given name does not exist, aborts.
+     * Print the error message
+     "A branch with that name does not exist." If you try to remove the branch
+     you're currently on, aborts, printing the error message
+     "Cannot remove the current branch." */
+    private void rmbranch(String[] args) {
+        checkGITLET(args);
+        File branch = Utils.join(_branches, args[1]);
+        if (!branch.exists()) {
+            throw Utils.error("A branch with that name does not exist.",
+                    args[0]);
+        }
+        String currentBRANCH = getbranchCURRENT();
+        if (currentBRANCH.compareTo(branch.getName()) == 0) {
+            throw Utils.error("Cannot remove the current branch.",
+                    args[0]);
+        }
+        branch.delete();
+    }
+
+//    private void reset(String[] args) {
+//        checkGITLET(args);
+//        File branch = Utils.join(_branches, args[1]);
+//        if (!branch.exists()) {
+//            throw Utils.error("A branch with that name does not exist.",
+//                    args[0]);
+//        }
+//
+//    }
+
     /** Helper method for updating the HEAD file. */
     public void updateHEAD(String activeBRANCH) {
         String PATH = _branches.toPath().toString() + File.separator +
@@ -609,6 +659,13 @@ public class Main {
         if (!name.exists()) {
             Utils.writeContents(name, blob);
         }
+    }
+    /** Helper method for getting the name of the currently active BRANCH. */
+    public String getbranchCURRENT() {
+        String path = Utils.readContentsAsString(_HEAD);
+        File branch = new File(path);
+        String name = branch.getName();
+        return name;
     }
     /** Helper method for getting the SHA-1 ID of the head of the given
      * BRANCH. */

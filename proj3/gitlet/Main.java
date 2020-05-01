@@ -3,6 +3,7 @@ package gitlet;
 import edu.neu.ccs.util.FileUtilities;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
@@ -74,6 +75,9 @@ public class Main {
                 break;
             case "checkout":
                 checkout(args);
+                break;
+            case "branch":
+                branch(args);
                 break;
 
             default:
@@ -492,7 +496,7 @@ public class Main {
             Utils.writeContents(dest, input);
         } else if (args.length == 2) {
             String branch = args[1];
-            File check = Utils.join(_commits, branch);
+            File check = Utils.join(_branches, branch);
             String path = Utils.readContentsAsString(_HEAD);
             File currBRANCH = new File(path);
             if (!check.exists()) {
@@ -538,6 +542,25 @@ public class Main {
         }
     }
 
+    /** Create a new branch(reference to a SHA-1 identifier) with the given
+     * name and point it at the current head node. This command does NOT
+     * immediately switch to the newly created branch.
+     *
+     * Failure cases: If a branch with the given name already exists, print
+     * the error message "A branch with that name already exists." */
+    private void branch(String[] args) {
+        checkGITLET(args);
+        if (args.length != 2) {
+            throw Utils.error("Incorrect operands.", args[0]);
+        }
+        File branch = Utils.join(_branches, args[1]);
+        if (branch.exists()) {
+            throw Utils.error("A branch with that name already exists.",
+                    args[0]);
+        }
+        setcurrent();
+        Utils.writeContents(branch, _currSHA);
+    }
     /** Helper method for updating the HEAD file. */
     public void updateHEAD(String activeBRANCH) {
         String PATH = _branches.toPath().toString() + File.separator +

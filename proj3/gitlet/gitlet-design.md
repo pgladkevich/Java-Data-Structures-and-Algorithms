@@ -80,18 +80,17 @@
            the file does not exist in the given commit, print the same message as for failure case 1.        
        3. For each file in the head commit of the given branch, copy/overwrite the file in the working directory. 
        If a file is in the commit of the current branch but not in the specified branch, delete it from the 
-       current branch. If the current and given branches are different, clear the staging area. Set the given 
+       current working directory. If the current and given branches are different, clear the staging area. Set the given 
        branch to head.
            * Failure Cases: If no branch with that name exists, print No such branch exists. 
            If that branch is the current branch, print No need to checkout the current branch. If a working file is 
            un-tracked in the current branch and would be overwritten by the checkout, print There is an un-tracked file 
            in the way; delete it, or add and commit it first. and exit; perform this check before doing anything else.
-       
-       
-            
-            
    
-   10. branch: Create a new branch (holds the SHA-1 identifier) holding the head node hash.
+   10. branch: Create a new branch(reference to a SHA-1 identifier) with the given name and point it at the current 
+   head node. This command does NOT immediately switch to the newly created branch.
+       * Failure cases: If a branch with the given name already exists, print the error message "A branch with that 
+       name already exists."
    
    11. rm-branch: Remove specified branch from list of branches.
    

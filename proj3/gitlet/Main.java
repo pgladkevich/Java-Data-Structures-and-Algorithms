@@ -3,11 +3,15 @@ package gitlet;
 import edu.neu.ccs.util.FileUtilities;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Map;
 
 /** Driver class for Gitlet, the tiny stupid version-control system.
  *  @author Pavel Gladkevich

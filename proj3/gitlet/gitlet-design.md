@@ -68,14 +68,28 @@
    area or commit. This includes files that have been staged for removal, but then re-created without Gitlet's 
    knowledge. Ignore any subdirectories that may have been introduced, since Gitlet does not deal with them.
    
-   9. checkout: 
-            1. Search for file in list of files in head commit, and copy/overwrite the file in the working directory.
-            2. Search for file in list of files in specified commit, and copy/overwrite the file in the 
-            working directory.
-            3. For each file in the head commit of the given branch, copy/overwrite the file in the working directory. 
-            If a file is in the commit of the current branch but not in the specified branch, delete it from the 
-            current branch. If the current and given branches are different, clear the staging area. Set the given 
-            branch to head.
+   9. checkout: Checkout is a kind of general command that can do a few different things depending on what its 
+   arguments are. There are 3 possible use cases.
+       1. Search for file in list of files in head commit, and copy/overwrite the file into the working directory.
+       The new version of the file is not staged.
+           * Failure Cases: If the file does not exist in the previous commit, abort, printing the error message 
+               "File does not exist in that commit." 
+       2. Search for file in list of files in the specified commit, and copy/overwrite the file in the 
+       working directory. The new version of the file is not staged.
+           * Failure Cases: If no commit with the given id exists, print No commit with that id exists. Otherwise, if 
+           the file does not exist in the given commit, print the same message as for failure case 1.        
+       3. For each file in the head commit of the given branch, copy/overwrite the file in the working directory. 
+       If a file is in the commit of the current branch but not in the specified branch, delete it from the 
+       current branch. If the current and given branches are different, clear the staging area. Set the given 
+       branch to head.
+           * Failure Cases: If no branch with that name exists, print No such branch exists. 
+           If that branch is the current branch, print No need to checkout the current branch. If a working file is 
+           un-tracked in the current branch and would be overwritten by the checkout, print There is an un-tracked file 
+           in the way; delete it, or add and commit it first. and exit; perform this check before doing anything else.
+       
+       
+            
+            
    
    10. branch: Create a new branch (holds the SHA-1 identifier) holding the head node hash.
    
@@ -97,6 +111,8 @@
 | | -- Staging Directory | -- removal subdirectory | files staged for removal |
 
 Inspiration/References: 
+
+https://inst.eecs.berkeley.edu/~cs61b/sp20/materials/proj/proj3
 
 https://www.researchgate.net/post/Can_someone_help_with_a_definition_of_information_hiding_and_encapsulation
 

@@ -126,6 +126,9 @@ public class Main {
     private void add(String[] args) {
         // TODO adding a tracked, unchanged file should have no effect.
         // TODO adding nonexistent file gets correct error
+
+        // # Status with a removal followed by an add that restores former
+        //2. # contents.  Should simply "unremove" the file without staging.
         checkGITLET(args);
         if (args.length != 2 || (args[1] == null)) {
             throw Utils.error("Incorrect operands.", args[0]);
@@ -425,26 +428,113 @@ public class Main {
 
     }
 
-    /**  */
+    /** checkout: Checkout is a kind of general command that can do a few
+     * different things depending on what its ARGS are. There are 3 possible
+     * use cases.
+     * 1. Search for file in list of files in head commit, and copy/overwrite
+     * the file into the working directory. The new version of the file is not
+     * staged.
+     *      Failure Cases: If the file does not exist in the previous commit,
+     *      abort, printing the error message "File does not exist
+     *      in that commit."
+     * 2. Search for file in list of files in the specified commit, and
+     * copy/overwrite the file in the working directory. The new version of the
+     * file is not staged.
+     *      Failure Cases: If no commit with the given id exists, print
+     *      "No commit with that id exists." Otherwise, if the file does not
+     *      exist in the given commit, print the same message as for failure
+     *      case 1.
+     * 3. For each file in the head commit of the given branch, copy/overwrite
+     * the file in the working directory. If a file is in the commit of the
+     * current branch but not in the specified branch, delete it from the
+     * current working directory. If the current and given branches are
+     * different, clear the staging area. Set the given branch to head.
+     *      Failure Cases: If no branch with that name exists, print
+     *      "No such branch exists." If that branch is the current branch,
+     *      print "No need to checkout the current branch." If a working file is
+     *      un-tracked in the current branch and would be overwritten by the
+     *      checkout, print "There is an un-tracked file in the way; delete it,
+     *      or add and commit it first." and exit;
+     *      perform this check before doing anything else. */
     private void checkout(String[] args) {
         checkGITLET(args);
         if (args.length == 3) {
-            File dest = Utils.join(_cwd, args[2]);
+            _nameFILE = args[2];
+            File dest = Utils.join(_cwd, _nameFILE);
             setcurrent();
             setBLOBS();
-            String sha = _blobs.get(args[2]);
+            if (!_blobs.containsKey(_nameFILE)) {
+                throw Utils.error("File does not exist in that commit.",
+                        args[0]);
+            }
+            String sha = _blobs.get(_nameFILE);
             File source = Utils.join(_objects, sha);
             String input = Utils.readContentsAsString(source);
             Utils.writeContents(dest, input);
         } else if (args.length == 4) {
             String sha = args[1];
+            _nameFILE = args[3];
             File com = Utils.join(_commits, sha);
-            Commit commit = Utils.readObject(com, Commit.class);
-            File dest = Utils.join(_cwd, args[3]);
-            String shaf = commit.get_blobs().get(args[3]);
+            if (!com.exists()) {
+                throw Utils.error("No commit with that id exists.",
+                        args[0]);
+            }
+            setcurrentTOID(sha);
+            setBLOBS();
+            if (!_blobs.containsKey(_nameFILE)) {
+                throw Utils.error("File does not exist in that commit.",
+                        args[0]);
+            }
+            File dest = Utils.join(_cwd, _nameFILE);
+            String shaf = _blobs.get(_nameFILE);
             File source = Utils.join(_objects, shaf);
             String input = Utils.readContentsAsString(source);
             Utils.writeContents(dest, input);
+        } else if (args.length == 2) {
+            String branch = args[1];
+            File check = Utils.join(_commits, branch);
+            String path = Utils.readContentsAsString(_HEAD);
+            File currBRANCH = new File(path);
+            if (!check.exists()) {
+                throw Utils.error("No such branch exists.", args[0]);
+            } else if (branch.compareTo(currBRANCH.getName()) == 0) {
+                throw Utils.error("No need to checkout the current " +
+                        "branch.", args[0]);
+            }
+            setcurrent();
+            HashMap<String, String> oldblobs = _current.get_blobs();
+            String SHA = getBRANCHHEAD(branch);
+            setcurrentTOID(SHA);
+            setBLOBS();
+            List<String> cwd = Utils.plainFilenamesIn(_cwd);
+            for (String name : cwd) {
+                if (!_blobs.containsKey(name)) {
+                    throw Utils.error("There is an untracked file in the " +
+                            "way; delete it, or add and commit it first.");
+                }
+            }
+            // For each file in the head commit of the given branch, copy/overwrite
+            //     * the file in the working directory.
+            for (Map.Entry mapElement : _blobs.entrySet()) {
+                String n = (String) mapElement.getKey();
+                String s = (String) mapElement.getValue();
+                writeblobTOCWD(n, s);
+            }
+            // If a file is in the commit of the current branch but not in the
+            // specified branch, delete it from the current working directory.
+            for (Map.Entry mapElement : oldblobs.entrySet()) {
+                String name = (String) mapElement.getKey();
+                if (!_blobs.containsKey(name)) {
+                    File file = Utils.join(_cwd, name);
+                    file.delete();
+                }
+            }
+            // clear the staging area.
+            clearSTAGING();
+            // Last step to set the current branch the the checked out branch
+            updateHEAD(branch);
+        } else {
+            throw Utils.error("Incorrect operands.", args[0]);
         }
     }
 
@@ -497,6 +587,13 @@ public class Main {
             Utils.writeContents(name, blob);
         }
     }
+    /** Helper method for getting the SHA-1 ID of the head of the given
+     * BRANCH. */
+    public String getBRANCHHEAD(String branch) {
+        File head = Utils.join(_branches, branch);
+        String SHA = Utils.readContentsAsString(head);
+        return SHA;
+    }
     /** Helper method for printing the log of the current Commit. This will be
      * called by the log command once the proper objects for _current and
      * _currSHA have been set. The command will print out the commit's metadata
@@ -529,12 +626,34 @@ public class Main {
         String SHA1 = Utils.sha1(contents);
         return SHA1;
     }
-
     /** Helper method for checking the .gitlet directory existence. */
     public void checkGITLET(String[] args) {
         if (!_exists) {
             throw Utils.error("Not in an initialized Gitlet directory.",
                     args[0]);
+        }
+    }
+    /** Helper method for writing the contents of passed in file NAME into the
+     * user's current working directory. Contents are retrieved from _objects
+     * using the passed in SHA ID to get the corresponding blob. */
+    public void writeblobTOCWD(String NAME, String SHA) {
+        File source = Utils.join(_objects, SHA);
+        File dest = Utils.join(_cwd, NAME);
+        String contents = Utils.readContentsAsString(source);
+        Utils.writeContents(dest, contents);
+    }
+    /** Helper method for deleting all files from addition and removal
+     * subdirectories. This clears the staging area. */
+    public void clearSTAGING() {
+        List<String> addition = Utils.plainFilenamesIn(_addition);
+        List<String> removal = Utils.plainFilenamesIn(_removal);
+        for (String name : addition) {
+            File file = Utils.join(_addition, name);
+            file.delete();
+        }
+        for (String name : removal) {
+            File file = Utils.join(_removal, name);
+            file.delete();
         }
     }
 

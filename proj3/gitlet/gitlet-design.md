@@ -104,8 +104,44 @@
        is untracked in the current branch and would be overwritten by the reset, print "There is an untracked file in 
        the way; delete it, or add and commit it first." and exit; perform this check before doing anything else.
    
-   13. merge: ***Needs to be revisited*** Set up two Commit pointers for the current branch and the given branch. While these two do not point to the same commit, follow the current commit’s first parent pointer. Once they are equal, set that commit to split point. For each file in the current branch, if it is equal to the file in the split point but not in the current branch, check the file out from the given branch. For every file in the given branch commit, if it was not present at the split point or in the current branch, check the file out and add it to staging addition area. For every file in the split point and the current branch commit but not in the given branch commit, remove the file and add it to the removal directory. For all files in the current branch, if the file is different in the given branch, print the differences for both branches. 
-
+   13. merge: Merges files from the given branch into the current branch. Retrieve the head Commit of both branches. 
+   If these two do not point to the same commit, then traverse the entire tree of the given branch, storing the Commits
+   in a HashMap<String, Commit> with the key being the SHA value. Then, traverse the current branch until you find the
+   first shared commit. Set that commit to be the split point, which is the latest common ancestor of both branches.
+   * If the split point is the same commit as the given branch's head, do nothing. The merge is complete, and the 
+       operation ends with the message "Given branch is an ancestor of the current branch." 
+   * If the split point is the current branch , then the effect is to check out the given branch, and the operation 
+   ends after printing the message "Current branch fast-forwarded." If the split point is neither of the above, proceed
+   with the steps below. If at any point a conflict is encountered, set the boolean _conflict to true, and concatenate
+   the contents of the file in the current branch with the contents of the version in the given branch.
+       1. Iterate through each file in the given branch. 
+           1. If the file is absent from the split-point and the current branch, checkout the file from the given branch 
+           and stage for addition.
+           2. If the file is absent from the current branch, and not modified from the version in the split-point, it
+           should remain absent --> no action. 
+           3. If the file is absent from the current branch, and modified from the version in the split-point --> it is
+           a conflict. 
+           4. If the file in the given branch is not modified from the split-point, but the file is modified in the
+           current branch, it should remain as is --> no action.
+           5. If the file is modified in the given branch, but is the same version in the current branch as from the
+           split-point, checkout the file from the given branch and stage it for addition. 
+           6. If the file is modified in the given branch in the same way as the current branch --> no action.
+           7. If the file is modified in the given branch in a different way from the modification in the current branch
+           --> conflict.
+       2. Iterate through every file in the current branch. 
+           1. If the file is in both the current branch and the split-point (not modified), and is absent in the given
+           branch, call the rm command on the file.        
+       * Failure Cases: If there are staged files present (in addition or removal) print the error message 
+       "You have uncommitted changes." If a branch with the given name does not exist, print the error message
+        "A branch with that name does not exist." If attempting to merge a branch with itself, print the error message 
+        "Cannot merge a branch with itself." If an un-tracked file in the current commit would be overwritten or 
+        deleted by the merge, print "There is an untracked file in the way; delete it, or add and commit it first."
+        Perform this check before doing anything else. 
+   * Once the files have been updated, merge automatically calls the commit command with the message 
+   "Merged [given branch name] into [current branch name]". Then, if the merge encountered a conflict, print the message
+   "Encountered a merge conflict." to the terminal. The resulting commit will have the current branch as 
+   its parent, and the given branch as its second parent.
+        
 ## Persistence
 | cwd + files | In .gitlet | In .gitlet subdirectories | In Staging Subdirectory |
 | --------- | ---------- | ---------- | ---------- |

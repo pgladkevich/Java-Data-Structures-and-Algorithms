@@ -1,6 +1,6 @@
 package gitlet;
 
-import edu.neu.ccs.util.FileUtilities;
+// import edu.neu.ccs.util.FileUtilities;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Arrays;
 
 /** Driver class for Gitlet, the tiny stupid version-control system.
  *  @author Pavel Gladkevich
@@ -90,6 +89,9 @@ public class Main {
             case "reset":
                 reset(args);
                 break;
+            case "merge":
+                merge(args);
+                break;
 
             default:
                 throw Utils.error("No command with that name exists.",
@@ -139,8 +141,6 @@ public class Main {
      * commit (or that commit did not contain this file), override the old file
      * with the new contents. */
     private void add(String[] args) {
-        // TODO adding a tracked, unchanged file should have no effect.
-        // TODO adding nonexistent file gets correct error
         checkGITLET(args);
         if (args.length != 2 || (args[1] == null)) {
             throw Utils.error("Incorrect operands.", args[0]);
@@ -193,6 +193,7 @@ public class Main {
      * being tracked in the next commit. Clear the staging area and add new
      * commit to branch, updating the HEAD. */
     private void commit(String[] args) {
+        // TODO be able to handle merge commit creation
         checkGITLET(args);
         List<String> remove = Utils.plainFilenamesIn(_removal);
         List<String> addition = Utils.plainFilenamesIn(_addition);
@@ -214,6 +215,7 @@ public class Main {
             }
         }
         setBLOBS();
+        // TODO figure out if this breaks under merge commit creation
         if (!addition.isEmpty()) {
             for (String name : addition) {
                 File pot = Utils.join(_addition, name);
@@ -669,6 +671,68 @@ public class Main {
         updateBRANCH(branch, SHA);
     }
 
+    /** Merges files from the given branch into the current branch. Retrieve
+     * the head Commit of both branches. If these two do not point to the same
+     * commit, then traverse the entire tree of the given branch, storing the
+     * Commits in a HashMap<String, Commit> with the key being the SHA value.
+     * Then, traverse the current branch until you find the first shared
+     * commit. Set that commit to be the split point, which is the latest
+     * common ancestor of both branches. If the split point is the same commit
+     * as the given branch's head, do nothing. The merge is complete, and the
+     * operation ends with the message "Given branch is an ancestor of the
+     * current branch." If the split point is the current branch, then the
+     * effect is to check out the given branch, and the operation ends after
+     * printing the message "Current branch fast-forwarded." If the split point
+     * is neither of the above, proceed with the steps below.
+     *
+     * If at any point a conflict is encountered, set the boolean _conflict to
+     * true, and concatenate the contents of the file in the current branch
+     * with the contents of the version in the given branch.
+     *
+     * Iterate through each file in the given branch.
+     *  1. If the file is absent from the split-point and the current branch,
+     *  checkout the file from the given branch and stage for addition.
+     *  2. If the file is absent from the current branch, and not modified from
+     *  the version in the split-point, it should remain absent --> no action.
+     *  3. If the file is absent from the current branch, and modified from the
+     *  version in the split-point --> it is a conflict.
+     *  4. If the file in the given branch is not modified from the split-point,
+     *  but the file is modified in the current branch, it should remain as is
+     *  --> no action.
+     *  5. If the file is modified in the given branch, but is the same version
+     *  in the current branch as from the split-point, checkout the file from
+     *  the given branch and stage it for addition.
+     *  6. If the file is modified in the given branch in the same way as the
+     *  current branch --> no action.
+     *  7. If the file is modified in the given branch in a different way from
+     *  the modification in the current branch --> conflict.
+     *
+     * Iterate through every file in the current branch.
+     *  1. If the file is in both the current branch and the split-point
+     *  (not modified), and is absent in the given branch, call the
+     *  rm command on the file.
+     *
+     * Failure Cases: If there are staged files present (in addition or removal)
+     * print the error message "You have uncommitted changes." If a branch with
+     * the given name does not exist, print the error message "A branch with
+     * that name does not exist." If attempting to merge a branch with itself,
+     * print the error message "Cannot merge a branch with itself." If an
+     * un-tracked file in the current commit would be overwritten or deleted by
+     * the merge, print "There is an untracked file in the way; delete it, or
+     * add and commit it first." Perform this check before doing anything else.
+     *
+     * Once the files have been updated, merge automatically calls the commit
+     * command with the message "Merged [given branch name] into
+     * [current branch name]". Then, if the merge encountered a conflict,
+     * print the message "Encountered a merge conflict." to the terminal. The
+     * resulting commit will have the current branch as its parent, and the
+     * given branch as its second parent. */
+    private void merge(String[] args) {
+        if (args.length != 2) {
+            throw Utils.error("Incorrect operands.", args[0]);
+        }
+    }
+
     /** Helper method for updating the HEAD file. */
     public void updateHEAD(String activeBRANCH) {
         String PATH = _branches.toPath().toString() + File.separator +
@@ -840,5 +904,8 @@ public class Main {
     private HashMap<String, String> _blobs;
     /** The named of the file to potentially be used. */
     private String _nameFILE;
+    /** The boolean representing whether a merge of two branches encountered
+     * any conflicts. By default this will be set to false. */
+    private boolean _conflict;
 
 }

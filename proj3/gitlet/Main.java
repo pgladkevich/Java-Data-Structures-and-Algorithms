@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Arrays;
 
 /** Driver class for Gitlet, the tiny stupid version-control system.
  *  @author Pavel Gladkevich
@@ -480,9 +481,8 @@ public class Main {
                         args[0]);
             }
             String sha = _blobs.get(_nameFILE);
-            File source = Utils.join(_objects, sha);
-            String input = Utils.readContentsAsString(source);
-            Utils.writeContents(dest, input);
+            String contents = getblobCONTENTS(sha);
+            Utils.writeContents(dest, contents);
         } else if (args.length == 4) {
             if (args[2].compareTo("--") != 0) {
                 throw Utils.error("Incorrect operands.", args[0]);
@@ -662,6 +662,15 @@ public class Main {
             Utils.writeContents(name, blob);
         }
     }
+    /** Helper method for de-serializing and retrieving the contents of the
+     * blob whose SHA ID was passed in. Returns the string representing said
+     * contents. */
+    public String getblobCONTENTS(String SHA) {
+        File source = Utils.join(_objects, SHA);
+        byte[] bytec = Utils.readObject(source, byte[].class);
+        return new String(bytec);
+    }
+
     /** Helper method for getting the name of the currently active BRANCH. */
     public String getbranchCURRENT() {
         String path = Utils.readContentsAsString(_HEAD);
@@ -719,9 +728,8 @@ public class Main {
      * user's current working directory. Contents are retrieved from _objects
      * using the passed in SHA ID to get the corresponding blob. */
     public void writeblobTOCWD(String NAME, String SHA) {
-        File source = Utils.join(_objects, SHA);
         File dest = Utils.join(_cwd, NAME);
-        String contents = Utils.readContentsAsString(source);
+        String contents = getblobCONTENTS(SHA);
         Utils.writeContents(dest, contents);
     }
     /** Helper method for deleting all files from addition and removal

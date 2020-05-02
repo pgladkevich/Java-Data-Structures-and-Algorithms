@@ -1,12 +1,12 @@
- # Create two branches and merge where second merge parents must be followed.
- I prelude1.inc
- > branch B1
- <<<
- > branch B2
- <<<
- > checkout B1
- <<<
- + h.txt wug.txt
+# Create two branches and merge where second merge parents must be followed.
+I prelude1.inc
+> branch B1
+<<<
+> branch B2
+<<<
+> checkout B1
+<<<
++ h.txt wug.txt
 > add h.txt
 <<<
 > commit "Add h.txt"

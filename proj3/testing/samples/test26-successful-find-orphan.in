@@ -1,12 +1,12 @@
- # Test the find command when it finds commits that are no longer
- # on any branch.
- I setup2.inc
- > rm f.txt
- <<<
- > commit "Remove one file"
- <<<
- > log
- ===
+# Test the find command when it finds commits that are no longer
+# on any branch.
+I setup2.inc
+> rm f.txt
+<<<
+> commit "Remove one file"
+<<<
+> log
+===
 ${COMMIT_HEAD}
 Remove one file
 

@@ -1,12 +1,12 @@
- # Test of abbreviated UIDs.
- # Check that we can check out a previous version.
- > init
- <<<
- + wug.txt wug.txt
- > add wug.txt
- <<<
- > commit "version 1 of wug.txt"
- <<<
+# Test of abbreviated UIDs.
+# Check that we can check out a previous version.
+> init
+<<<
++ wug.txt wug.txt
+> add wug.txt
+<<<
+> commit "version 1 of wug.txt"
+<<<
 + wug.txt notwug.txt
 > add wug.txt
 <<<

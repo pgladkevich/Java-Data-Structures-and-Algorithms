@@ -1,12 +1,12 @@
- # Test the find command when it succeeds.
- I setup2.inc
- > rm f.txt
- <<<
- > commit "Remove one file"
- <<<
- + f.txt notwug.txt
- > add f.txt
- <<<
+# Test the find command when it succeeds.
+I setup2.inc
+> rm f.txt
+<<<
+> commit "Remove one file"
+<<<
++ f.txt notwug.txt
+> add f.txt
+<<<
 > commit "Two files"
 <<<
 > log

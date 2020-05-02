@@ -137,9 +137,6 @@ public class Main {
     private void add(String[] args) {
         // TODO adding a tracked, unchanged file should have no effect.
         // TODO adding nonexistent file gets correct error
-
-        // # Status with a removal followed by an add that restores former
-        //2. # contents.  Should simply "unremove" the file without staging.
         checkGITLET(args);
         if (args.length != 2 || (args[1] == null)) {
             throw Utils.error("Incorrect operands.", args[0]);
@@ -155,15 +152,16 @@ public class Main {
                 .contains(_nameFILE);
         boolean inremoval = Utils.plainFilenamesIn(_removal)
                 .contains(_nameFILE);
+        boolean incurrent = _blobs.containsKey(_nameFILE);
         File dest = Utils.join(_addition, _nameFILE);
-        if (!inaddition) {
+        if (!inaddition && !inremoval && !incurrent) {
             try {
                 Files.copy(source.toPath(), dest.toPath());
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
-            byte[] contents = Utils.serialize(source);
+            byte[] contents = Utils.serialize(Utils.readContents(source));
             String SHA1 = Utils.sha1(contents);
             dest.delete();
             if (_blobs.containsKey(_nameFILE) &&
@@ -215,7 +213,7 @@ public class Main {
         if (!addition.isEmpty()) {
             for (String name : addition) {
                 File pot = Utils.join(_addition, name);
-                byte[] blob = Utils.readContents(pot);
+                byte[] blob = Utils.serialize(Utils.readContents(pot));
                 String sha = Utils.sha1(blob);
                 if (_blobs == null || !_blobs.containsKey(name) ||
                         _blobs.containsKey(name)
@@ -436,7 +434,7 @@ public class Main {
         //     * includes files that have been staged for removal, but then re-created
         //     * without Gitlet's knowledge. Ignore any subdirectories that may have been
         //     * introduced, since Gitlet does not deal with them.
-
+        System.out.println();
     }
 
     /** checkout: Checkout is a kind of general command that can do a few

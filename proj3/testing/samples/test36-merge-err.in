@@ -1,12 +1,12 @@
- # Check various merge error cases.
- I setup2.inc
- > branch other
- <<<
- + h.txt wug2.txt
- > add h.txt
- <<<
- > rm g.txt
- <<<
+# Check various merge error cases.
+I setup2.inc
+> branch other
+<<<
++ h.txt wug2.txt
+> add h.txt
+<<<
+> rm g.txt
+<<<
 > commit "Add h.txt and remove g.txt"
 <<<
 > checkout other

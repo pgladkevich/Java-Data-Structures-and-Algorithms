@@ -1,6 +1,7 @@
 > status
 === Branches ===
-*other
+*master
+other
 
 === Staged Files ===
 

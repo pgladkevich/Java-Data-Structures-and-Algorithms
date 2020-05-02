@@ -731,9 +731,38 @@ public class Main {
         if (args.length != 2) {
             throw Utils.error("Incorrect operands.", args[0]);
         }
+        _conflict = false;
+        _givnBRNCHNAME = args[1];
+        _givnBRNCHFILE = Utils.join(_branches, _givnBRNCHNAME);
+        _currBRNCHNAME = getbranchCURRENT();
+        List<String> addition = Utils.plainFilenamesIn(_addition);
+        List<String> removal = Utils.plainFilenamesIn(_removal);
+        if (!addition.isEmpty() && !removal.isEmpty()) {
+            throw Utils.error("You have uncommitted changes.", args[0]);
+        } else if (!_givnBRNCHFILE.exists()) {
+            throw Utils.error("A branch with that name does not exist.",
+                    args[0]);
+        } else if (_givnBRNCHNAME.compareTo(_currBRNCHNAME) == 0) {
+            throw Utils.error("Cannot merge a branch with itself.",
+                    args[0]);
+        }
+        setcurrent();
+        setBLOBS();
+        _currMERGESHA = _currSHA;
+        _currMERGEBLOBS = _blobs;
+        _currMERGECOM = _current;
+        _givnMERGESHA = Utils.readContentsAsString(_givnBRNCHFILE);
+        setcurrentTOID(_givnMERGESHA);
+        setBLOBS();
+        _givnMERGECOM = _current;
+        _givnMERGEBLOBS = _blobs;
+        // check for untracked
+        mergecheckUNTRACKED();
+
     }
 
-    /** Helper method for updating the HEAD file. */
+    /** Helper method for updating the HEAD file for the passed
+     * in ACTIVEBRANCH. */
     public void updateHEAD(String activeBRANCH) {
         String PATH = _branches.toPath().toString() + File.separator +
         activeBRANCH;
@@ -755,6 +784,7 @@ public class Main {
         File commit = Utils.join(_commits, _currSHA);
         _current = Utils.readObject(commit, Commit.class);
         _parent = _current.get_parent();
+        _secondparent = _current.get_secondparent();
     }
     /** Helper method for setting the _current Commit to provided ID. */
     public void setcurrentTOID(String SHA) {
@@ -866,7 +896,25 @@ public class Main {
             file.delete();
         }
     }
-
+    /** Helper method for the merge command to check if there are any untracked
+     * files in the current working directory that would be over-written after
+     * the merge commit. */
+    private void mergecheckUNTRACKED() {
+        List<String> cwd = Utils.plainFilenamesIn(_cwd);
+        for (Map.Entry mapElement : _givnMERGEBLOBS.entrySet()) {
+            String n = (String) mapElement.getKey();
+            String s = (String) mapElement.getValue();
+            if (!_currMERGEBLOBS.containsKey(n) && cwd.contains(n)
+                    && _givnMERGEBLOBS.containsKey(n)) {
+                File file = Utils.join(_cwd, n);
+                String blobSHA = toSHA(file);
+                if (blobSHA.compareTo(s) != 0) {
+                    throw Utils.error("There is an untracked file in the "
+                            + "way; delete it, or add and commit it first.");
+                }
+            }
+        }
+    }
 
     /** File object representing the current working directory ~. */
     private static File _cwd;
@@ -900,12 +948,34 @@ public class Main {
     private String _currSHA;
     /** The current Commit object's parent SHA-1 UID. */
     private String _parent;
-    /** The latest Commit's blobs HashMap. */
+    /** The current Commit object's second parent SHA-1 UID. */
+    private String _secondparent;
+    /** The current Commit's blobs HashMap. */
     private HashMap<String, String> _blobs;
     /** The named of the file to potentially be used. */
     private String _nameFILE;
     /** The boolean representing whether a merge of two branches encountered
      * any conflicts. By default this will be set to false. */
     private boolean _conflict;
+    /** The name of the current branch. */
+    private String _currBRNCHNAME;
+    /** The name of the given branch when a merge command is called. */
+    private String _givnBRNCHNAME;
+    /** File object of the given branch when a merge command is called. */
+    private File _givnBRNCHFILE;
+    /** The given branch's head Commit object's SHA-1 UID when a merge command
+     * is called. */
+    private String _givnMERGESHA;
+    /** The given branch's head Commit object when a merge command is called. */
+    private Commit _givnMERGECOM;
+    /** The given branch's Commit's blobs when a merge command is called. */
+    private HashMap<String, String> _givnMERGEBLOBS;
+    /** The current Commit object's SHA-1 UID when a merge command is called. */
+    private String _currMERGESHA;
+    /** The current Commit object when a merge command is called. */
+    private Commit _currMERGECOM;
+    /** The current Commit's blobs HashMap when a merge command is called. */
+    private HashMap<String, String> _currMERGEBLOBS;
+
 
 }

@@ -87,6 +87,9 @@ public class Main {
             case "rm-branch":
                 rmbranch(args);
                 break;
+            case "reset":
+                reset(args);
+                break;
 
             default:
                 throw Utils.error("No command with that name exists.",
@@ -227,7 +230,8 @@ public class Main {
         }
         byte[] serialized = _current.serialize();
         String sha1 = Utils.sha1(serialized);
-        updateBRANCH("master", sha1);
+        String branch = getbranchCURRENT();
+        updateBRANCH(branch, sha1);
         updateCOMMIT(sha1, serialized);
     }
     /** rm: Search addition for the file from ARGS. If it is present, remove it,
@@ -488,6 +492,18 @@ public class Main {
                 throw Utils.error("Incorrect operands.", args[0]);
             }
             String sha = args[1];
+            // Short UID
+            if (sha.length() < 40) {
+                int comlen = sha.length();
+                List<String> commits = Utils.plainFilenamesIn(_commits);
+                for (String commit : commits) {
+                    String substring = commit.substring(0, comlen);
+                    if (sha.compareTo(substring) == 0) {
+                        sha = commit;
+                        break;
+                    }
+                }
+            }
             _nameFILE = args[3];
             File com = Utils.join(_commits, sha);
             if (!com.exists()) {
@@ -501,10 +517,14 @@ public class Main {
                         args[0]);
             }
             File dest = Utils.join(_cwd, _nameFILE);
+//            String shaf = _blobs.get(_nameFILE);
+//            File source = Utils.join(_objects, shaf);
+//            String input = Utils.readContentsAsString(source);
+//            Utils.writeContents(dest, input);
+
             String shaf = _blobs.get(_nameFILE);
-            File source = Utils.join(_objects, shaf);
-            String input = Utils.readContentsAsString(source);
-            Utils.writeContents(dest, input);
+            String contents = getblobCONTENTS(shaf);
+            Utils.writeContents(dest, contents);
         } else if (args.length == 2) {
             String branch = args[1];
             File check = Utils.join(_branches, branch);
@@ -602,16 +622,52 @@ public class Main {
         }
         branch.delete();
     }
-
-//    private void reset(String[] args) {
-//        checkGITLET(args);
-//        File branch = Utils.join(_branches, args[1]);
-//        if (!branch.exists()) {
-//            throw Utils.error("A branch with that name does not exist.",
-//                    args[0]);
-//        }
-//
-//    }
+    /**  For each file in the given commit, write the version of the file from
+     * the given commit into cwd. Set the head of the current branch to the
+     * given commit.
+     *
+     * Failure Cases: If no commit with the given id exists, print
+     * "No commit with that id exists." If a working file is untracked in the
+     * current branch and would be overwritten by the reset, print
+     * "There is an untracked file in the way; delete it, or add and commit it
+     * first." and exit; perform this check before doing anything else. */
+    private void reset(String[] args) {
+        if (args.length != 2) {
+            throw Utils.error("Incorrect operands.", args[0]);
+        }
+        checkGITLET(args);
+        String SHA = args[1];
+        File commit = Utils.join(_commits, SHA);
+        if (!commit.exists()) {
+            throw Utils.error("No commit with that id exists.", args[0]);
+        }
+        setcurrent();
+        setBLOBS();
+        HashMap<String, String> oldblobs = _current.get_blobs();
+        String branch = getbranchCURRENT();
+        setcurrentTOID(SHA);
+        setBLOBS();
+        List<String> cwd = Utils.plainFilenamesIn(_cwd);
+        for (Map.Entry mapElement : _blobs.entrySet()) {
+            String n = (String) mapElement.getKey();
+            String s = (String) mapElement.getValue();
+            if (!oldblobs.containsKey(n) && cwd.contains(n)
+                    && _blobs.containsKey(n)) {
+                throw Utils.error("There is an untracked file in the "
+                        + "way; delete it, or add and commit it first.");
+            }
+            writeblobTOCWD(n, s);
+        }
+        for (Map.Entry mapElement : oldblobs.entrySet()) {
+            String name = (String) mapElement.getKey();
+            if (!_blobs.containsKey(name)) {
+                File file = Utils.join(_cwd, name);
+                file.delete();
+            }
+        }
+        clearSTAGING();
+        updateBRANCH(branch, SHA);
+    }
 
     /** Helper method for updating the HEAD file. */
     public void updateHEAD(String activeBRANCH) {

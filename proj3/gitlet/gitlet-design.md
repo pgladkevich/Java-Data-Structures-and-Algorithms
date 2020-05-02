@@ -100,7 +100,9 @@
    
    12. reset: For each file in the given commit, call checkout [file name] on it. Set the head of the current branch 
    to the given commit.
-       * Failure Cases: The same as for checkout [file name]
+       * Failure Cases: If no commit with the given id exists, print "No commit with that id exists." If a working file
+       is untracked in the current branch and would be overwritten by the reset, print "There is an untracked file in 
+       the way; delete it, or add and commit it first." and exit; perform this check before doing anything else.
    
    13. merge: ***Needs to be revisited*** Set up two Commit pointers for the current branch and the given branch. While these two do not point to the same commit, follow the current commit’s first parent pointer. Once they are equal, set that commit to split point. For each file in the current branch, if it is equal to the file in the split point but not in the current branch, check the file out from the given branch. For every file in the given branch commit, if it was not present at the split point or in the current branch, check the file out and add it to staging addition area. For every file in the split point and the current branch commit but not in the given branch commit, remove the file and add it to the removal directory. For all files in the current branch, if the file is different in the given branch, print the differences for both branches. 
 

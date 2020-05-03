@@ -44,4 +44,4 @@ I prelude1.inc
 <<<
 * f.txt
 = g.txt notwug.txt
-= h.txt wug
+= h.txt wug.txt

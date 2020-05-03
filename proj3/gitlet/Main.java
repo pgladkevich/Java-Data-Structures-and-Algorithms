@@ -206,7 +206,8 @@ public class Main {
         String message = args[1];
         setcurrent();
         Commit commit;
-        if (message.substring(0, 6).compareTo("Merge") == 0) {
+        if (message.length() > 6
+                && message.substring(0, 6).compareTo("Merged") == 0) {
             commit = new Commit(message, _currMERGESHA, _givnMERGESHA,
                     _currMERGECOM);
         } else {
@@ -769,6 +770,7 @@ public class Main {
             String[] newargs = {"checkout", _givnBRNCHNAME};
             checkout(newargs);
             System.out.println("Current branch fast-forwarded.");
+            return;
         }
         for (Map.Entry mapElement : _givnMERGEBLOBS.entrySet()) {
             String n = (String) mapElement.getKey();
@@ -781,7 +783,7 @@ public class Main {
             performACTION2(n, s);
         }
         String[] cargs = {"commit", "Merged " + _givnBRNCHNAME + " into "
-                + _currBRNCHNAME};
+                + _currBRNCHNAME + "."};
         commit(cargs);
         if(_conflict) {
             System.out.println("Encountered a merge conflict.");
@@ -974,6 +976,10 @@ public class Main {
             String sha = queue.poll();
             if (_givnANCESTORS.containsKey(sha)) {
                 _spltMERGESHA = sha;
+                setcurrentTOID(_spltMERGESHA);
+                setBLOBS();
+                _spltMERGEBLOBS = _blobs;
+                _spltMERGECOM = _current;
                 return;
             }
             setcurrentTOID(sha);
@@ -1067,43 +1073,38 @@ public class Main {
         File cwdFILE = Utils.join(_cwd, fileNAME);
         switch(CASE) {
             case ("1"):
+            case ("2"):
                 String shaCURR1 = _currMERGEBLOBS.get(fileNAME);
                 String contentsCURR1 = getblobCONTENTS(shaCURR1);
-                String shaGIVN1 = _currMERGEBLOBS.get(fileNAME);
+                String shaGIVN1 = _givnMERGEBLOBS.get(fileNAME);
                 String contentsGIVN1 = getblobCONTENTS(shaGIVN1);
                 String result1 = formatCONFLICTRESULT(contentsCURR1,
                         contentsGIVN1);
                 Utils.writeContents(cwdFILE, result1);
-            case ("2"):
-                String shaCURR2 = _currMERGEBLOBS.get(fileNAME);
-                String contentsCURR2 = getblobCONTENTS(shaCURR2);
-                String shaGIVN2 = _currMERGEBLOBS.get(fileNAME);
-                String contentsGIVN2 = getblobCONTENTS(shaGIVN2);
-                String result2 = formatCONFLICTRESULT(contentsCURR2,
-                        contentsGIVN2);
-                Utils.writeContents(cwdFILE, result2);
+                break;
             case ("3"):
-                String shaGIVN3 = _currMERGEBLOBS.get(fileNAME);
+                String shaGIVN3 = _givnMERGEBLOBS.get(fileNAME);
                 String contentsGIVN3 = getblobCONTENTS(shaGIVN3);
                 String result3 = formatCONFLICTRESULT("",
                         contentsGIVN3);
                 Utils.writeContents(cwdFILE, result3);
+                break;
             case ("4"):
                 String shaCURR4 = _currMERGEBLOBS.get(fileNAME);
                 String contentsCURR4 = getblobCONTENTS(shaCURR4);
                 String result4 = formatCONFLICTRESULT(contentsCURR4,
                         "");
                 Utils.writeContents(cwdFILE, result4);
+                break;
         }
     }
     /** Helper method for formatting the contents for the resulting file when
      * you have conflicts during a merge. */
     private String formatCONFLICTRESULT(String contentsCURR,
                                         String contentsGIVN) {
-        return "<<<<<<< HEAD" + System.lineSeparator() + contentsCURR +
-                System.lineSeparator() + "=======" + System.lineSeparator() +
-                contentsGIVN + System.lineSeparator() + ">>>>>>>" +
-                System.lineSeparator();
+        return "<<<<<<< HEAD" + System.lineSeparator() + contentsCURR
+                + "=======" + System.lineSeparator() +
+                contentsGIVN + ">>>>>>>" + System.lineSeparator();
     }
     /** Helper method for the merge command to perform the necessary actions
      * on the files contained in both the current and given branch, as well as

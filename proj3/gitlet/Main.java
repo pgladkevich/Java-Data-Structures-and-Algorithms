@@ -1,7 +1,5 @@
 package gitlet;
 
-// import edu.neu.ccs.util.FileUtilities;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -12,6 +10,7 @@ import java.util.List;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ArrayBlockingQueue;
 
 /** Driver class for Gitlet, the tiny stupid version-control system.
  *  @author Pavel Gladkevich
@@ -204,8 +203,16 @@ public class Main {
         } else if (remove.isEmpty() && addition.isEmpty()) {
             throw Utils.error("No changes added to the commit.", args[0]);
         }
+        String message = args[1];
         setcurrent();
-        Commit commit = new Commit(args[1], _currSHA, _current);
+        Commit commit;
+        if (message.substring(0, 6).compareTo("Merge") == 0) {
+            commit = new Commit(message, _currMERGESHA, _givnMERGESHA,
+                    _currMERGECOM);
+        } else {
+            commit = new Commit(message, _currSHA, _current);
+        }
+
         updateCURRENT(commit);
         if (!remove.isEmpty()) {
             for (String name : remove) {
@@ -494,7 +501,6 @@ public class Main {
                 throw Utils.error("Incorrect operands.", args[0]);
             }
             String sha = args[1];
-            // Short UID
             if (sha.length() < 40) {
                 int comlen = sha.length();
                 List<String> commits = Utils.plainFilenamesIn(_commits);
@@ -519,11 +525,6 @@ public class Main {
                         args[0]);
             }
             File dest = Utils.join(_cwd, _nameFILE);
-//            String shaf = _blobs.get(_nameFILE);
-//            File source = Utils.join(_objects, shaf);
-//            String input = Utils.readContentsAsString(source);
-//            Utils.writeContents(dest, input);
-
             String shaf = _blobs.get(_nameFILE);
             String contents = getblobCONTENTS(shaf);
             Utils.writeContents(dest, contents);
@@ -758,9 +759,33 @@ public class Main {
         _givnMERGEBLOBS = _blobs;
         mergecheckUNTRACKED();
         _givnANCESTORS = new HashMap<>();
-        findgivnANCESTORS(_parent);
-        findgivnANCESTORS(_secondparent);
+        findgivnANCESTORS(_givnMERGESHA);
         findsplitPOINT();
+        if (_spltMERGESHA.compareTo(_givnMERGESHA) == 0) {
+            System.out.println("Given branch is an ancestor of the current " +
+                    "branch.");
+            return;
+        } else if (_spltMERGESHA.compareTo(_currMERGESHA) == 0) {
+            String[] newargs = {"checkout", _givnBRNCHNAME};
+            checkout(newargs);
+            System.out.println("Current branch fast-forwarded.");
+        }
+        for (Map.Entry mapElement : _givnMERGEBLOBS.entrySet()) {
+            String n = (String) mapElement.getKey();
+            String s = (String) mapElement.getValue();
+            performACTION1(n, s);
+        }
+        for (Map.Entry mapElement : _currMERGEBLOBS.entrySet()) {
+            String n = (String) mapElement.getKey();
+            String s = (String) mapElement.getValue();
+            performACTION2(n, s);
+        }
+        String[] cargs = {"commit", "Merged " + _givnBRNCHNAME + " into "
+                + _currBRNCHNAME};
+        commit(cargs);
+        if(_conflict) {
+            System.out.println("Encountered a merge conflict.");
+        }
     }
 
     /** Helper method for updating the HEAD file for the passed
@@ -847,6 +872,10 @@ public class Main {
     public void printLOG() {
         System.out.println("===");
         System.out.println("commit " + _currSHA);
+        if (_secondparent != null) {
+            System.out.println("Merge: " + _parent.substring(0, 7) + " "
+                    + _secondparent.substring(0, 7));
+        }
         String date = timestamp(_current.get_millitime());
         System.out.println("Date: " + date);
         System.out.println(_current.get_message());
@@ -919,7 +948,8 @@ public class Main {
         }
     }
     /** Helper method for the merge command to find all of the ancestors of the
-     * given branch. This method fills out the _givnANCESTORS hashmap.  */
+     * given commit associated with  the provided SHA. This method fills out
+     * the _givnANCESTORS hashmap. Traversal is performed recursively */
     private void findgivnANCESTORS(String SHA) {
         if (SHA == null) {
             return;
@@ -931,9 +961,158 @@ public class Main {
             findgivnANCESTORS(_secondparent);
         }
     }
-    /** Helper method for the merge command to find the first */
+    /** Helper method for the merge command to find the latest common ancestor,
+     * or in other words the split-point. For this purpose a BFS is performed
+     * with a traversal or the parent and secondparent of _currMERGECOM.
+     * Because the parent is added to the queue first in the case of crisscross
+     * merges the parent will always be selected as the split-point. */
     private void findsplitPOINT() {
+        int capacity = 8;
+        ArrayBlockingQueue<String> queue = new ArrayBlockingQueue<>(capacity);
+        queue.add(_currMERGESHA);
+        while(queue.size() != 0) {
+            String sha = queue.poll();
+            if (_givnANCESTORS.containsKey(sha)) {
+                _spltMERGESHA = sha;
+                return;
+            }
+            setcurrentTOID(sha);
+            queue.add(_parent);
+            if (_secondparent != null) {
+                queue.add(_secondparent);
+            }
+        }
+    }
+    /** Helper method for the merge command to perform the necessary actions
+     * on the files contained in both the current and given branch. Action is
+     * performed on the file created by using the passed in FILENAME and
+     * retrieving the blob corresponding to the the SHA UID. */
+    private void performACTION1(String fileNAME, String SHA) {
 
+        boolean incurr = _currMERGEBLOBS.containsKey(fileNAME);
+        boolean insplt = _spltMERGEBLOBS.containsKey(fileNAME);
+        // If the file is absent from the split-point and the current branch, checkout the file from the given branch
+        // and stage for addition.
+        if (!incurr && !insplt) {
+            String[] cargs = {"checkout", _givnMERGESHA, "--", fileNAME};
+            checkout(cargs);
+            stageFILE(fileNAME);
+        }
+        // If the file is absent from the current branch, and modified from the version in the split-point --> it is
+        // a conflict.
+        else if (!incurr && insplt) {
+            String spltblobSHA = _spltMERGEBLOBS.get(fileNAME);
+            if(SHA.compareTo(spltblobSHA) != 0) {
+                conflictRESOLVE(fileNAME, "3");
+                stageFILE(fileNAME);
+            }
+        }
+
+        else if (incurr && !insplt) {
+            String currblobSHA = _currMERGEBLOBS.get(fileNAME);
+            if (SHA.compareTo(currblobSHA) !=0) {
+                conflictRESOLVE(fileNAME, "2");
+                stageFILE(fileNAME);
+            }
+        }
+        else {
+            String spltblobSHA = _spltMERGEBLOBS.get(fileNAME);
+            String currblobSHA = _currMERGEBLOBS.get(fileNAME);
+            // If the file is modified in the given branch, but is the same version in the current branch as from the
+            //           split-point, checkout the file from the given branch and stage it for addition.
+            if (currblobSHA.compareTo(spltblobSHA) == 0
+                    && currblobSHA.compareTo(SHA) != 0) {
+                String[] cargs = {"checkout", _givnMERGESHA, "--", fileNAME};
+                checkout(cargs);
+                stageFILE(fileNAME);
+            }
+            // If the file is modified in the given branch in a different way from the modification in the current branch
+            //           --> conflict.
+            else if (currblobSHA.compareTo(spltblobSHA) != 0
+                    && currblobSHA.compareTo(SHA) != 0) {
+                conflictRESOLVE(fileNAME, "1");
+                stageFILE(fileNAME);
+            }
+        }
+
+    }
+    /** Helper method for the merge command to perform the necessary actions
+     * on the files contained in both the current and split commit, but not in
+     * the given branch. Action is performed on the file created
+     * by using the passed in FILENAME and retrieving the blob corresponding
+     * to the the SHA UID. */
+    private void performACTION2(String fileNAME, String SHA) {
+        boolean ingivn = _givnMERGEBLOBS.containsKey(fileNAME);
+        boolean insplt = _spltMERGEBLOBS.containsKey(fileNAME);
+        // If the file is in both the current branch and the split-point (not modified), and is absent in the given
+        //           branch, call the rm command on the file.
+        // If the file is modified in the current branch and absent from the given branch --> conflict.
+        if (!ingivn && insplt) {
+            String spltblobSHA = _spltMERGEBLOBS.get(fileNAME);
+            String currblobSHA = _currMERGEBLOBS.get(fileNAME);
+            if (spltblobSHA.compareTo(currblobSHA) == 0) {
+                String[] args = {"rm", fileNAME};
+                rm(args);
+            } else {
+                conflictRESOLVE(fileNAME, "4");
+                stageFILE(fileNAME);
+            }
+        }
+//            File cwdfile = Utils.join(_cwd, fileNAME);
+//            boolean incwd = cwdfile.exists();
+    }
+    /** Helper method resolving conflicts during a merge. */
+    private void conflictRESOLVE(String fileNAME, String CASE) {
+        _conflict = true;
+        File cwdFILE = Utils.join(_cwd, fileNAME);
+        switch(CASE) {
+            case ("1"):
+                String shaCURR1 = _currMERGEBLOBS.get(fileNAME);
+                String contentsCURR1 = getblobCONTENTS(shaCURR1);
+                String shaGIVN1 = _currMERGEBLOBS.get(fileNAME);
+                String contentsGIVN1 = getblobCONTENTS(shaGIVN1);
+                String result1 = formatCONFLICTRESULT(contentsCURR1,
+                        contentsGIVN1);
+                Utils.writeContents(cwdFILE, result1);
+            case ("2"):
+                String shaCURR2 = _currMERGEBLOBS.get(fileNAME);
+                String contentsCURR2 = getblobCONTENTS(shaCURR2);
+                String shaGIVN2 = _currMERGEBLOBS.get(fileNAME);
+                String contentsGIVN2 = getblobCONTENTS(shaGIVN2);
+                String result2 = formatCONFLICTRESULT(contentsCURR2,
+                        contentsGIVN2);
+                Utils.writeContents(cwdFILE, result2);
+            case ("3"):
+                String shaGIVN3 = _currMERGEBLOBS.get(fileNAME);
+                String contentsGIVN3 = getblobCONTENTS(shaGIVN3);
+                String result3 = formatCONFLICTRESULT("",
+                        contentsGIVN3);
+                Utils.writeContents(cwdFILE, result3);
+            case ("4"):
+                String shaCURR4 = _currMERGEBLOBS.get(fileNAME);
+                String contentsCURR4 = getblobCONTENTS(shaCURR4);
+                String result4 = formatCONFLICTRESULT(contentsCURR4,
+                        "");
+                Utils.writeContents(cwdFILE, result4);
+        }
+    }
+    /** Helper method for formatting the contents for the resulting file when
+     * you have conflicts during a merge. */
+    private String formatCONFLICTRESULT(String contentsCURR,
+                                        String contentsGIVN) {
+        return "<<<<<<< HEAD" + System.lineSeparator() + contentsCURR +
+                System.lineSeparator() + "=======" + System.lineSeparator() +
+                contentsGIVN + System.lineSeparator() + ">>>>>>>" +
+                System.lineSeparator();
+    }
+    /** Helper method for the merge command to perform the necessary actions
+     * on the files contained in both the current and given branch, as well as
+     * the current working directory. Action is performed on the file created
+     * by using the passed in FILENAME and retrieving the blob corresponding
+     * to the the SHA UID. */
+    private void stageFILE(String fileNAME) {
+        String[] aargs = {"add", fileNAME};
+        add(aargs);
     }
 
     /** File object representing the current working directory ~. */
@@ -1000,6 +1179,12 @@ public class Main {
      * Commit objects indexed by their corresponding SHA-1 UID. It is filled
      * by the findgivnANCESTORS() method when a merge command is called. */
     private HashMap<String, Commit> _givnANCESTORS;
+    /** The split-point commit's SHA-1 UID when a merge command is called. */
+    private String _spltMERGESHA;
+    /** The split-point's Commit object when a merge command is called. */
+    private Commit _spltMERGECOM;
+    /** The split-point Commit's blobs when a merge command is called. */
+    private HashMap<String, String> _spltMERGEBLOBS;
 
 
 }

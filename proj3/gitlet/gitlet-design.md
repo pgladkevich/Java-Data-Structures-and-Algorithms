@@ -114,7 +114,7 @@
    ends after printing the message "Current branch fast-forwarded." If the split point is neither of the above, proceed
    with the steps below. If at any point a conflict is encountered, set the boolean _conflict to true, and concatenate
    the contents of the file in the current branch with the contents of the version in the given branch.
-       1. Iterate through each file in the given branch. 
+       1. Iterate through each filename in the given branch that represents a file corresponding to a blob. 
            1. If the file is absent from the split-point and the current branch, checkout the file from the given branch 
            and stage for addition.
            2. If the file is absent from the current branch, and not modified from the version in the split-point, it
@@ -130,7 +130,8 @@
            --> conflict.
        2. Iterate through every file in the current branch. 
            1. If the file is in both the current branch and the split-point (not modified), and is absent in the given
-           branch, call the rm command on the file.        
+           branch, call the rm command on the file.
+           2. If the file is modified in the current branch and absent from the given branch --> conflict.        
        * Failure Cases: If there are staged files present (in addition or removal) print the error message 
        "You have uncommitted changes." If a branch with the given name does not exist, print the error message
         "A branch with that name does not exist." If attempting to merge a branch with itself, print the error message 

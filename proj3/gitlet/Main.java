@@ -959,8 +959,9 @@ public class Main {
         setcurrentTOID(SHA);
         if (!_givnANCESTORS.containsKey(_currSHA)) {
             _givnANCESTORS.put(_currSHA, _current);
+            String sprnt = _secondparent;
             findgivnANCESTORS(_parent);
-            findgivnANCESTORS(_secondparent);
+            findgivnANCESTORS(sprnt);
         }
     }
     /** Helper method for the merge command to find the latest common ancestor,

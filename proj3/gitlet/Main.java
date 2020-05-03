@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Date;
@@ -192,7 +191,6 @@ public class Main {
      * being tracked in the next commit. Clear the staging area and add new
      * commit to branch, updating the HEAD. */
     private void commit(String[] args) {
-        // TODO be able to handle merge commit creation
         checkGITLET(args);
         List<String> remove = Utils.plainFilenamesIn(_removal);
         List<String> addition = Utils.plainFilenamesIn(_addition);
@@ -223,7 +221,6 @@ public class Main {
             }
         }
         setBLOBS();
-        // TODO figure out if this breaks under merge commit creation
         if (!addition.isEmpty()) {
             for (String name : addition) {
                 File pot = Utils.join(_addition, name);
@@ -302,7 +299,6 @@ public class Main {
         if (args.length != 1) {
             throw Utils.error("Incorrect operands.", args[0]);
         }
-        //TODO Will need to revisit log after I finish merge
         setcurrent();
         printLOG();
         while (_parent != null) {
@@ -379,10 +375,6 @@ public class Main {
         List<String> branches = Utils.plainFilenamesIn(_branches);
         List<String> removal = Utils.plainFilenamesIn(_removal);
         List<String> addition = Utils.plainFilenamesIn(_addition);
-        Collections.sort(cwd);
-        Collections.sort(branches);
-        Collections.sort(removal);
-        Collections.sort(addition);
         setcurrent();
         setBLOBS();
         String path = Utils.readContentsAsString(_HEAD);
@@ -409,46 +401,44 @@ public class Main {
         }
         System.out.println();
         System.out.println("=== Modifications Not Staged For Commit ===");
-        // 1. If the file IS in cwd, IS tracked, and NOT staged. Meaning, the
-        //     *    contents of the file in the working directory and current commit
-        //     *    differ AND the file is not in staging area.
-        //     * 2. If the file IS in cwd and IS staged. Meaning, the contents staged for
-        //     * addition differ from those in the working directory.
-//        for (String name : cwd) {
-//            if (_blobs.containsKey(name) && !addition.contains(name)) {
-//                String shaSTORED = _blobs.get(name);
-//                File pot = Utils.join(_cwd, name);
-//                String sha = toSHA(pot);
-//                if (shaSTORED != sha) {
-//                    System.out.println(name + " (modified)");
-//                }
-//            }
-//            if (addition.contains(name)) {
-//                File cwdF = Utils.join(_cwd, name);
-//                File addF = Utils.join(_addition, name);
-//                if (toSHA(cwdF).compareTo(toSHA(addF)) != 0) {
-//                    System.out.println(name + " (modified)");
-//                }
-//            }
-//        }
-        //3. If the file is NOT in cwd and IS staged. Meaning, the file was
-        //     * deleted in the working directory but is staged for addition.
-        //     * 4. If the file is NOT in cwd, IS tracked, and is NOT staged. Meaning, the
-        //     *    file is not staged for removal, is deleted from the working directory,
-        //     *    but it is IN the current commit.
-//        for (String name : addition) {
-//            if (!cwd.contains(name)) {
-//                System.out.println(name + " (modified)");
-//            }
-//        }
+        for (String name : cwd) {
+            File cwdFILE = Utils.join(_cwd, name);
+            File addFILE = Utils.join(_addition, name);
+            boolean inadd = addFILE.exists();
+            boolean tracked = _blobs.containsKey(name);
+            String shaCWD = toSHA(cwdFILE);
 
+            if (tracked && !inadd) {
+                String shaTRACKED = _blobs.get(name);
+                if (shaTRACKED.compareTo(shaCWD) != 0) {
+                    System.out.println(name + " (modified)");
+                }
+            } else if (inadd) {
+                String addSHA = toSHA(addFILE);
+                if (shaCWD.compareTo(addSHA) != 0) {
+                    System.out.println(name + " (modified)");
+                }
+            }
+        }
+        for (String name : addition) {
+            if (!cwd.contains(name)) {
+                System.out.println(name + " (modified)");
+            }
+        }
+        for (Map.Entry mapElement : _blobs.entrySet()) {
+            String n = (String) mapElement.getKey();
+            if (!cwd.contains(n) && !addition.contains(n)
+                    && !removal.contains(n)) {
+                System.out.println(n + " (deleted)");
+            }
+        }
         System.out.println();
         System.out.println("=== Untracked Files ===");
-        // Lastly, print un-tracked files by: checking all files that are IN the
-        //     * working directory, but are not in the staging area or commit. This
-        //     * includes files that have been staged for removal, but then re-created
-        //     * without Gitlet's knowledge. Ignore any subdirectories that may have been
-        //     * introduced, since Gitlet does not deal with them.
+        for (String name : cwd) {
+            if (!_blobs.containsKey(name) && !addition.contains(name)) {
+                System.out.println(name);
+            }
+        }
         System.out.println();
     }
 
@@ -897,8 +887,9 @@ public class Main {
     }
     /** Helper method for converting a file to its SHA-1 ID string. */
     public String toSHA(File file) {
-        byte[] contents = Utils.serialize(file);
-        String SHA1 = Utils.sha1(contents);
+        byte[] contents = Utils.readContents(file);
+        byte[] serialized = Utils.serialize(contents);
+        String SHA1 = Utils.sha1(serialized);
         return SHA1;
     }
     /** Helper method for checking the .gitlet directory existence. */

@@ -1036,7 +1036,8 @@ public class Main {
             // If the file is modified in the given branch in a different way from the modification in the current branch
             //           --> conflict.
             else if (currblobSHA.compareTo(spltblobSHA) != 0
-                    && currblobSHA.compareTo(SHA) != 0) {
+                    && currblobSHA.compareTo(SHA) != 0
+                    && spltblobSHA.compareTo(SHA) != 0) {
                 conflictRESOLVE(fileNAME, "1");
                 stageFILE(fileNAME);
             }

@@ -737,7 +737,7 @@ public class Main {
         _currBRNCHNAME = getbranchCURRENT();
         List<String> addition = Utils.plainFilenamesIn(_addition);
         List<String> removal = Utils.plainFilenamesIn(_removal);
-        if (!addition.isEmpty() && !removal.isEmpty()) {
+        if (!addition.isEmpty() || !removal.isEmpty()) {
             throw Utils.error("You have uncommitted changes.", args[0]);
         } else if (!_givnBRNCHFILE.exists()) {
             throw Utils.error("A branch with that name does not exist.",
@@ -756,9 +756,11 @@ public class Main {
         setBLOBS();
         _givnMERGECOM = _current;
         _givnMERGEBLOBS = _blobs;
-        // check for untracked
         mergecheckUNTRACKED();
-
+        _givnANCESTORS = new HashMap<>();
+        findgivnANCESTORS(_parent);
+        findgivnANCESTORS(_secondparent);
+        findsplitPOINT();
     }
 
     /** Helper method for updating the HEAD file for the passed
@@ -792,6 +794,7 @@ public class Main {
         _currSHA = SHA;
         _current = Utils.readObject(commit, Commit.class);
         _parent = _current.get_parent();
+        _secondparent = _current.get_secondparent();
     }
 
     /** Helper method for updating the _current Commit to NEWCURR. */
@@ -915,6 +918,23 @@ public class Main {
             }
         }
     }
+    /** Helper method for the merge command to find all of the ancestors of the
+     * given branch. This method fills out the _givnANCESTORS hashmap.  */
+    private void findgivnANCESTORS(String SHA) {
+        if (SHA == null) {
+            return;
+        }
+        setcurrentTOID(SHA);
+        if (!_givnANCESTORS.containsKey(_currSHA)) {
+            _givnANCESTORS.put(_currSHA, _current);
+            findgivnANCESTORS(_parent);
+            findgivnANCESTORS(_secondparent);
+        }
+    }
+    /** Helper method for the merge command to find the first */
+    private void findsplitPOINT() {
+
+    }
 
     /** File object representing the current working directory ~. */
     private static File _cwd;
@@ -976,6 +996,10 @@ public class Main {
     private Commit _currMERGECOM;
     /** The current Commit's blobs HashMap when a merge command is called. */
     private HashMap<String, String> _currMERGEBLOBS;
+    /** The given Commit's ancestors HashMap that contains all of the ancestors
+     * Commit objects indexed by their corresponding SHA-1 UID. It is filled
+     * by the findgivnANCESTORS() method when a merge command is called. */
+    private HashMap<String, Commit> _givnANCESTORS;
 
 
 }

@@ -41,4 +41,4 @@ You have uncommitted changes.
 > rm k.txt
 <<<
 - k.txt
-I blank-status2
+I blank-status2.inc

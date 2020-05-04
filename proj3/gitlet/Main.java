@@ -913,7 +913,31 @@ public class Main {
         //     * follow the parent pointer of the current commit and repeat steps 4-6
         //     * until the base case is reached (either null or parent of head of local
         //     * copy of remote). **Base case checked at the start.**
-        
+        while(_parent.compareTo(baseCASE) != 0) {
+            for (Map.Entry mapElement : _blobs.entrySet()) {
+                String n = (String) mapElement.getKey();
+                String s = (String) mapElement.getValue();
+                File localBLOB = Utils.join(_objects, s);
+                if (!localBLOB.exists()) {
+                    File remoteBLOB = Utils.join(_objectsREMOTE, s);
+                    try {
+                        Files.copy(remoteBLOB.toPath(),
+                                localBLOB.toPath());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            File localCOM = Utils.join(_commits, _currSHA);
+            File remoteCOM = Utils.join(_commitsREMOTE, _currSHA);
+            try {
+                Files.copy(remoteCOM.toPath(), localCOM.toPath());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            setcurrentTOREMOTEID(_parent);
+            setBLOBS();
+        }
     }
 
     /** Helper method for updating the HEAD file for the passed

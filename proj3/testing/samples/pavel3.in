@@ -1,0 +1,31 @@
+# Pavel's third integration test.
+I setup2.inc
+> branch pavel3
+<<<
++ pavel.txt wug2.txt
+> add pavel.txt
+<<<
++ pavel1.txt a.txt
++ pavel2.txt b.txt
++ pavel3.txt c.txt
+> add pavel1.txt
+<<<
+> add pavel2.txt
+<<<
+> commit "pavel commit2"
+<<<
+> branch pavel4
+<<<
+> rm pavel.txt
+<<<
+> commit "removed pavel"
+<<<
+> add f.txt
+<<<
+> commit "added f.txt"
+No changes added to the commit.
+<<<
++ pavel.txt notwug.txt
+> checkout 44c99c5e66e0da148b4fd56fc53bc2cb19a80637 -- pavel.txt
+No commit with that id exists.
+<<<

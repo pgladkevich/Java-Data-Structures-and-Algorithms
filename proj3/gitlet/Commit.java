@@ -3,6 +3,9 @@ package gitlet;
 import java.io.Serializable;
 import java.util.HashMap;
 
+/** Commit class for use in gitlet.
+ * @author Pavel Gladkevich
+ * */
 public class Commit implements Serializable {
 
     /** Create a new commit that contains a _message MSG, a _parent PRNT,
@@ -32,7 +35,7 @@ public class Commit implements Serializable {
         _parent = prnt;
         _secondparent = null;
         _millitime = System.currentTimeMillis();
-        _blobs = current.get_blobs();
+        _blobs = current.getblobs();
     }
     /** See comments for the other Commit constructors..
      *
@@ -46,7 +49,7 @@ public class Commit implements Serializable {
         _parent = prnt;
         _secondparent = sprnt;
         _millitime = System.currentTimeMillis();
-        _blobs = current.get_blobs();
+        _blobs = current.getblobs();
     }
 
 
@@ -55,45 +58,46 @@ public class Commit implements Serializable {
     public byte[] serialize() {
         return Utils.serialize(this);
     }
-    /** Getter method for _blobs */
-    public HashMap<String, String> get_blobs() {
+    /** Getter method for _blobs.
+     * @return blobs */
+    public HashMap<String, String> getblobs() {
         return _blobs;
     }
-    /** Getter method for _message */
-    public String get_message() {
+    /** Getter method for _message.
+     * @return message */
+    public String getmessage() {
         return _message;
     }
-    /** Getter method for _timestamp */
-    public long get_millitime() {
+    /** Getter method for _timestamp.
+     * @return millitime */
+    public long getmillitime() {
         return _millitime;
     }
-    /** Getter method for _parent */
-    public String get_parent() {
+    /** Getter method for _parent.
+     * @return parent */
+    public String getparent() {
         return _parent;
     }
-    /** Getter method for _secondparent */
-    public String get_secondparent() {
+    /** Getter method for _secondparent.
+     * @return secondparent */
+    public String getsecondparent() {
         return _secondparent;
     }
-    /** Remove method for _blobs */
+    /** Remove method for _blobs using NAME. */
     public void removeblob(String name) {
         _blobs.remove(name);
     }
-    /** Add method for _blobs */
-    public void addblob(String name, String SHA) {
-        _blobs.put(name, SHA);
+    /** Add method for _blobs using NAME and SHA. */
+    public void addblob(String name, String sha) {
+        _blobs.put(name, sha);
     }
     /** Check if the SHA provided matches the SHA corresponding to the name
-     * provided. If it matches return true, otherwise false.  */
-    public boolean checkMATCHES(String name, String SHA) {
-        if (_blobs.get(name).compareTo(SHA) == 0) {
-            return true;
-        } else {
-            return false;
-        }
+     * provided. If it matches return true, otherwise false. Uses NAME.  */
+    public boolean checkMATCHES(String name, String sha) {
+        return _blobs.get(name).compareTo(sha) == 0;
     }
 
-    /** HashMap<String,String> of file names mapped to SHA1 blob hash values */
+    /** HashMap<String,String> of file names mapped to SHA1 blob hash values. */
     private HashMap<String, String> _blobs;
     /** String that contains the message of the commit. */
     private String _message;

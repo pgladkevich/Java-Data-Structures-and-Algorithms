@@ -1,0 +1,20 @@
+# Pavel's second integration test.
+I setup2.inc
+> branch pavel2
+<<<
+> checkout pavel2
+<<<
++ pavel1.txt a.txt
++ pavel2.txt b.txt
++ pavel3.txt c.txt
+> add pavel1.txt
+<<<
+> add pavel2.txt
+<<<
+> commit "pavel commit2"
+<<<
+> checkout master
+<<<
+> merge pavel2
+Current branch fast-forwarded.
+<<<

@@ -157,7 +157,17 @@
        * Usage: java gitlet.Main rm-remote [remote name]
        * Failure cases: If a remote with the given name does not exist, print the error message: 
        "A remote with that name does not exist."
-   3. fetch: Brings down commits from the remote Gitlet repository into the local Gitlet repository. Copies all commits 
+   3. push: Attempts to append the current branch's commits to the end of the given branch at the given remote. This 
+   command only works if the remote branch's head is in the history of the current local head, which means that the 
+   local branch contains some commits in the future of the remote branch. In this case, append the future commits to 
+   the remote branch. Then, the remote should reset to the front of the appended commits (so its head will be the same 
+   as the local head). This is called fast-forwarding. If the Gitlet system on the remote machine exists, but does not 
+   have the input branch, then simply add the branch to the remote Gitlet.
+       * Usage: java gitlet.Main push [remote name] [remote branch name]
+       * Failure cases: If the remote branch's head is not in the history of the current local head, print the error 
+       message "Please pull down remote changes before pushing." If the remote .gitlet directory does not exist, print 
+       "Remote directory not found."
+   4. fetch: Brings down commits from the remote Gitlet repository into the local Gitlet repository. Copies all commits 
    and blobs from the given branch in the remote repository (that are not already in the current repository) into a 
    branch named [remote name]/[remote branch name] in the local .gitlet, changing the branch 
    [remote name]/[remote branch name] to point to the head commit of the remote branch. 
@@ -181,6 +191,10 @@
        * Failure cases: If the remote Gitlet repository does not have the given branch name, print the error message 
        "That remote does not have that branch." If the remote .gitlet directory does not exist, print: 
        "Remote directory not found."
+   5. pull: Fetches branch [remote name]/[remote branch name] as for the fetch command, and then merges that fetch 
+   into the current branch.
+       * Usage: java gitlet.Main pull [remote name] [remote branch name]
+       * Failure cases: Just the failure cases of fetch and merge together.
         
 ## Persistence
 | cwd + files | In .gitlet | In .gitlet subdirectories | In Staging Subdirectory |

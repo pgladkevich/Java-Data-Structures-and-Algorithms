@@ -82,8 +82,12 @@ public class Main {
                 addremote(args); break;
             case "rm-remote":
                 rmremote(args); break;
+            case "push":
+                push(args); break;
             case "fetch":
                 fetch(args); break;
+            case "pull":
+                pull(args); break;
 
             default:
                 throw Utils.error("No command with that name exists.",
@@ -519,9 +523,11 @@ public class Main {
             File check = Utils.join(_branches, branch);
             String path = Utils.readContentsAsString(_HEAD);
             File currBRANCH = new File(path);
+            String checkDIR = currBRANCH.getParentFile().getName();
             if (!check.exists()) {
                 throw Utils.error("No such branch exists.", args[0]);
-            } else if (branch.compareTo(currBRANCH.getName()) == 0) {
+            } else if (branch.compareTo(currBRANCH.getName()) == 0
+                    && checkDIR.compareTo("branches") == 0) {
                 throw Utils.error("No need to checkout the current " +
                         "branch.", args[0]);
             }
@@ -802,6 +808,7 @@ public class Main {
      * called and then the remote will be re-added.
      *
      * Usage: java gitlet.Main rm-remote [remote name]
+     *
      * Failure cases: If a remote with the given name does not exist, print
      * the error message: "A remote with that name does not exist." */
     private void rmremote(String[] args) {
@@ -817,6 +824,68 @@ public class Main {
         }
         File remote = Utils.join(_remotesLOCAL, _remoteNAME);
         remote.delete();
+    }
+
+    /** push: Attempts to append the current branch's commits to the end of the
+     * given branch at the given remote. This command only works if the remote
+     * branch's head is in the history of the current local head, which means
+     * that the local branch contains some commits in the future of the remote
+     * branch. In this case, append the future commits to the remote branch.
+     * Then, the remote should reset to the front of the appended commits
+     * (so its head will be the same as the local head). This is called
+     * fast-forwarding. If the Gitlet system on the remote machine exists, but
+     * does not have the input branch, then simply add the branch to the remote
+     * Gitlet.
+     *
+     * Usage: java gitlet.Main push [remote name] [remote branch name]
+     *
+     * Failure cases: If the remote branch's head is not in the history of the
+     * current local head, print the error message
+     * "Please pull down remote changes before pushing." If the remote
+     * .gitlet directory does not exist, print "Remote directory not found." */
+    private void push(String[] args) {
+        checkGITLET(args);
+        if (args.length != 3) {
+            throw Utils.error("Incorrect operands.", args[0]);
+        }
+        _remoteNAME = args[1];
+        _remoteBRNCHNAME = args[2];
+        File path = Utils.join(_remotesLOCAL, _remoteNAME);
+        _remotePATH = Utils.readContentsAsString(path);
+        _gitletREMOTE = new File(_remotePATH);
+        if (!_gitletREMOTE.exists()) {
+            throw Utils.error("Remote directory not found.",
+                    args[0]);
+        }
+        _branchesREMOTE = Utils.join(_gitletREMOTE, "branches");
+        _remoteBRNCHFILE = Utils.join(_branchesREMOTE, _remoteBRNCHNAME);
+        _commitsREMOTE = Utils.join(_gitletREMOTE, "commits");
+        setcurrent();
+        _currFIRSTANCESTORS = new HashMap<>();
+        findFIRSTANCESTORS(_currSHA);
+        if (!_remoteBRNCHFILE.exists()) {
+            Utils.writeContents(_remoteBRNCHFILE, _currSHA);
+        } else {
+            _remoteCURRSHA = Utils.readContentsAsString(_remoteBRNCHFILE);
+            if(!_currFIRSTANCESTORS.containsKey(_remoteCURRSHA)) {
+                throw Utils.error("Please pull down remote changes " +
+                                "before pushing.", args[0]);
+            }
+        }
+        setcurrent();
+        Utils.writeContents(_remoteBRNCHFILE, _currSHA);
+        for (Map.Entry mapElement : _currFIRSTANCESTORS.entrySet()) {
+            String comSHA = (String) mapElement.getKey();
+            File localCOM = Utils.join(_commits, comSHA);
+            File remoteCOM = Utils.join(_commitsREMOTE, comSHA);
+            if (!remoteCOM.exists()) {
+                try {
+                    Files.copy(localCOM.toPath(), remoteCOM.toPath());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     /** Brings down commits from the remote Gitlet repository into the local
@@ -849,6 +918,7 @@ public class Main {
      * copy of remote). **Base case checked at the start.**
      *
      * Usage: java gitlet.Main fetch [remote name] [remote branch name]
+     *
      * Failure cases: If the remote Gitlet repository does not have the given
      * branch name, print error: "That remote does not have that branch."
      * If the remote .gitlet directory does not exist, print:
@@ -873,13 +943,6 @@ public class Main {
             throw Utils.error("That remote does not have that branch.",
                     args[0]);
         }
-        // First, checks if the branch to be created already exists. If it does,
-        //     * then get the Commit corresponding to the local head of this branch.
-        //     * Check if this commit's SHA exists in the remote repo. If it doesn't this
-        //     * means the local is ahead of the remote and fetch does not need to be
-        //     * performed. Exit. Otherwise, set this commit's parent to be the base case.
-        //     * If the branch does not exist then the base case is simply null,
-        //     * the parent of the initial commit.
         _commitsREMOTE = Utils.join(_gitletREMOTE, "commits");
         _objectsREMOTE = Utils.join(_gitletREMOTE, "objects");
         _remoteCURRSHA = Utils.readContentsAsString(_remoteBRNCHFILE);
@@ -900,20 +963,12 @@ public class Main {
             baseCASE = _parent;
         }
         Utils.writeContents(_localREMOTEBRNCHFILE, _remoteCURRSHA);
-        // Retrieve the remote commit corresponding to the aforementioned SHA
-        //     * UID and set it to be the current commit as well as the current blobs.
         setcurrentTOREMOTEID(_remoteCURRSHA);
         setBLOBS();
-        // 4. Retrieve the remote commit corresponding to the aforementioned SHA
-        //     * UID and set it to be the current commit as well as the current blobs.
-        //     * 5. For each blob in the commit, check if it is already present in the
-        //     * local _objects directory. If not, copy the file over.
-        //     * 6. Once all blobs have been copied (if not present), copy the serialized
-        //     * Commit file from the remote to the the local _commits directory. Then,
-        //     * follow the parent pointer of the current commit and repeat steps 4-6
-        //     * until the base case is reached (either null or parent of head of local
-        //     * copy of remote). **Base case checked at the start.**
-        while(_parent.compareTo(baseCASE) != 0) {
+        while(_parent != null) {
+             if (baseCASE != null && baseCASE.compareTo(_parent) == 0) {
+                 return;
+             }
             for (Map.Entry mapElement : _blobs.entrySet()) {
                 String n = (String) mapElement.getKey();
                 String s = (String) mapElement.getValue();
@@ -938,6 +993,25 @@ public class Main {
             setcurrentTOREMOTEID(_parent);
             setBLOBS();
         }
+    }
+    /** Fetches branch [remote name]/[remote branch name] as for the fetch
+     * command, and then merges that fetch into the current branch.
+     *
+     * Usage: java gitlet.Main pull [remote name] [remote branch name]
+     *
+     * Failure cases: Just the failure cases of fetch and merge together.*/
+    private void pull(String[] args) {
+        checkGITLET(args);
+        if (args.length != 3) {
+            throw Utils.error("Incorrect operands.", args[0]);
+        }
+        _remoteNAME = args[1];
+        _remoteBRNCHNAME = args[2];
+        String[] fargs = {"fetch", _remoteNAME, _remoteBRNCHNAME};
+        fetch(fargs);
+        String[] margs = {"merge", _remoteNAME + File.separator
+                + _remoteBRNCHNAME};
+        merge(margs);
     }
 
     /** Helper method for updating the HEAD file for the passed
@@ -1146,27 +1220,19 @@ public class Main {
      * performed on the file created by using the passed in FILENAME and
      * retrieving the blob corresponding to the the SHA UID. */
     private void performACTION1(String fileNAME, String SHA) {
-
         boolean incurr = _currMERGEBLOBS.containsKey(fileNAME);
         boolean insplt = _spltMERGEBLOBS.containsKey(fileNAME);
-        // If the file is absent from the split-point and the current branch, checkout the file from the given branch
-        // and stage for addition.
         if (!incurr && !insplt) {
             String[] cargs = {"checkout", _givnMERGESHA, "--", fileNAME};
             checkout(cargs);
             stageFILE(fileNAME);
-        }
-        // If the file is absent from the current branch, and modified from the version in the split-point --> it is
-        // a conflict.
-        else if (!incurr && insplt) {
+        } else if (!incurr && insplt) {
             String spltblobSHA = _spltMERGEBLOBS.get(fileNAME);
             if(SHA.compareTo(spltblobSHA) != 0) {
                 conflictRESOLVE(fileNAME, "3");
                 stageFILE(fileNAME);
             }
-        }
-
-        else if (incurr && !insplt) {
+        } else if (incurr && !insplt) {
             String currblobSHA = _currMERGEBLOBS.get(fileNAME);
             if (SHA.compareTo(currblobSHA) !=0) {
                 conflictRESOLVE(fileNAME, "2");
@@ -1176,17 +1242,12 @@ public class Main {
         else {
             String spltblobSHA = _spltMERGEBLOBS.get(fileNAME);
             String currblobSHA = _currMERGEBLOBS.get(fileNAME);
-            // If the file is modified in the given branch, but is the same version in the current branch as from the
-            //           split-point, checkout the file from the given branch and stage it for addition.
             if (currblobSHA.compareTo(spltblobSHA) == 0
                     && currblobSHA.compareTo(SHA) != 0) {
                 String[] cargs = {"checkout", _givnMERGESHA, "--", fileNAME};
                 checkout(cargs);
                 stageFILE(fileNAME);
-            }
-            // If the file is modified in the given branch in a different way from the modification in the current branch
-            //           --> conflict.
-            else if (currblobSHA.compareTo(spltblobSHA) != 0
+            } else if (currblobSHA.compareTo(spltblobSHA) != 0
                     && currblobSHA.compareTo(SHA) != 0
                     && spltblobSHA.compareTo(SHA) != 0) {
                 conflictRESOLVE(fileNAME, "1");
@@ -1217,8 +1278,6 @@ public class Main {
                 stageFILE(fileNAME);
             }
         }
-//            File cwdfile = Utils.join(_cwd, fileNAME);
-//            boolean incwd = cwdfile.exists();
     }
     /** Helper method resolving conflicts during a merge. */
     private void conflictRESOLVE(String fileNAME, String CASE) {
@@ -1276,6 +1335,18 @@ public class Main {
         _current = Utils.readObject(commit, Commit.class);
         _parent = _current.get_parent();
         _secondparent = _current.get_secondparent();
+    }
+    /** Helper method for the push command to find all of the first parent
+     * ancestors of the current commit associated with the provided SHA.
+     * This method fills out the _currFIRSTANCESTORS hashmap.
+     * Traversal is performed recursively */
+    private void findFIRSTANCESTORS(String SHA) {
+        if (SHA == null) {
+            return;
+        }
+        setcurrentTOID(SHA);
+        _currFIRSTANCESTORS.put(_currSHA, _current);
+        findFIRSTANCESTORS(_parent);
     }
 
     /** File object representing the current working directory ~. */
@@ -1374,6 +1445,9 @@ public class Main {
     private Commit _spltMERGECOM;
     /** The split-point Commit's blobs when a merge command is called. */
     private HashMap<String, String> _spltMERGEBLOBS;
-
-
+    /** The current Commit's ancestors HashMap that contains all of the
+     * ancestors Commit objects indexed by their corresponding SHA-1 UID. It is
+     * filled by the findFIRSTANCESTORS() method when a push command is called.
+     * This will then be used to update the remote */
+    private HashMap<String, Commit> _currFIRSTANCESTORS;
 }

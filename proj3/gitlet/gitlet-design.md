@@ -175,7 +175,7 @@
        5. For each blob in the commit, check if it is already present in the local _objects directory. If not, copy the
        file over. 
        6. Once all blobs have been copied (if not present), copy the serialized Commit file from the remote to the the
-       local _commits directory. Then, follow the parent pointer of the current commit and repeat steps 3-5 until the 
+       local _commits directory. Then, follow the parent pointer of the current commit and repeat steps 4-6 until the 
        base case is reached (either null or parent of head of local copy of remote). **Base case checked at the start.**
        * Usage: java gitlet.Main fetch [remote name] [remote branch name]
        * Failure cases: If the remote Gitlet repository does not have the given branch name, print the error message 

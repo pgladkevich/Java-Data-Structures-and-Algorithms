@@ -838,13 +838,13 @@ public class Main {
      * exist. In both cases set the head of the local copy of the remote branch
      * (change the SHA of the _branches/[remote name]/[remote branch name] file)
      * to the retrieved SHA-1 ID.
-     * 3. Retrieve the remote commit corresponding to the aforementioned SHA
+     * 4. Retrieve the remote commit corresponding to the aforementioned SHA
      * UID and set it to be the current commit as well as the current blobs.
-     * 4. For each blob in the commit, check if it is already present in the
+     * 5. For each blob in the commit, check if it is already present in the
      * local _objects directory. If not, copy the file over.
-     * 5. Once all blobs have been copied (if not present), copy the serialized
+     * 6. Once all blobs have been copied (if not present), copy the serialized
      * Commit file from the remote to the the local _commits directory. Then,
-     * follow the parent pointer of the current commit and repeat steps 3-5
+     * follow the parent pointer of the current commit and repeat steps 4-6
      * until the base case is reached (either null or parent of head of local
      * copy of remote). **Base case checked at the start.**
      *
@@ -867,13 +867,53 @@ public class Main {
             throw Utils.error("Remote directory not found.",
                     args[0]);
         }
-        _branchesREMOTE = Utils.join(_gitletREMOTE, "_branches");
+        _branchesREMOTE = Utils.join(_gitletREMOTE, "branches");
         _remoteBRNCHFILE = Utils.join(_branchesREMOTE, _remoteBRNCHNAME);
         if (!_remoteBRNCHFILE.exists()) {
             throw Utils.error("That remote does not have that branch.",
                     args[0]);
         }
-
+        // First, checks if the branch to be created already exists. If it does,
+        //     * then get the Commit corresponding to the local head of this branch.
+        //     * Check if this commit's SHA exists in the remote repo. If it doesn't this
+        //     * means the local is ahead of the remote and fetch does not need to be
+        //     * performed. Exit. Otherwise, set this commit's parent to be the base case.
+        //     * If the branch does not exist then the base case is simply null,
+        //     * the parent of the initial commit.
+        _commitsREMOTE = Utils.join(_gitletREMOTE, "commits");
+        _objectsREMOTE = Utils.join(_gitletREMOTE, "objects");
+        _remoteCURRSHA = Utils.readContentsAsString(_remoteBRNCHFILE);
+        File localbranchDIR = Utils.join(_branches, _remoteNAME);
+        if (!localbranchDIR.exists()) {
+            localbranchDIR.mkdir();
+        }
+        _localREMOTEBRNCHFILE = Utils.join(localbranchDIR, _remoteBRNCHNAME);
+        String baseCASE = null;
+        if (_localREMOTEBRNCHFILE.exists()) {
+            String shaCOMMIT =
+                    Utils.readContentsAsString(_localREMOTEBRNCHFILE);
+            File checkAHEAD = Utils.join(_commitsREMOTE, shaCOMMIT);
+            if (!checkAHEAD.exists()) {
+                return;
+            }
+            setcurrentTOID(shaCOMMIT);
+            baseCASE = _parent;
+        }
+        Utils.writeContents(_localREMOTEBRNCHFILE, _remoteCURRSHA);
+        // Retrieve the remote commit corresponding to the aforementioned SHA
+        //     * UID and set it to be the current commit as well as the current blobs.
+        setcurrentTOREMOTEID(_remoteCURRSHA);
+        setBLOBS();
+        // 4. Retrieve the remote commit corresponding to the aforementioned SHA
+        //     * UID and set it to be the current commit as well as the current blobs.
+        //     * 5. For each blob in the commit, check if it is already present in the
+        //     * local _objects directory. If not, copy the file over.
+        //     * 6. Once all blobs have been copied (if not present), copy the serialized
+        //     * Commit file from the remote to the the local _commits directory. Then,
+        //     * follow the parent pointer of the current commit and repeat steps 4-6
+        //     * until the base case is reached (either null or parent of head of local
+        //     * copy of remote). **Base case checked at the start.**
+        
     }
 
     /** Helper method for updating the HEAD file for the passed
@@ -1204,6 +1244,15 @@ public class Main {
         String[] aargs = {"add", fileNAME};
         add(aargs);
     }
+    /** Helper method for setting the _current Commit to provided ID that
+     * corresponds to a commit in the remote repository. */
+    public void setcurrentTOREMOTEID(String SHA) {
+        File commit = Utils.join(_commitsREMOTE, SHA);
+        _currSHA = SHA;
+        _current = Utils.readObject(commit, Commit.class);
+        _parent = _current.get_parent();
+        _secondparent = _current.get_secondparent();
+    }
 
     /** File object representing the current working directory ~. */
     private static File _cwd;
@@ -1253,16 +1302,22 @@ public class Main {
     private String _secondparent;
     /** The current Commit's blobs HashMap. */
     private HashMap<String, String> _blobs;
-    /** The name of the file to potentially be used. */
+    /** The name of a file to potentially be used. */
     private String _nameFILE;
-    /** The name of the remote to potentially be used. */
+    /** The name of the remote. */
     private String _remoteNAME;
-    /** The path of the remote .gitlet directory to potentially be used. */
+    /** The path of the remote .gitlet directory. */
     private String _remotePATH;
-    /** The name of the remote branch to potentially be used. */
+    /** The name of the remote branch. */
     private String _remoteBRNCHNAME;
-    /** The file object for the remote branch to potentially be used. */
+    /** The SHA-1 UID of the current commit of the remote branch. */
+    private String _remoteCURRSHA;
+    /** The file object for the remote branch. */
     private File _remoteBRNCHFILE;
+    /** The file object for the local repository's pointer to the head of the
+     * local copy of the remote branch. This will be stored in the local
+     * .gitlet/branches */
+    private File _localREMOTEBRNCHFILE;
     /** The boolean representing whether a merge of two branches encountered
      * any conflicts. By default this will be set to false. */
     private boolean _conflict;

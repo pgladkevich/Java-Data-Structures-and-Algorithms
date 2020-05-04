@@ -49,47 +49,41 @@ public class Main {
         _addition = Utils.join(_staging, "addition");
         _removal = Utils.join(_staging, "removal");
         _commits = Utils.join(_gitlet, "commits");
+        _remotesLOCAL = Utils.join(_gitlet, "remotes");
 
         switch (args[0]) {
             case "init":
-                init(args);
-                break;
+                init(args); break;
             case "add":
-                add(args);
-                break;
+                add(args); break;
             case "commit":
-                commit(args);
-                break;
+                commit(args); break;
             case "rm":
-                rm(args);
-                break;
+                rm(args); break;
             case "log":
-                log(args);
-                break;
+                log(args); break;
             case "global-log":
-                globallog(args);
-                break;
+                globallog(args); break;
             case "find":
-                find(args);
-                break;
+                find(args); break;
             case "status":
-                status(args);
-                break;
+                status(args); break;
             case "checkout":
-                checkout(args);
-                break;
+                checkout(args); break;
             case "branch":
-                branch(args);
-                break;
+                branch(args); break;
             case "rm-branch":
-                rmbranch(args);
-                break;
+                rmbranch(args); break;
             case "reset":
-                reset(args);
-                break;
+                reset(args); break;
             case "merge":
-                merge(args);
-                break;
+                merge(args); break;
+            case "add-remote":
+                addremote(args); break;
+            case "rm-remote":
+                rmremote(args); break;
+            case "fetch":
+                fetch(args); break;
 
             default:
                 throw Utils.error("No command with that name exists.",
@@ -119,6 +113,7 @@ public class Main {
             _addition.mkdir();
             _removal.mkdir();
             _commits.mkdir();
+            _remotesLOCAL.mkdir();
             Commit initial = new Commit("initial commit");
             byte[] serialized = initial.serialize();
             String sha1 = Utils.sha1(serialized);
@@ -536,13 +531,6 @@ public class Main {
             setcurrentTOID(SHA);
             setBLOBS();
             List<String> cwd = Utils.plainFilenamesIn(_cwd);
-//            for (String name : cwd) {
-//                if (_blobs.containsKey(name) && !oldblobs.containsKey(name)) {
-//                    throw Utils.error("There is an untracked file in the "
-//                            + "way; delete it, or add and commit it first.");
-//                }
-//            }
-
             // For each file in the head commit of the given branch, copy/overwrite
             //     * the file in the working directory.
             for (Map.Entry mapElement : _blobs.entrySet()) {
@@ -720,6 +708,7 @@ public class Main {
      * resulting commit will have the current branch as its parent, and the
      * given branch as its second parent. */
     private void merge(String[] args) {
+        checkGITLET(args);
         if (args.length != 2) {
             throw Utils.error("Incorrect operands.", args[0]);
         }
@@ -778,6 +767,113 @@ public class Main {
         if(_conflict) {
             System.out.println("Encountered a merge conflict.");
         }
+    }
+
+    /** Saves the given login information under the given remote name in a file
+     * in the remotes subdirectory of .gitlet. In this case the login
+     * information is simply the absolute path to the remote directory.
+     * Attempts to push or pull from the given remote name will then attempt to
+     * use this .gitlet directory.
+     * By writing, java gitlet.Main add-remote other ../testing/otherdir/.gitlet
+     * you can provide tests of remotes that will work from all locations.
+     *
+     * Usage: `java gitlet.Main
+     * add-remote [remote name] [name of remote directory]/.gitlet '
+     * Failure cases: If a remote with the given name already exists,
+     * print the error message: "A remote with that name already exists." */
+    private void addremote(String[] args) {
+        checkGITLET(args);
+        List<String> remotes = Utils.plainFilenamesIn(_remotesLOCAL);
+        if (args.length != 3) {
+            throw Utils.error("Incorrect operands.", args[0]);
+        }
+        _remoteNAME = args[1];
+        _remotePATH = args[2];
+        if (remotes.contains(_remoteNAME)) {
+            throw Utils.error("A remote with that name already exists.",
+                    args[0]);
+        }
+        File remote = Utils.join(_remotesLOCAL, _remoteNAME);
+        Utils.writeContents(remote, _remotePATH);
+    }
+
+    /** Remove information associated with the given remote name. If you ever
+     * want to change a remote's information the rm-remote command will be
+     * called and then the remote will be re-added.
+     *
+     * Usage: java gitlet.Main rm-remote [remote name]
+     * Failure cases: If a remote with the given name does not exist, print
+     * the error message: "A remote with that name does not exist." */
+    private void rmremote(String[] args) {
+        checkGITLET(args);
+        List<String> remotes = Utils.plainFilenamesIn(_remotesLOCAL);
+        if (args.length != 2) {
+            throw Utils.error("Incorrect operands.", args[0]);
+        }
+        _remoteNAME = args[1];
+        if (!remotes.contains(_remoteNAME)) {
+            throw Utils.error("A remote with that name does not exist.",
+                    args[0]);
+        }
+        File remote = Utils.join(_remotesLOCAL, _remoteNAME);
+        remote.delete();
+    }
+
+    /** Brings down commits from the remote Gitlet repository into the local
+     * Gitlet repository. Copies all commits and blobs from the given branch in
+     * the remote repository (that are not already in the current repository)
+     * into a branch named [remote name]/[remote branch name] in the local
+     * .gitlet, changing the branch [remote name]/[remote branch name] to point
+     * to the head commit of the remote branch.
+     *
+     * 1. First, checks if the branch to be created already exists. If it does,
+     * then get the Commit corresponding to the local head of this branch.
+     * Check if this commit's SHA exists in the remote repo. If it doesn't this
+     * means the local is ahead of the remote and fetch does not need to be
+     * performed. Exit. Otherwise, set this commit's parent to be the base case.
+     * If the branch does not exist then the base case is simply null,
+     * the parent of the initial commit.
+     * 2. Retrieve the SHA-1 ID of the head of the remote branch.
+     * 3. Create the branch in the local repository if it did not previously
+     * exist. In both cases set the head of the local copy of the remote branch
+     * (change the SHA of the _branches/[remote name]/[remote branch name] file)
+     * to the retrieved SHA-1 ID.
+     * 3. Retrieve the remote commit corresponding to the aforementioned SHA
+     * UID and set it to be the current commit as well as the current blobs.
+     * 4. For each blob in the commit, check if it is already present in the
+     * local _objects directory. If not, copy the file over.
+     * 5. Once all blobs have been copied (if not present), copy the serialized
+     * Commit file from the remote to the the local _commits directory. Then,
+     * follow the parent pointer of the current commit and repeat steps 3-5
+     * until the base case is reached (either null or parent of head of local
+     * copy of remote). **Base case checked at the start.**
+     *
+     * Usage: java gitlet.Main fetch [remote name] [remote branch name]
+     * Failure cases: If the remote Gitlet repository does not have the given
+     * branch name, print error: "That remote does not have that branch."
+     * If the remote .gitlet directory does not exist, print:
+     * "Remote directory not found." */
+    private void fetch(String[] args) {
+        checkGITLET(args);
+        if (args.length != 3) {
+            throw Utils.error("Incorrect operands.", args[0]);
+        }
+        _remoteNAME = args[1];
+        _remoteBRNCHNAME = args[2];
+        File path = Utils.join(_remotesLOCAL, _remoteNAME);
+        _remotePATH = Utils.readContentsAsString(path);
+        _gitletREMOTE = new File(_remotePATH);
+        if (!_gitletREMOTE.exists()) {
+            throw Utils.error("Remote directory not found.",
+                    args[0]);
+        }
+        _branchesREMOTE = Utils.join(_gitletREMOTE, "_branches");
+        _remoteBRNCHFILE = Utils.join(_branchesREMOTE, _remoteBRNCHNAME);
+        if (!_remoteBRNCHFILE.exists()) {
+            throw Utils.error("That remote does not have that branch.",
+                    args[0]);
+        }
+
     }
 
     /** Helper method for updating the HEAD file for the passed
@@ -1133,6 +1229,18 @@ public class Main {
     private static File _removal;
     /** File object representing the ~/.gitlet/commits directory. */
     private static File _commits;
+    /** File object representing the local .gitlet/remotes directory that stores
+     * remote files representing the path to each remote/.gitlet directory. */
+    private static File _remotesLOCAL;
+    /** File object representing the [remote path]/.gitlet directory. */
+    private static File _gitletREMOTE;
+    /** File object representing the [remote path]/.gitlet/objects directory. */
+    private static File _objectsREMOTE;
+    /** File object representing the [remote path]/.gitlet/branches directory. */
+    private static File _branchesREMOTE;
+    /** File object representing the [remote path]/.gitlet/commits directory. */
+    private static File _commitsREMOTE;
+
     /** Boolean representing if the .gitlet directory is present in _cwd. */
     private boolean _exists;
     /** The latest Commit object that was committed, the head. */
@@ -1145,8 +1253,16 @@ public class Main {
     private String _secondparent;
     /** The current Commit's blobs HashMap. */
     private HashMap<String, String> _blobs;
-    /** The named of the file to potentially be used. */
+    /** The name of the file to potentially be used. */
     private String _nameFILE;
+    /** The name of the remote to potentially be used. */
+    private String _remoteNAME;
+    /** The path of the remote .gitlet directory to potentially be used. */
+    private String _remotePATH;
+    /** The name of the remote branch to potentially be used. */
+    private String _remoteBRNCHNAME;
+    /** The file object for the remote branch to potentially be used. */
+    private File _remoteBRNCHFILE;
     /** The boolean representing whether a merge of two branches encountered
      * any conflicts. By default this will be set to false. */
     private boolean _conflict;

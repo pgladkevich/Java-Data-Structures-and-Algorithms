@@ -142,6 +142,45 @@
    "Merged [given branch name] into [current branch name]". Then, if the merge encountered a conflict, print the message
    "Encountered a merge conflict." to the terminal. The resulting commit will have the current branch as 
    its parent, and the given branch as its second parent.
+
+#### Extra Credit Algorithms
+   1. add-remote: Saves the given login information under the given remote name in a file in the remotes subdirectory 
+   of .gitlet. In this case the login information is simply the absolute path to the remote directory. Attempts to push 
+   or pull from the given remote name will then attempt to use this .gitlet directory. By writing, e.g., 
+   java gitlet.Main add-remote other ../testing/otherdir/.gitlet you can provide tests of remotes that will work from 
+   all locations.
+       * Usage: `java gitlet.Main add-remote [remote name] [name of remote directory]/.gitlet
+       * Failure cases: If a remote with the given name already exists, print the error message: 
+       "A remote with that name already exists."
+   2. rm-remote: Remove information associated with the given remote name. If you ever want to change a remote's 
+   information the rm-remote command will be called and then the remote will be re-added. 
+       * Usage: java gitlet.Main rm-remote [remote name]
+       * Failure cases: If a remote with the given name does not exist, print the error message: 
+       "A remote with that name does not exist."
+   3. fetch: Brings down commits from the remote Gitlet repository into the local Gitlet repository. Copies all commits 
+   and blobs from the given branch in the remote repository (that are not already in the current repository) into a 
+   branch named [remote name]/[remote branch name] in the local .gitlet, changing the branch 
+   [remote name]/[remote branch name] to point to the head commit of the remote branch. 
+       1. First, checks if the branch to be created already exists. If it does, then get the Commit corresponding to the
+       local head of this branch. Check if this commit's SHA exists in the remote repo. If it doesn't this means the 
+       local is ahead of the remote and fetch does not need to be performed. Exit. Otherwise, set this commit's parent 
+       to be the base case. If the branch does not exist then the base case is simply null, the parent of the initial 
+       commit. 
+       2. Retrieve the SHA-1 ID of the head of the remote branch using a helper function.
+       3. Create the branch in the local repository if it did not previously exist. In both cases set the head of the
+       local copy of the remote branch (change the SHA of the _branches/[remote name]/[remote branch name] file) to the
+       retrieved SHA-1 ID.
+       4. Retrieve the remote commit corresponding to the aforementioned SHA UID and set it to be the current commit as
+       well as the current blobs. 
+       5. For each blob in the commit, check if it is already present in the local _objects directory. If not, copy the
+       file over. 
+       6. Once all blobs have been copied (if not present), copy the serialized Commit file from the remote to the the
+       local _commits directory. Then, follow the parent pointer of the current commit and repeat steps 3-5 until the 
+       base case is reached (either null or parent of head of local copy of remote). **Base case checked at the start.**
+       * Usage: java gitlet.Main fetch [remote name] [remote branch name]
+       * Failure cases: If the remote Gitlet repository does not have the given branch name, print the error message 
+       "That remote does not have that branch." If the remote .gitlet directory does not exist, print: 
+       "Remote directory not found."
         
 ## Persistence
 | cwd + files | In .gitlet | In .gitlet subdirectories | In Staging Subdirectory |
@@ -153,6 +192,7 @@
 | | -- Commits Directory | -- Every Commit |
 | | -- Staging Directory | -- addition subdirectory | files staged for addition |
 | | -- Staging Directory | -- removal subdirectory | files staged for removal |
+| | -- Remotes Directory | -- Every Remote |
 
 Inspiration/References: 
 
@@ -165,10 +205,3 @@ https://john.cs.olemiss.edu/~hcc/researchMethods/notes/ClassicParnas/ACMannotate
 https://blog.jayway.com/2013/03/03/git-is-a-purely-functional-data-structure/
 
 https://paper.dropbox.com/doc/Gitlet-Persistence--Ay9ecQH7azheEFUnMaQelMXjAg-zEnTGJhtUMtGr8ILYhoab
-
-
-## Maybe don't need 
-#### Commit Tree (HashMap)
-#### Instance Variables
-        1. contains the history of all commits through a parent commit pointer (stores SHA-1 value)
-        2. head pointer for current commit

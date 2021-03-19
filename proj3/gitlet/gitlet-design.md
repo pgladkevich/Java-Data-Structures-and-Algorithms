@@ -2,10 +2,6 @@
 
 **Name**: Pavel Gladkevich
 
-    Lab 13 Partner's name: Zain Hasnain
-    Lab 13 Partner's SID: 3033718042
-    Lab 13 Partner's email: zainhasnain@berkeley.edu
-    
 ## Classes and Data Structures
 ### Commit
 #### Instance Variables
